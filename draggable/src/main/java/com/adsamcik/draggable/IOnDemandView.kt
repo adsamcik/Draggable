@@ -21,9 +21,4 @@ interface IOnDemandView {
      * @param success success
      */
     fun onPermissionResponse(requestCode: Int, success: Boolean)
-
-    /**
-     * Home action that is performed
-     */
-    fun onHomeAction()
 }
