@@ -8,20 +8,22 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 
-class DraggablePayload<T>(private val context: Context,
+class DraggablePayload<T>(private val mContext: Context,
                           private val mClass: Class<T>,
                           private val mInitialTranslation: Point,
                           private val mParent: ViewGroup,
                           private val mAnchor: DragTargetAnchor,
-                          mMarginDp: Int) where T : Fragment, T : IOnDemandView {
+                          mMarginDp: Int,
+                          private val mWidth: Int = MATCH_PARENT,
+                          private val mHeight: Int = MATCH_PARENT) where T : Fragment, T : IOnDemandView {
     private var mWrapper: FrameLayout? = null
-    private var mMarginPx = Utility.dpToPx(context, mMarginDp)
+    private var mMarginPx = Utility.dpToPx(mContext, mMarginDp)
 
 
     internal fun initializeView() {
         if (mWrapper == null) {
-            val cView = FrameLayout(context)
-            cView.layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+            val cView = FrameLayout(mContext)
+            cView.layoutParams = ViewGroup.LayoutParams(mWidth, mHeight)
             cView.setBackgroundColor(Color.parseColor("#aa0000ff"))
             cView.translationZ = 1000f
             cView.translationX = mInitialTranslation.x.toFloat()
