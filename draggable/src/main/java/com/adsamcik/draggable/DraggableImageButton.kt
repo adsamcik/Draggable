@@ -10,8 +10,6 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 
 class DraggableImageButton : AppCompatImageButton {
-    val TAG = "DraggableImageButton"
-
     private val mDeadZone = Utility.dpToPx(context, 16)
 
     private var mInitialTranslation: PointF = PointF()

@@ -1,7 +1,6 @@
 package com.adsamcik.draggable
 
 import android.content.Context
-import android.graphics.Point
 import android.graphics.PointF
 import android.view.View
 import kotlin.math.sign

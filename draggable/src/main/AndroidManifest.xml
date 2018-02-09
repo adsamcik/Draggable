@@ -1,2 +1,2 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.adsamcik.draggable"/>
+<manifest
+    package="com.adsamcik.draggable"/>
