@@ -1,11 +1,12 @@
 package com.adsamcik.draggabletest
 
-import android.support.v7.app.AppCompatActivity
+import android.graphics.Point
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.view.View
-import com.adsamcik.draggable.DragAxis
-import com.adsamcik.draggable.DragTargetAnchor
-import com.adsamcik.draggable.DraggableImageButton
+import android.view.ViewGroup
+import com.adsamcik.draggable.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,7 +16,22 @@ class MainActivity : AppCompatActivity() {
 
         val button = findViewById<DraggableImageButton>(R.id.leftRightButton)
         button.setDrag(DragAxis.X)
-        button.setTarget(button.parent as View, DragTargetAnchor.Right, 8)
+
+        val parent = button.parent as View
+
+        parent.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+
+        button.translationX = Utility.dpToPx(this, 36).toFloat()
+        button.setTarget(parent, DragTargetAnchor.Right, 8)
+        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Top, 0))
+        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.TopRight, 0))
+        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.TopLeft, 0))
+        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Middle, 0))
+        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Left, 0))
+        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Right, 0))
+        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Bottom, 0))
+        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.BottomLeft, 0))
+        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.BottomRight, 0))
         //button.attachView(ViewClass::class.java, DragTargetAnchor.Right, 0)
 
     }

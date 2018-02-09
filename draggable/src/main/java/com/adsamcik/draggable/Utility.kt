@@ -36,4 +36,11 @@ object Utility {
         else
             (number - firstConstraint) / (secondConstraint - firstConstraint)
     }
+
+    fun betweenInPercent(firstConstraint: Float, secondConstraint: Float, number: Float): Float {
+        return if (firstConstraint > secondConstraint)
+            (number - secondConstraint) / (firstConstraint - secondConstraint)
+        else
+            (number - firstConstraint) / (secondConstraint - firstConstraint)
+    }
 }

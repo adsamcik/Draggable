@@ -79,40 +79,33 @@ class DraggableImageButton : AppCompatImageButton {
         var target: Float
         if (this.mDragAxis == DragAxis.X || this.mDragAxis == DragAxis.XY) {
             target = if (state) mTargetTranslation.x.toFloat() else mInitialTranslation.x
-            animate(translationX, target, ::setTranslationX, DraggablePayload<*>::onHorizontalDrag)
+            animate(translationX, target, ::setTranslationX)
         }
 
         if (this.mDragAxis == DragAxis.Y || this.mDragAxis == DragAxis.XY) {
             target = if (state) mTargetTranslation.y.toFloat() else mInitialTranslation.y
-            animate(translationY, target, ::setTranslationY, DraggablePayload<*>::onVerticalDrag)
+            animate(translationY, target, ::setTranslationY)
         }
 
         mCurrentState = state
     }
 
-    private fun animate(thisTranslation: Float, targetTranslation: Float, assignListener: (Float) -> Unit, onPayloadDragMethod: (payload: DraggablePayload<*>, percentage: Float) -> Unit) {
-        val diff = targetTranslation - thisTranslation
-
-        animate {
-            assignListener.invoke(thisTranslation + it * diff)
-            payloads.forEach { payload -> onPayloadDragMethod.invoke(payload, it) }
-        }
-    }
-
-    private fun animate(updateListener: (Float) -> Unit) {
-        val valueAnimator = ValueAnimator.ofFloat(0f, 1f)
+    private fun animate(thisTranslation: Float, targetTranslation: Float, assignListener: (Float) -> Unit) {
+        val valueAnimator = ValueAnimator.ofFloat(thisTranslation, targetTranslation)
 
         valueAnimator.addUpdateListener {
             val value = it.animatedValue as Float
-            updateListener.invoke(value)
+
+            assignListener.invoke(value)
+            val percentage = Utility.betweenInPercent(mInitialTranslation.x.toInt(), mTargetTranslation.x, value)
+            payloads.forEach { payload -> payload.onDrag(percentage) }
         }
 
         valueAnimator.interpolator = LinearInterpolator()
-        valueAnimator.duration = 2000
+        valueAnimator.duration = 200
         valueAnimator.start()
         activeAnimation = valueAnimator
     }
-
 
     private fun setHorizontalTranslation(desire: Float) {
         if (mTargetView != null) {
@@ -120,7 +113,7 @@ class DraggableImageButton : AppCompatImageButton {
                 translationX = desire
                 if (payloads.isNotEmpty()) {
                     val percentage = Utility.betweenInPercent(mTargetTranslation.x, mInitialPosition.x, desire)
-                    payloads.forEach { payload -> payload.onHorizontalDrag(percentage) }
+                    payloads.forEach { payload -> payload.onDrag(percentage) }
                 }
             }
         } else
@@ -133,7 +126,7 @@ class DraggableImageButton : AppCompatImageButton {
                 translationY = desire
                 if (payloads.isNotEmpty()) {
                     val percentage = Utility.betweenInPercent(mTargetTranslation.y, mInitialPosition.y, desire)
-                    payloads.forEach { payload -> payload.onVerticalDrag(percentage) }
+                    payloads.forEach { payload -> payload.onDrag(percentage) }
                 }
             }
         } else
@@ -156,6 +149,8 @@ class DraggableImageButton : AppCompatImageButton {
                     activeAnimation!!.cancel()
                     activeAnimation = null
                 }
+
+                payloads.forEach { it.initializeView() }
             }
             MotionEvent.ACTION_UP -> {
                 val changeX = event.rawX - mTouchInitialPosition.x
@@ -171,11 +166,11 @@ class DraggableImageButton : AppCompatImageButton {
                     mTargetTranslation = calculateTargetTranslation()
 
                     if (mDragAxis.isHorizontal() && mDragAxis.isVertical()) {
-
+                        TODO("This is not yet implemented")
                     } else if (mDragAxis.isVertical()) {
-                        move = (Math.abs(changeY - mInitialPosition.y) > Math.abs(changeY - mTargetTranslation.y)) xor mCurrentState
+                        move = (Math.abs(translationY - mInitialPosition.y) > Math.abs(translationY - mTargetTranslation.y)) xor mCurrentState
                     } else if (mDragAxis.isHorizontal()) {
-                        move = (Math.abs(changeX - mInitialPosition.x) > Math.abs(changeX - mTargetTranslation.x)) xor mCurrentState
+                        move = (Math.abs(translationX - mInitialPosition.x) > Math.abs(translationX - mTargetTranslation.x)) xor mCurrentState
                     }
 
                     if (move)
