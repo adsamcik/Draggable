@@ -1,6 +1,6 @@
 package com.adsamcik.draggable
 
-import android.support.v4.app.FragmentActivity
+import android.app.Activity
 
 interface IOnDemandView {
     /**
@@ -8,12 +8,12 @@ interface IOnDemandView {
      *
      * @return if tab successfully loaded
      */
-    fun onEnter(activity: FragmentActivity)
+    fun onEnter(activity: Activity)
 
     /**
      * Called when leaving tab
      */
-    fun onLeave(activity: FragmentActivity)
+    fun onLeave(activity: Activity)
 
     /**
      * Called when permissions result comes back
