@@ -5,7 +5,7 @@ import android.graphics.PointF
 import android.view.View
 import kotlin.math.sign
 
-object Utility {
+internal object Utility {
     internal fun dpToPx(c: Context, dp: Int): Int = Math.round(dp * c.resources.displayMetrics.density)
 
     internal fun getLocationOnScreen(view: View): IntArray {

@@ -1,6 +1,7 @@
 package com.adsamcik.draggabletest
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.Point
 import android.os.Bundle
 import android.view.View
@@ -9,6 +10,7 @@ import com.adsamcik.draggable.*
 
 
 class MainActivity : Activity() {
+    private fun dpToPx(c: Context, dp: Int): Int = Math.round(dp * c.resources.displayMetrics.density)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,7 +23,7 @@ class MainActivity : Activity() {
 
         parent.measure(View.MeasureSpec.AT_MOST, View.MeasureSpec.AT_MOST)
 
-        button.translationX = Utility.dpToPx(this, 36).toFloat()
+        button.translationX = dpToPx(this, 36).toFloat()
         button.setTarget(parent, DragTargetAnchor.BottomRight, 8)
         button.setTargetTranslationZ(200f)
         parent as ViewGroup
