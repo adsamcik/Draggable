@@ -3,7 +3,6 @@ package com.adsamcik.draggable
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Fragment
-import android.graphics.Color
 import android.graphics.Point
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -40,14 +39,14 @@ class DraggablePayload<T>(private val mActivity: Activity,
         }
     }
 
-    fun setTranslationZ(value: Float) {
+    internal fun setTranslationZ(value: Float) {
         if (mWrapper == null)
             throw IllegalStateException("mWrapper was not initialized")
 
         mWrapper!!.translationZ = value
     }
 
-    fun onDrag(percentage: Float) {
+    internal fun onDrag(percentage: Float) {
         if (mWrapper == null)
             throw IllegalStateException("mWrapper was not initialized")
 
