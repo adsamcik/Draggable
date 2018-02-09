@@ -53,6 +53,7 @@ before_script:
     - adb shell input keyevent 82 &
 
 before_install:
+    - yes | sdkmanager "platforms;android-27"
     - chmod +x gradlew
 
 after_success:
