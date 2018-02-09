@@ -4,11 +4,10 @@ plugins {
 }
 
 apply plugin: 'maven-publish'
-
 apply plugin: 'com.android.library'
-
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'org.jetbrains.dokka'
 
 android {
     compileSdkVersion 27
@@ -32,6 +31,11 @@ android {
             testCoverageEnabled = true
         }
     }
+}
+
+dokka {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/javadoc"
 }
 
 dependencies {
@@ -67,5 +71,5 @@ ext {
 
 if (file('../local.properties').exists()) {
     apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
-    apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+    apply from: 'bintrayv1.gradle'
 }
