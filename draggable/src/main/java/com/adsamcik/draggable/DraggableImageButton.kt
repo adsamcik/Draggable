@@ -80,6 +80,14 @@ class DraggableImageButton : AppCompatImageButton {
         targetTranslationZ = translation
     }
 
+    /**
+     * This function needs to be called when the activity that was set for payloads receives appropriate permission
+     * Otherwise permission won't be received, because they require activity
+     */
+    fun onPermissionResponse(requestCode: Int, success: Boolean) {
+        payloads.forEach { (it as IOnDemandView).onPermissionResponse(requestCode, success) }
+    }
+
     override fun performClick(): Boolean {
         super.performClick()
 
