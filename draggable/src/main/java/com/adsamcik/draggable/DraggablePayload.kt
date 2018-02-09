@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Fragment
 import android.graphics.Point
+import android.support.annotation.ColorInt
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
@@ -19,14 +20,24 @@ class DraggablePayload<T>(private val mActivity: Activity,
     private var mWrapper: FrameLayout? = null
     private var mMarginPx = Utility.dpToPx(mActivity, mMarginDp)
 
+    private var mBackgroundColor = 0
 
+    fun setBackgroundColor(@ColorInt color: Int) {
+        mWrapper?.setBackgroundColor(color)
+        mBackgroundColor = color
+    }
+
+    /**
+     * Initializes view
+     * Does nothing if view is already created
+     */
     @SuppressLint("ResourceType")
-    internal fun initializeView() {
+    fun initializeView() {
         if (mWrapper == null) {
             val cView = FrameLayout(mActivity)
             cView.id = 1695841
             cView.layoutParams = ViewGroup.LayoutParams(mWidth, mHeight)
-            //cView.setBackgroundColor(Color.parseColor("#aa0000ff"))
+            cView.setBackgroundColor(mBackgroundColor)
             //cView.translationZ = 1000f
             cView.translationX = mInitialTranslation.x.toFloat()
             cView.translationY = mInitialTranslation.y.toFloat()
