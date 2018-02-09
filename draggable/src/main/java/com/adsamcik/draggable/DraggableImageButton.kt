@@ -49,7 +49,8 @@ class DraggableImageButton : AppCompatImageButton {
         mInitialTranslation.y = translationY
     }
 
-    fun attachPayload(payload: DraggablePayload<*>) {
+
+    fun addPayload(payload: DraggablePayload<*>) {
         payloads.add(payload)
     }
 
