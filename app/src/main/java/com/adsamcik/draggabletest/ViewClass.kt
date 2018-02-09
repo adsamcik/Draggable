@@ -1,13 +1,19 @@
 package com.adsamcik.draggabletest
 
-import android.content.Context
-import android.support.v4.app.Fragment
+import android.app.Fragment
+import android.os.Bundle
 import android.support.v4.app.FragmentActivity
-import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.adsamcik.draggable.IOnDemandView
 
 class ViewClass : Fragment(), IOnDemandView {
+
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val view = inflater!!.inflate(R.layout.fragment_view_class, container, false)
+        return view
+    }
     override fun onEnter(activity: FragmentActivity) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

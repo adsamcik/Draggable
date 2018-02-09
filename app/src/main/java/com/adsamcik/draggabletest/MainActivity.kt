@@ -1,14 +1,15 @@
 package com.adsamcik.draggabletest
 
+import android.app.Activity
 import android.graphics.Point
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import com.adsamcik.draggable.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,8 +24,9 @@ class MainActivity : AppCompatActivity() {
 
         button.translationX = Utility.dpToPx(this, 36).toFloat()
         button.setTarget(parent, DragTargetAnchor.BottomRight, 8)
-        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(-1080, 0), parent as ViewGroup, DragTargetAnchor.TopRight, 0))
-        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent, DragTargetAnchor.Middle, 0, 128, 128))
+        parent as ViewGroup
+        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(-1080, 0), parent, DragTargetAnchor.TopRight, 0))
+        //button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent, DragTargetAnchor.Middle, 0, WRAP_CONTENT, WRAP_CONTENT))
         /*button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.TopLeft, 0))
         button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Middle, 0))
         button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Left, 0))
