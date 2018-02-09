@@ -36,10 +36,18 @@ class DraggableImageButton : AppCompatImageButton {
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
+    /**
+     * Sets dragging axis
+     * Note:  XY axis is not yet supported
+     */
     fun setDrag(axis: DragAxis) {
         mDragAxis = axis
     }
 
+    /**
+     * Sets target position view, anchor on that view and margin
+     * This is used to determine the second position of the button
+     */
     fun setTarget(target: View, anchor: DragTargetAnchor, marginDp: Int) {
         this.mTargetView = target
         this.mAnchor = anchor
@@ -49,15 +57,25 @@ class DraggableImageButton : AppCompatImageButton {
         mInitialTranslation.y = translationY
     }
 
-
+    /**
+     * Adds payload to the button
+     * Payloads cannot be dragged and are dependent on this buttons drag position
+     */
     fun addPayload(payload: DraggablePayload<*>) {
         payloads.add(payload)
     }
 
+    /**
+     * Removes payload
+     */
     fun removePayload(payload: DraggablePayload<*>) {
         payloads.remove(payload)
     }
 
+    /**
+     * Sets target translationZ
+     * In some cases it might be desired to have different Z translation in the final position
+     */
     fun setTargetTranslationZ(translation: Float) {
         targetTranslationZ = translation
     }
