@@ -27,8 +27,8 @@ class DraggablePayload<T>(private val mActivity: Activity,
             val cView = FrameLayout(mActivity)
             cView.id = 1695841
             cView.layoutParams = ViewGroup.LayoutParams(mWidth, mHeight)
-            cView.setBackgroundColor(Color.parseColor("#aa0000ff"))
-            cView.translationZ = 1000f
+            //cView.setBackgroundColor(Color.parseColor("#aa0000ff"))
+            //cView.translationZ = 1000f
             cView.translationX = mInitialTranslation.x.toFloat()
             cView.translationY = mInitialTranslation.y.toFloat()
             mParent.addView(cView)
