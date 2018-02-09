@@ -12,9 +12,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 27
-
-
-
+    
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 27
@@ -43,16 +41,16 @@ dependencies {
 
 ext {
     bintrayRepo = 'android-components'
-    bintrayName = 'slider'
+    bintrayName = 'draggable'
 
     publishedGroupId = 'com.adsamcik.android-components'
-    libraryName = 'slider'
-    artifact = 'slider'
+    libraryName = 'draggable'
+    artifact = 'draggable'
 
-    libraryDescription = 'Slider built on top of Android\'s SeekBar with support for floating point, steps and min value'
+    libraryDescription = 'Draggable components allowing you to easily define draggable elements'
 
-    siteUrl = 'https://github.com/adsamcik/Slider'
-    gitUrl = 'https://github.com/adsamcik/Slider.git'
+    siteUrl = 'https://github.com/adsamcik/Draggable'
+    gitUrl = 'https://github.com/adsamcik/Draggable.git'
 
     libraryVersion = "$version"
 
