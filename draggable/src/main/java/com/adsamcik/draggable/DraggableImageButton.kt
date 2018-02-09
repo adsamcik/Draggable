@@ -132,16 +132,16 @@ class DraggableImageButton : AppCompatImageButton {
     }
 
     private fun initializeView(): FrameLayout {
-        if (mClassWrapper == null) {
+        return if (mClassWrapper == null) {
             val cView = FrameLayout(context)
             cView.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
             cView.setBackgroundColor(Color.parseColor("#aa0000ff"))
             cView.translationZ = 1000f
             (mTargetView!!.parent as ViewGroup).addView(cView)
             mClassWrapper = cView
-            return cView
+            cView
         } else
-            return mClassWrapper!!
+            mClassWrapper!!
     }
 
     private fun animate(thisTranslation: Float, targetTranslation: Float, assignListener: (Float) -> Unit) {
