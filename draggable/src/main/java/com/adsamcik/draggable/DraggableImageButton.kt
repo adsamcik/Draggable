@@ -9,12 +9,11 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.LinearInterpolator
-import kotlin.math.sign
 
 class DraggableImageButton : AppCompatImageButton {
     val TAG = "DraggableImageButton"
 
-    private val mDeadZone = dpToPx(context, 16)
+    private val mDeadZone = Utility.dpToPx(context, 16)
 
     private var mInitialPosition: Point = Point()
     private var mInitialTranslation: PointF = PointF()
@@ -61,15 +60,9 @@ class DraggableImageButton : AppCompatImageButton {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        val position = getLocationOnScreen(this)
+        val position = Utility.getLocationOnScreen(this)
         mInitialPosition.x = position[0]
         mInitialPosition.y = position[1]
-    }
-
-    private fun getLocationOnScreen(view: View): IntArray {
-        val array = IntArray(2)
-        view.getLocationOnScreen(array)
-        return array
     }
 
     override fun performClick(): Boolean {
@@ -120,36 +113,13 @@ class DraggableImageButton : AppCompatImageButton {
         activeAnimation = valueAnimator
     }
 
-    private fun between(firstConstraint: Int, secondConstraint: Int, number: Float): Boolean {
-        return if (firstConstraint > secondConstraint)
-            number in secondConstraint..firstConstraint
-        else
-            number in firstConstraint..secondConstraint
-    }
-
-    private fun betweenInPercent(firstConstraint: Int, secondConstraint: Int, number: Float): Float {
-        return if (firstConstraint > secondConstraint)
-            (number - secondConstraint) / (firstConstraint - secondConstraint)
-        else
-            (number - firstConstraint) / (secondConstraint - firstConstraint)
-    }
-
-    private fun calculateTargetTranslation(sourceView: View, toView: View): Point {
-        val thisOnScreen = getLocationOnScreen(sourceView)
-        val targetOnScreen = getLocationOnScreen(toView)
-        val targetRelPos = mAnchor.calculateEdgeOffset(toView, sourceView)
-        val targetX = ((targetOnScreen[0] - thisOnScreen[0]) + targetRelPos.x + translationX).toInt()
-        val targetY = ((targetOnScreen[1] - thisOnScreen[1]) + targetRelPos.y + translationY).toInt()
-        val marginPx = dpToPx(context, mMarginDp)
-        return Point(targetX - targetX.sign * marginPx, targetY - targetY.sign * marginPx)
-    }
 
     private fun setHorizontalTranslation(desire: Float) {
         if (mTargetView != null) {
-            if (between(mTargetTranslation.x, mInitialPosition.x, desire)) {
+            if (Utility.between(mTargetTranslation.x, mInitialPosition.x, desire)) {
                 translationX = desire
                 if (payloads.isNotEmpty()) {
-                    val percentage = betweenInPercent(mTargetTranslation.x, mInitialPosition.x, desire)
+                    val percentage = Utility.betweenInPercent(mTargetTranslation.x, mInitialPosition.x, desire)
                     payloads.forEach { payload -> payload.onHorizontalDrag(percentage) }
                 }
             }
@@ -159,16 +129,18 @@ class DraggableImageButton : AppCompatImageButton {
 
     private fun setVerticalTranslation(desire: Float) {
         if (mTargetView != null) {
-            if (between(mTargetTranslation.y, mInitialPosition.y, desire)) {
+            if (Utility.between(mTargetTranslation.y, mInitialPosition.y, desire)) {
                 translationY = desire
                 if (payloads.isNotEmpty()) {
-                    val percentage = betweenInPercent(mTargetTranslation.y, mInitialPosition.y, desire)
+                    val percentage = Utility.betweenInPercent(mTargetTranslation.y, mInitialPosition.y, desire)
                     payloads.forEach { payload -> payload.onVerticalDrag(percentage) }
                 }
             }
         } else
             translationY = desire
     }
+
+    private fun calculateTargetTranslation() = Utility.calculateTargetTranslation(this, mTargetView!!, mAnchor, Utility.dpToPx(context, mMarginDp))
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         val x = event!!.x
@@ -178,7 +150,7 @@ class DraggableImageButton : AppCompatImageButton {
                 mTouchInitialPosition.x = event.rawX
                 mTouchInitialPosition.y = event.rawY
 
-                mTargetTranslation = calculateTargetTranslation(this, mTargetView!!)
+                mTargetTranslation = calculateTargetTranslation()
 
                 if (activeAnimation != null) {
                     activeAnimation!!.cancel()
@@ -196,7 +168,7 @@ class DraggableImageButton : AppCompatImageButton {
                 else if (mTargetView != null) {
                     var move = false
 
-                    mTargetTranslation = calculateTargetTranslation(this, mTargetView!!)
+                    mTargetTranslation = calculateTargetTranslation()
 
                     if (mDragAxis.isHorizontal() && mDragAxis.isVertical()) {
 
