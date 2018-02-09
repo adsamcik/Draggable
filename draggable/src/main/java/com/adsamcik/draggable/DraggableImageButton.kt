@@ -18,7 +18,7 @@ class DraggableImageButton : AppCompatImageButton {
     private var mInitialTranslation: PointF = PointF()
     private var mTargetTranslation: PointF = PointF()
 
-    private var mCurrentState = true
+    private var mCurrentState = false
     private var mTouchInitialPosition: PointF = PointF()
 
 
@@ -101,25 +101,30 @@ class DraggableImageButton : AppCompatImageButton {
         return true
     }
 
-    private fun moveToState(state: Boolean) {
-        var target: Float
-        if (this.mDragAxis == DragAxis.X || this.mDragAxis == DragAxis.XY) {
-            target = if (state) mTargetTranslation.x else mInitialTranslation.x
-            animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX).addListener(object : AnimatorListenerAdapter() {
+    private fun handleAnimatorListeners(animator: ValueAnimator, state: Boolean) {
+        if (state != mCurrentState)
+            animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     payloads.forEach { it.onStateChange(state) }
                 }
             })
+    }
+
+    private fun moveToState(state: Boolean) {
+        var target: Float
+        var animator: ValueAnimator? = null
+        if (this.mDragAxis == DragAxis.X || this.mDragAxis == DragAxis.XY) {
+            target = if (state) mTargetTranslation.x else mInitialTranslation.x
+            animator = animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
         }
 
         if (this.mDragAxis == DragAxis.Y || this.mDragAxis == DragAxis.XY) {
             target = if (state) mTargetTranslation.y else mInitialTranslation.y
-            animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY).addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator) {
-                    payloads.forEach { it.onStateChange(state) }
-                }
-            })
+            animator = animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
         }
+
+        if (animator != null)
+            handleAnimatorListeners(animator, state)
 
         mCurrentState = state
     }
