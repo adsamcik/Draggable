@@ -24,6 +24,7 @@ class MainActivity : Activity() {
 
         button.translationX = Utility.dpToPx(this, 36).toFloat()
         button.setTarget(parent, DragTargetAnchor.BottomRight, 8)
+        button.setTargetTranslationZ(200f)
         parent as ViewGroup
         button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(-1080, 0), parent, DragTargetAnchor.TopRight, 0))
         //button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent, DragTargetAnchor.Middle, 0, WRAP_CONTENT, WRAP_CONTENT))

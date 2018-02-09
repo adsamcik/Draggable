@@ -40,6 +40,13 @@ class DraggablePayload<T>(private val mActivity: Activity,
         }
     }
 
+    fun setTranslationZ(value: Float) {
+        if (mWrapper == null)
+            throw IllegalStateException("mWrapper was not initialized")
+
+        mWrapper!!.translationZ = value
+    }
+
     fun onDrag(percentage: Float) {
         if (mWrapper == null)
             throw IllegalStateException("mWrapper was not initialized")

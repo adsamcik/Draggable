@@ -29,6 +29,9 @@ class DraggableImageButton : AppCompatImageButton {
 
     private var activeAnimation: ValueAnimator? = null
 
+    private var initialTranslationZ = translationZ
+    private var targetTranslationZ = translationZ
+
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -52,6 +55,10 @@ class DraggableImageButton : AppCompatImageButton {
 
     fun removePayload(payload: DraggablePayload<*>) {
         payloads.remove(payload)
+    }
+
+    fun setTargetTranslationZ(translation: Float) {
+        targetTranslationZ = translation
     }
 
     override fun performClick(): Boolean {
@@ -88,6 +95,8 @@ class DraggableImageButton : AppCompatImageButton {
             assignListener.invoke(value)
             val percentage = Utility.betweenInPercent(initialConstraintTranslation, targetConstraintTranslation, value)
             payloads.forEach { payload -> payload.onDrag(percentage) }
+
+            updateTranslationZ(percentage)
         }
 
         valueAnimator.interpolator = LinearInterpolator()
@@ -100,10 +109,9 @@ class DraggableImageButton : AppCompatImageButton {
         if (mTargetView != null) {
             if (Utility.between(mTargetTranslation.x, mInitialTranslation.x, desire)) {
                 translationX = desire
-                if (payloads.isNotEmpty()) {
-                    val percentage = Utility.betweenInPercent(mTargetTranslation.x, mInitialTranslation.x, desire)
-                    payloads.forEach { payload -> payload.onDrag(percentage) }
-                }
+                val percentage = Utility.betweenInPercent(mTargetTranslation.x, mInitialTranslation.x, desire)
+                payloads.forEach { payload -> payload.onDrag(percentage) }
+                updateTranslationZ(percentage)
             }
         } else
             translationX = desire
@@ -113,13 +121,20 @@ class DraggableImageButton : AppCompatImageButton {
         if (mTargetView != null) {
             if (Utility.between(mTargetTranslation.y, mInitialTranslation.y, desire)) {
                 translationY = desire
-                if (payloads.isNotEmpty()) {
-                    val percentage = Utility.betweenInPercent(mTargetTranslation.y, mInitialTranslation.y, desire)
-                    payloads.forEach { payload -> payload.onDrag(percentage) }
-                }
+                val percentage = Utility.betweenInPercent(mTargetTranslation.y, mInitialTranslation.y, desire)
+                payloads.forEach { payload -> payload.onDrag(percentage) }
+                updateTranslationZ(percentage)
             }
         } else
             translationY = desire
+    }
+
+    private fun updateTranslationZ(percentage: Float) {
+        if (initialTranslationZ != targetTranslationZ) {
+            val translationZ = initialTranslationZ + (targetTranslationZ - initialTranslationZ) * percentage
+            this.translationZ = translationZ + 1
+            payloads.forEach { it.setTranslationZ(translationZ) }
+        }
     }
 
     private fun calculateTargetTranslation() = Utility.calculateTargetTranslation(this, mTargetView!!, mAnchor, Utility.dpToPx(context, mMarginDp))
