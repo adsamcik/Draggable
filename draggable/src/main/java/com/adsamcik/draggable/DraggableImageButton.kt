@@ -1,5 +1,7 @@
 package com.adsamcik.draggable
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.PointF
@@ -8,6 +10,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.LinearInterpolator
+
 
 class DraggableImageButton : AppCompatImageButton {
     private val mDeadZone = Utility.dpToPx(context, 16)
@@ -102,18 +105,30 @@ class DraggableImageButton : AppCompatImageButton {
         var target: Float
         if (this.mDragAxis == DragAxis.X || this.mDragAxis == DragAxis.XY) {
             target = if (state) mTargetTranslation.x else mInitialTranslation.x
-            animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
+            animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX).addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    payloads.forEach { it.onStateChange(state) }
+                }
+            })
         }
 
         if (this.mDragAxis == DragAxis.Y || this.mDragAxis == DragAxis.XY) {
             target = if (state) mTargetTranslation.y else mInitialTranslation.y
-            animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
+            animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY).addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    payloads.forEach { it.onStateChange(state) }
+                }
+            })
         }
 
         mCurrentState = state
     }
 
-    private fun animate(initialConstraintTranslation: Float, targetConstraintTranslation: Float, thisTranslation: Float, targetTranslation: Float, assignListener: (Float) -> Unit) {
+    private fun animate(initialConstraintTranslation: Float,
+                        targetConstraintTranslation: Float,
+                        thisTranslation: Float,
+                        targetTranslation: Float,
+                        assignListener: (Float) -> Unit): ValueAnimator {
         val valueAnimator = ValueAnimator.ofFloat(thisTranslation, targetTranslation)
 
         valueAnimator.addUpdateListener {
@@ -130,6 +145,7 @@ class DraggableImageButton : AppCompatImageButton {
         valueAnimator.duration = 200
         valueAnimator.start()
         activeAnimation = valueAnimator
+        return valueAnimator
     }
 
     private fun setHorizontalTranslation(desire: Float) {

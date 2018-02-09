@@ -19,6 +19,7 @@ class DraggablePayload<T>(private val mActivity: Activity,
                           private val mHeight: Int = MATCH_PARENT) where T : Fragment, T : IOnDemandView {
     private var mWrapper: FrameLayout? = null
     private var mMarginPx = Utility.dpToPx(mActivity, mMarginDp)
+    private var fragment: IOnDemandView? = null
 
     private var mBackgroundColor = 0
 
@@ -30,6 +31,7 @@ class DraggablePayload<T>(private val mActivity: Activity,
     /**
      * Initializes view
      * Does nothing if view is already created
+     * It is called automatically when drag starts
      */
     @SuppressLint("ResourceType")
     fun initializeView() {
@@ -44,9 +46,12 @@ class DraggablePayload<T>(private val mActivity: Activity,
             mParent.addView(cView)
             mWrapper = cView
 
+            val newInst = mClass.newInstance()
             val ft = mActivity.fragmentManager.beginTransaction()
-            ft.replace(cView.id, mClass.newInstance() as Fragment)
+            ft.replace(cView.id, newInst as Fragment)
             ft.commit()
+
+            fragment = newInst
         }
     }
 
@@ -64,5 +69,20 @@ class DraggablePayload<T>(private val mActivity: Activity,
         val targetTranslation = Utility.calculateTargetTranslation(mWrapper!!, mParent, mAnchor, mMarginPx)
         mWrapper!!.translationX = mInitialTranslation.x.toFloat() + (targetTranslation.x - mInitialTranslation.x) * percentage
         mWrapper!!.translationY = mInitialTranslation.y.toFloat() + (targetTranslation.y - mInitialTranslation.y) * percentage
+    }
+
+    /**
+     * Called when there is permission response
+     */
+    internal fun onPermissionResponse(requestCode: Int, success: Boolean) = fragment?.onPermissionResponse(requestCode, success)
+
+    /**
+     * Called when state change is finished
+     */
+    internal fun onStateChange(entering: Boolean) {
+        if(entering)
+            fragment?.onEnter(mActivity)
+        else
+            fragment?.onLeave(mActivity)
     }
 }
