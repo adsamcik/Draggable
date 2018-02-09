@@ -109,7 +109,7 @@ class DraggableImageButton : AppCompatImageButton {
         if (mClass != null) {
             val view = initializeView()
             val classTranslation = view.translationX
-            val classTarget = calculateTargetTranslation(view).x + mClassAnchor.calculateEdgeOffset(this.parent as View, view).x
+            val classTarget = calculateTargetTranslation(view, mTargetView!!).x + mClassAnchor.calculateEdgeOffset(this.parent as View, view).x
             animate(translationX, targetTranslation, classTranslation, classTarget.toFloat()) { buttonTranslation, viewTranslation ->
                 translationX = buttonTranslation
                 view.translationX = viewTranslation
@@ -122,7 +122,7 @@ class DraggableImageButton : AppCompatImageButton {
         if (mClass != null) {
             val view = initializeView()
             val classTranslation = view.translationY
-            val classTarget = calculateTargetTranslation(view).y + mClassAnchor.calculateEdgeOffset(this.parent as View, view).y
+            val classTarget = calculateTargetTranslation(view, mTargetView!!).y + mClassAnchor.calculateEdgeOffset(this.parent as View, view).y
             animate(translationY, targetTranslation, classTranslation, classTarget.toFloat()) { buttonTranslation, viewTranslation ->
                 translationY = buttonTranslation
                 view.translationY = viewTranslation
@@ -137,7 +137,9 @@ class DraggableImageButton : AppCompatImageButton {
             cView.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
             cView.setBackgroundColor(Color.parseColor("#aa0000ff"))
             cView.translationZ = 1000f
-            (mTargetView!!.parent as ViewGroup).addView(cView)
+            val parent = (mTargetView!!.parent as ViewGroup)
+            cView.translationX = -parent.width.toFloat()
+            parent.addView(cView)
             mClassWrapper = cView
             cView
         } else
@@ -176,7 +178,7 @@ class DraggableImageButton : AppCompatImageButton {
         }
 
         valueAnimator.interpolator = LinearInterpolator()
-        valueAnimator.duration = 200
+        valueAnimator.duration = 2000
         valueAnimator.start()
     }
 
@@ -187,10 +189,10 @@ class DraggableImageButton : AppCompatImageButton {
             number in firstConstraint..secondConstraint
     }
 
-    private fun calculateTargetTranslation(target: View): Point {
-        val thisOnScreen = getLocationOnScreen(this)
-        val targetOnScreen = getLocationOnScreen(target)
-        val targetRelPos = mAnchor.calculateEdgeOffset(target, this)
+    private fun calculateTargetTranslation(sourceView: View, toView: View): Point {
+        val thisOnScreen = getLocationOnScreen(sourceView)
+        val targetOnScreen = getLocationOnScreen(toView)
+        val targetRelPos = mAnchor.calculateEdgeOffset(toView, sourceView)
         val targetX = ((targetOnScreen[0] - thisOnScreen[0]) + targetRelPos.x + translationX).toInt()
         val targetY = ((targetOnScreen[1] - thisOnScreen[1]) + targetRelPos.y + translationY).toInt()
         val marginPx = dpToPx(context, mMarginDp)
@@ -205,7 +207,7 @@ class DraggableImageButton : AppCompatImageButton {
                 mTouchInitialPosition.x = event.rawX
                 mTouchInitialPosition.y = event.rawY
 
-                mTargetTranslation = calculateTargetTranslation(mTargetView!!)
+                mTargetTranslation = calculateTargetTranslation(this, mTargetView!!)
             }
             MotionEvent.ACTION_UP -> {
                 val changeX = event.rawX - mTouchInitialPosition.x
@@ -218,7 +220,7 @@ class DraggableImageButton : AppCompatImageButton {
                 else if (mTargetView != null) {
                     var move = false
 
-                    mTargetTranslation = calculateTargetTranslation(mTargetView!!)
+                    mTargetTranslation = calculateTargetTranslation(this, mTargetView!!)
 
                     if (mDragAxis.isHorizontal() && mDragAxis.isVertical()) {
 
