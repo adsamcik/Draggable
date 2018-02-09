@@ -15,14 +15,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val button = findViewById<DraggableImageButton>(R.id.leftRightButton)
-        button.setDrag(DragAxis.X)
+        button.setDrag(DragAxis.Y)
 
         val parent = button.parent as View
 
         parent.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
 
         button.translationX = Utility.dpToPx(this, 36).toFloat()
-        button.setTarget(parent, DragTargetAnchor.Right, 8)
+        button.setTarget(parent, DragTargetAnchor.BottomRight, 8)
         button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Top, 0))
         button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.TopRight, 0))
         button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.TopLeft, 0))

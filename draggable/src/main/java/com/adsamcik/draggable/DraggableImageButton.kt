@@ -2,7 +2,6 @@ package com.adsamcik.draggable
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Point
 import android.graphics.PointF
 import android.support.v7.widget.AppCompatImageButton
 import android.util.AttributeSet
@@ -15,9 +14,9 @@ class DraggableImageButton : AppCompatImageButton {
 
     private val mDeadZone = Utility.dpToPx(context, 16)
 
-    private var mInitialPosition: Point = Point()
+    private var mInitialPosition: PointF = PointF()
     private var mInitialTranslation: PointF = PointF()
-    private var mTargetTranslation: Point = Point()
+    private var mTargetTranslation: PointF = PointF()
 
     private var mCurrentState = true
     private var mTouchInitialPosition: PointF = PointF()
@@ -61,8 +60,8 @@ class DraggableImageButton : AppCompatImageButton {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         val position = Utility.getLocationOnScreen(this)
-        mInitialPosition.x = position[0]
-        mInitialPosition.y = position[1]
+        mInitialPosition.x = position[0].toFloat()
+        mInitialPosition.y = position[1].toFloat()
     }
 
     override fun performClick(): Boolean {
@@ -78,26 +77,26 @@ class DraggableImageButton : AppCompatImageButton {
     private fun moveToState(state: Boolean) {
         var target: Float
         if (this.mDragAxis == DragAxis.X || this.mDragAxis == DragAxis.XY) {
-            target = if (state) mTargetTranslation.x.toFloat() else mInitialTranslation.x
-            animate(translationX, target, ::setTranslationX)
+            target = if (state) mTargetTranslation.x else mInitialTranslation.x
+            animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
         }
 
         if (this.mDragAxis == DragAxis.Y || this.mDragAxis == DragAxis.XY) {
-            target = if (state) mTargetTranslation.y.toFloat() else mInitialTranslation.y
-            animate(translationY, target, ::setTranslationY)
+            target = if (state) mTargetTranslation.y else mInitialTranslation.y
+            animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
         }
 
         mCurrentState = state
     }
 
-    private fun animate(thisTranslation: Float, targetTranslation: Float, assignListener: (Float) -> Unit) {
+    private fun animate(initialConstraintTranslation: Float, targetConstraintTranslation: Float, thisTranslation: Float, targetTranslation: Float, assignListener: (Float) -> Unit) {
         val valueAnimator = ValueAnimator.ofFloat(thisTranslation, targetTranslation)
 
         valueAnimator.addUpdateListener {
             val value = it.animatedValue as Float
 
             assignListener.invoke(value)
-            val percentage = Utility.betweenInPercent(mInitialTranslation.x.toInt(), mTargetTranslation.x, value)
+            val percentage = Utility.betweenInPercent(initialConstraintTranslation, targetConstraintTranslation, value)
             payloads.forEach { payload -> payload.onDrag(percentage) }
         }
 
@@ -109,10 +108,10 @@ class DraggableImageButton : AppCompatImageButton {
 
     private fun setHorizontalTranslation(desire: Float) {
         if (mTargetView != null) {
-            if (Utility.between(mTargetTranslation.x, mInitialPosition.x, desire)) {
+            if (Utility.between(mTargetTranslation.x, mInitialTranslation.x, desire)) {
                 translationX = desire
                 if (payloads.isNotEmpty()) {
-                    val percentage = Utility.betweenInPercent(mTargetTranslation.x, mInitialPosition.x, desire)
+                    val percentage = Utility.betweenInPercent(mTargetTranslation.x, mInitialTranslation.x, desire)
                     payloads.forEach { payload -> payload.onDrag(percentage) }
                 }
             }
@@ -122,10 +121,10 @@ class DraggableImageButton : AppCompatImageButton {
 
     private fun setVerticalTranslation(desire: Float) {
         if (mTargetView != null) {
-            if (Utility.between(mTargetTranslation.y, mInitialPosition.y, desire)) {
+            if (Utility.between(mTargetTranslation.y, mInitialTranslation.y, desire)) {
                 translationY = desire
                 if (payloads.isNotEmpty()) {
-                    val percentage = Utility.betweenInPercent(mTargetTranslation.y, mInitialPosition.y, desire)
+                    val percentage = Utility.betweenInPercent(mTargetTranslation.y, mInitialTranslation.y, desire)
                     payloads.forEach { payload -> payload.onDrag(percentage) }
                 }
             }
@@ -168,9 +167,9 @@ class DraggableImageButton : AppCompatImageButton {
                     if (mDragAxis.isHorizontal() && mDragAxis.isVertical()) {
                         TODO("This is not yet implemented")
                     } else if (mDragAxis.isVertical()) {
-                        move = (Math.abs(translationY - mInitialPosition.y) > Math.abs(translationY - mTargetTranslation.y)) xor mCurrentState
+                        move = (Math.abs(translationY - mInitialTranslation.y) > Math.abs(translationY - mTargetTranslation.y)) xor mCurrentState
                     } else if (mDragAxis.isHorizontal()) {
-                        move = (Math.abs(translationX - mInitialPosition.x) > Math.abs(translationX - mTargetTranslation.x)) xor mCurrentState
+                        move = (Math.abs(translationX - mInitialTranslation.x) > Math.abs(translationX - mTargetTranslation.x)) xor mCurrentState
                     }
 
                     if (move)
