@@ -1,14 +1,15 @@
 package com.adsamcik.draggable
 
-import android.content.Context
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Fragment
 import android.graphics.Color
 import android.graphics.Point
-import android.support.v4.app.Fragment
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 
-class DraggablePayload<T>(private val mContext: Context,
+class DraggablePayload<T>(private val mActivity: Activity,
                           private val mClass: Class<T>,
                           private val mInitialTranslation: Point,
                           private val mParent: ViewGroup,
@@ -17,12 +18,14 @@ class DraggablePayload<T>(private val mContext: Context,
                           private val mWidth: Int = MATCH_PARENT,
                           private val mHeight: Int = MATCH_PARENT) where T : Fragment, T : IOnDemandView {
     private var mWrapper: FrameLayout? = null
-    private var mMarginPx = Utility.dpToPx(mContext, mMarginDp)
+    private var mMarginPx = Utility.dpToPx(mActivity, mMarginDp)
 
 
+    @SuppressLint("ResourceType")
     internal fun initializeView() {
         if (mWrapper == null) {
-            val cView = FrameLayout(mContext)
+            val cView = FrameLayout(mActivity)
+            cView.id = 1695841
             cView.layoutParams = ViewGroup.LayoutParams(mWidth, mHeight)
             cView.setBackgroundColor(Color.parseColor("#aa0000ff"))
             cView.translationZ = 1000f
@@ -30,6 +33,10 @@ class DraggablePayload<T>(private val mContext: Context,
             cView.translationY = mInitialTranslation.y.toFloat()
             mParent.addView(cView)
             mWrapper = cView
+
+            val ft = mActivity.fragmentManager.beginTransaction()
+            ft.replace(cView.id, mClass.newInstance() as Fragment)
+            ft.commit()
         }
     }
 
