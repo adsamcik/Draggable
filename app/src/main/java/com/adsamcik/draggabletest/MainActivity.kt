@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         val button = findViewById<DraggableImageButton>(R.id.leftRightButton)
         button.setDrag(DragAxis.X)
         button.setTarget(button.parent as View, DragTargetAnchor.Right, 8)
-        button.attachView(ViewClass::class.java, DragTargetAnchor.Right, 0)
+        //button.attachView(ViewClass::class.java, DragTargetAnchor.Right, 0)
 
     }
 }
