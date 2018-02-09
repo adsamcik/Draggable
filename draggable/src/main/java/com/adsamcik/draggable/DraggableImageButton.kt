@@ -105,60 +105,74 @@ class DraggableImageButton : AppCompatImageButton {
         mCurrentState = state
     }
 
-    private fun animateHorizontal(targetPosition: Float) {
-        val thisTranslation = translationX
-        val diff = targetPosition - thisTranslation
-
+    private fun animateHorizontal(targetTranslation: Float) {
         if (mClass != null) {
-            if (mClassWrapper == null) {
-                mClassWrapper = FrameLayout(context)
-                mClassWrapper!!.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
-                mClassWrapper!!.setBackgroundColor(Color.parseColor("#aa000000"))
+            val view = initializeView()
+            val classTranslation = view.translationX
+            val classTarget = calculateTargetTranslation(view).x + mClassAnchor.calculateEdgeOffset(this.parent as View, view).x
+            animate(translationX, targetTranslation, classTranslation, classTarget.toFloat()) { buttonTranslation, viewTranslation ->
+                translationX = buttonTranslation
+                view.translationX = viewTranslation
             }
+        } else
+            animate(translationX, targetTranslation) { translationX = it }
+    }
 
-            val cView = mClassWrapper!!
-            val classTranslation = cView.translationX
-            val classDiff = calculateTargetTranslation(cView).x + mClassAnchor.calculateEdgeOffset(this.parent as View, cView).x
+    private fun animateVertical(targetTranslation: Float) {
+        if (mClass != null) {
+            val view = initializeView()
+            val classTranslation = view.translationY
+            val classTarget = calculateTargetTranslation(view).y + mClassAnchor.calculateEdgeOffset(this.parent as View, view).y
+            animate(translationY, targetTranslation, classTranslation, classTarget.toFloat()) { buttonTranslation, viewTranslation ->
+                translationY = buttonTranslation
+                view.translationY = viewTranslation
+            }
+        } else
+            animate(translationY, targetTranslation) { translationY = it }
+    }
 
-            animate({
-                translationX = thisTranslation + it * diff
-                cView.translationX = classTranslation + it * classDiff
-            })
+    private fun initializeView(): FrameLayout {
+        if (mClassWrapper == null) {
+            val cView = FrameLayout(context)
+            cView.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
+            cView.setBackgroundColor(Color.parseColor("#aa0000ff"))
+            cView.translationZ = 1000f
+            (mTargetView!!.parent as ViewGroup).addView(cView)
+            mClassWrapper = cView
+            return cView
+        } else
+            return mClassWrapper!!
+    }
+
+    private fun animate(thisTranslation: Float, targetTranslation: Float, assignListener: (Float) -> Unit) {
+        val diff = targetTranslation - thisTranslation
+
+        animate {
+            assignListener.invoke(thisTranslation + it * diff)
         }
     }
 
-    private fun animateVertical(targetPosition: Float) {
-        val thisTranslation = translationY
-        val diff = targetPosition - thisTranslation
+    private fun animate(thisTranslation: Float,
+                        targetTranslation: Float,
+                        classTranslation: Float,
+                        classTargetTranslation: Float,
+                        assignListener: (buttonTranslation: Float,
+                                         viewTranslation: Float) -> Unit) {
+        val diff = targetTranslation - thisTranslation
 
-        if (mClass != null) {
-            if (mClassWrapper == null) {
-                mClassWrapper = FrameLayout(context)
-                mClassWrapper!!.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
-                mClassWrapper!!.setBackgroundColor(Color.parseColor("#aa000000"))
-                mClassWrapper!!.translationZ = 1000f
-                (mTargetView!!.parent as ViewGroup).addView(mClassWrapper)
-            }
+        val classDiff = classTargetTranslation - classTranslation
 
-            val cView = mClassWrapper!!
-            val classTranslation = cView.translationY
-            val classDiff = calculateTargetTranslation(cView).y + mClassAnchor.calculateEdgeOffset(this.parent as View, cView).y
-
-            animate({
-                translationY = thisTranslation + it * diff
-                cView.translationY = classTranslation + it * classDiff
-            })
+        animate {
+            assignListener.invoke(thisTranslation + it * diff, classTranslation + it * classDiff)
         }
     }
 
-    private fun animate(vararg updateListener: (Float) -> Unit) {
+    private fun animate(updateListener: (Float) -> Unit) {
         val valueAnimator = ValueAnimator.ofFloat(0f, 1f)
 
         valueAnimator.addUpdateListener {
             val value = it.animatedValue as Float
-            updateListener.forEach {
-                it.invoke(value)
-            }
+            updateListener.invoke(value)
         }
 
         valueAnimator.interpolator = LinearInterpolator()
