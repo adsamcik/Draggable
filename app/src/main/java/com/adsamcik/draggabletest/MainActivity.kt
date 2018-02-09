@@ -19,19 +19,19 @@ class MainActivity : AppCompatActivity() {
 
         val parent = button.parent as View
 
-        parent.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        parent.measure(View.MeasureSpec.AT_MOST, View.MeasureSpec.AT_MOST)
 
         button.translationX = Utility.dpToPx(this, 36).toFloat()
         button.setTarget(parent, DragTargetAnchor.BottomRight, 8)
-        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Top, 0))
-        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.TopRight, 0))
-        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.TopLeft, 0))
+        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(-1080, 0), parent as ViewGroup, DragTargetAnchor.TopRight, 0))
+        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent, DragTargetAnchor.Middle, 0, 128, 128))
+        /*button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.TopLeft, 0))
         button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Middle, 0))
         button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Left, 0))
         button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Right, 0))
         button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Bottom, 0))
         button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.BottomLeft, 0))
-        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.BottomRight, 0))
+        button.attachPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.BottomRight, 0))*/
         //button.attachView(ViewClass::class.java, DragTargetAnchor.Right, 0)
 
     }
