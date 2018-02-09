@@ -14,7 +14,6 @@ class DraggableImageButton : AppCompatImageButton {
 
     private val mDeadZone = Utility.dpToPx(context, 16)
 
-    private var mInitialPosition: PointF = PointF()
     private var mInitialTranslation: PointF = PointF()
     private var mTargetTranslation: PointF = PointF()
 
@@ -55,13 +54,6 @@ class DraggableImageButton : AppCompatImageButton {
 
     fun removePayload(payload: DraggablePayload<*>) {
         payloads.remove(payload)
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        val position = Utility.getLocationOnScreen(this)
-        mInitialPosition.x = position[0].toFloat()
-        mInitialPosition.y = position[1].toFloat()
     }
 
     override fun performClick(): Boolean {
