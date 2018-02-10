@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/adsamcik/Draggable.svg?branch=master)](https://travis-ci.org/adsamcik/Draggable)
+[ ![Download](https://api.bintray.com/packages/adsamcik/android-components/draggable/images/download.svg) ](https://bintray.com/adsamcik/android-components/draggable/_latestVersion)
+
 # Draggable
 
 Draggable is Android library providing draggable elements. For now only supported element is 
