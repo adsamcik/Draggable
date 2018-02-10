@@ -1,15 +1,18 @@
 package com.adsamcik.draggabletest
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.Point
 import android.os.Bundle
+import android.support.v4.app.FragmentActivity
 import android.view.View
 import android.view.ViewGroup
-import com.adsamcik.draggable.*
+import com.adsamcik.draggable.DragAxis
+import com.adsamcik.draggable.DragTargetAnchor
+import com.adsamcik.draggable.DraggableImageButton
+import com.adsamcik.draggable.DraggablePayload
 
 
-class MainActivity : Activity() {
+class MainActivity : FragmentActivity() {
     private fun dpToPx(c: Context, dp: Int): Int = Math.round(dp * c.resources.displayMetrics.density)
 
     override fun onCreate(savedInstanceState: Bundle?) {

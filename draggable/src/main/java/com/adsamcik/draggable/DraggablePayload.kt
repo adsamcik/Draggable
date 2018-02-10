@@ -1,15 +1,15 @@
 package com.adsamcik.draggable
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.Fragment
 import android.graphics.Point
 import android.support.annotation.ColorInt
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentActivity
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 
-class DraggablePayload<T>(private val mActivity: Activity,
+class DraggablePayload<T>(private val mActivity: FragmentActivity,
                           private val mClass: Class<T>,
                           private val mInitialTranslation: Point,
                           private val mParent: ViewGroup,
@@ -47,7 +47,7 @@ class DraggablePayload<T>(private val mActivity: Activity,
             mWrapper = cView
 
             val newInst = mClass.newInstance()
-            val ft = mActivity.fragmentManager.beginTransaction()
+            val ft = mActivity.supportFragmentManager.beginTransaction()
             ft.replace(cView.id, newInst as Fragment)
             ft.commit()
 
