@@ -23,6 +23,12 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 
     private var mBackgroundColor = 0
 
+    /**
+     * Sets payloads background
+     * Can be called even after view is visible
+     *
+     * @param color Color int as ARGB
+     */
     fun setBackgroundColor(@ColorInt color: Int) {
         mWrapper?.setBackgroundColor(color)
         mBackgroundColor = color
@@ -73,14 +79,19 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 
     /**
      * Called when there is permission response
+     *
+     * @param requestCode Request code of the permission
+     * @param success True if all permissions succeeded
      */
     internal fun onPermissionResponse(requestCode: Int, success: Boolean) = fragment?.onPermissionResponse(requestCode, success)
 
     /**
      * Called when state change is finished
+     *
+     * @param entering True if view went to active state
      */
     internal fun onStateChange(entering: Boolean) {
-        if(entering)
+        if (entering)
             fragment?.onEnter(mActivity)
         else
             fragment?.onLeave(mActivity)
