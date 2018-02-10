@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.2] - 10-2-2018
+
+- Fixed payload moving in opposite direction when moving button from higher coordinate to lower coordinate
+
+
 ## [0.1.1] - 10-2-2018
 
 - Moved to FragmentActivity and support Fragments (They should provide more consistency and be more widely used)
