@@ -38,16 +38,10 @@ internal object Utility {
     }
 
     internal fun betweenInPercent(firstConstraint: Int, secondConstraint: Int, number: Float): Float {
-        return if (firstConstraint > secondConstraint)
-            (number - secondConstraint) / (firstConstraint - secondConstraint)
-        else
-            (number - firstConstraint) / (secondConstraint - firstConstraint)
+        return (number - firstConstraint) / (secondConstraint - firstConstraint)
     }
 
     internal fun betweenInPercent(firstConstraint: Float, secondConstraint: Float, number: Float): Float {
-        return if (firstConstraint > secondConstraint)
-            (number - secondConstraint) / (firstConstraint - secondConstraint)
-        else
-            (number - firstConstraint) / (secondConstraint - firstConstraint)
+        return (number - firstConstraint) / (secondConstraint - firstConstraint)
     }
 }

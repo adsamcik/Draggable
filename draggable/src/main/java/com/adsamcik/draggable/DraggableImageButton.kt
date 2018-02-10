@@ -155,9 +155,9 @@ class DraggableImageButton : AppCompatImageButton {
 
     private fun setHorizontalTranslation(desire: Float) {
         if (mTargetView != null) {
-            if (Utility.between(mTargetTranslation.x, mInitialTranslation.x, desire)) {
+            if (Utility.between(mInitialTranslation.x, mTargetTranslation.x, desire)) {
                 translationX = desire
-                val percentage = Utility.betweenInPercent(mTargetTranslation.x, mInitialTranslation.x, desire)
+                val percentage = Utility.betweenInPercent(mInitialTranslation.x, mTargetTranslation.x, desire)
                 payloads.forEach { payload -> payload.onDrag(percentage) }
                 updateTranslationZ(percentage)
             }
@@ -167,9 +167,9 @@ class DraggableImageButton : AppCompatImageButton {
 
     private fun setVerticalTranslation(desire: Float) {
         if (mTargetView != null) {
-            if (Utility.between(mTargetTranslation.y, mInitialTranslation.y, desire)) {
+            if (Utility.between(mInitialTranslation.y, mTargetTranslation.y, desire)) {
                 translationY = desire
-                val percentage = Utility.betweenInPercent(mTargetTranslation.y, mInitialTranslation.y, desire)
+                val percentage = Utility.betweenInPercent(mInitialTranslation.y, mTargetTranslation.y, desire)
                 payloads.forEach { payload -> payload.onDrag(percentage) }
                 updateTranslationZ(percentage)
             }
