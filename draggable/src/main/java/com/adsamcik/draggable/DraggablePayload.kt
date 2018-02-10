@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentActivity
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
+import java.util.*
+
 
 class DraggablePayload<T>(private val mActivity: FragmentActivity,
                           private val mClass: Class<T>,
@@ -43,7 +45,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     fun initializeView() {
         if (mWrapper == null) {
             val cView = FrameLayout(mActivity)
-            cView.id = 1695841
+            cView.id = Random().nextInt(Int.MAX_VALUE - 2) + 1
             cView.layoutParams = ViewGroup.LayoutParams(mWidth, mHeight)
             cView.setBackgroundColor(mBackgroundColor)
             //cView.translationZ = 1000f
