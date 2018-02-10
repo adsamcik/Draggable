@@ -10,6 +10,7 @@ import com.adsamcik.draggable.DragAxis
 import com.adsamcik.draggable.DragTargetAnchor
 import com.adsamcik.draggable.DraggableImageButton
 import com.adsamcik.draggable.DraggablePayload
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : FragmentActivity() {
@@ -19,18 +20,37 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val button = findViewById<DraggableImageButton>(R.id.leftRightButton)
-        button.setDrag(DragAxis.Y)
 
-        val parent = button.parent as View
+        val parent = leftButton.parent as ViewGroup
 
         parent.measure(View.MeasureSpec.AT_MOST, View.MeasureSpec.AT_MOST)
 
-        button.translationX = dpToPx(this, 36).toFloat()
-        button.setTarget(parent, DragTargetAnchor.BottomRight, 8)
-        button.setTargetTranslationZ(200f)
-        parent as ViewGroup
-        button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(-1080, 0), parent, DragTargetAnchor.TopRight, 0))
+        leftButton.setDrag(DragAxis.X)
+        leftButton.translationX = dpToPx(this, 16).toFloat()
+        leftButton.setTarget(parent, DragTargetAnchor.TopRight, 8)
+        leftButton.setTargetTranslationZ(200f)
+        leftButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(-1080, 0), parent, DragTargetAnchor.Right, 0))
+
+        rightButton.setDrag(DragAxis.X)
+        rightButton.translationX = -dpToPx(this, 16).toFloat()
+        rightButton.setTarget(parent, DragTargetAnchor.TopLeft, 8)
+        rightButton.setTargetTranslationZ(200f)
+        rightButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(-1080, 0), parent, DragTargetAnchor.Left, 0))
+
+        topButton.setDrag(DragAxis.Y)
+        topButton.translationY = dpToPx(this, 16).toFloat()
+        topButton.setTarget(parent, DragTargetAnchor.BottomRight, 8)
+        topButton.setTargetTranslationZ(200f)
+        topButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(-1080, 0), parent, DragTargetAnchor.Bottom, 0))
+
+        bottomButton.setDrag(DragAxis.Y)
+        bottomButton.translationY = -dpToPx(this, 56).toFloat()
+        bottomButton.setTarget(parent, DragTargetAnchor.TopRight, 8)
+        bottomButton.setTargetTranslationZ(200f)
+        bottomButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(-1080, 0), parent, DragTargetAnchor.Top, 0))
+
+
+
         //button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent, DragTargetAnchor.Middle, 0, WRAP_CONTENT, WRAP_CONTENT))
         /*button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.TopLeft, 0))
         button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Middle, 0))
