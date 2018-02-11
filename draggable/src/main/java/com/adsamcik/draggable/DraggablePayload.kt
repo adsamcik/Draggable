@@ -18,7 +18,12 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
                           mMarginDp: Int,
                           private val mWidth: Int = MATCH_PARENT,
                           private val mHeight: Int = MATCH_PARENT) where T : Fragment, T : IOnDemandView {
-    private var mWrapper: FrameLayout? = null
+    /**
+     * Wrapper of payloads fragment
+     */
+    var wrapper: FrameLayout? = null
+        private set
+
     private var fragment: IOnDemandView? = null
     private var mMargin = Utility.dpToPx(mActivity, mMarginDp)
 
@@ -27,7 +32,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
      */
     var mBackgroundColor = 0
         set(value) {
-            mWrapper?.setBackgroundColor(value)
+            wrapper?.setBackgroundColor(value)
             field = value
         }
 
@@ -55,7 +60,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     fun setTranslationZ(translationZ: Float) {
         mInitialTranslationZ = translationZ
         mTargetTranslationZ = translationZ
-        mWrapper?.translationZ = translationZ
+        wrapper?.translationZ = translationZ
     }
 
     /**
@@ -65,16 +70,16 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
      */
     @SuppressLint("ResourceType")
     fun initializeView() {
-        if (mWrapper == null) {
+        if (wrapper == null) {
             val cView = FrameLayout(mActivity)
             cView.id = Random().nextInt(Int.MAX_VALUE - 2) + 1
             cView.layoutParams = ViewGroup.LayoutParams(mWidth, mHeight)
             cView.setBackgroundColor(mBackgroundColor)
-            //cView.translationZ = 1000f
+            cView.translationZ = mInitialTranslationZ
             cView.translationX = mInitialTranslation.x.toFloat()
             cView.translationY = mInitialTranslation.y.toFloat()
             mParent.addView(cView)
-            mWrapper = cView
+            wrapper = cView
 
             val newInst = mClass.newInstance()
             val ft = mActivity.supportFragmentManager.beginTransaction()
@@ -86,10 +91,10 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     }
 
     internal fun onDrag(percentage: Float) {
-        if (mWrapper == null)
+        if (wrapper == null)
             throw IllegalStateException("mWrapper was not initialized")
 
-        val wrapper = mWrapper!!
+        val wrapper = wrapper!!
 
         val targetTranslation = Utility.calculateTargetTranslation(wrapper, mParent, mAnchor, mMargin)
         wrapper.translationX = mInitialTranslation.x.toFloat() + (targetTranslation.x - mInitialTranslation.x) * percentage
