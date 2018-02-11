@@ -18,19 +18,19 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
                           mMarginDp: Int,
                           private val mWidth: Int = MATCH_PARENT,
                           private val mHeight: Int = MATCH_PARENT) where T : Fragment, T : IOnDemandView {
+    private var mFragment: IOnDemandView? = null
+    private var mMargin = Utility.dpToPx(mActivity, mMarginDp)
+
     /**
      * Wrapper of payloads fragment
      */
     var wrapper: FrameLayout? = null
         private set
 
-    private var fragment: IOnDemandView? = null
-    private var mMargin = Utility.dpToPx(mActivity, mMarginDp)
-
     /**
      * Background color
      */
-    var mBackgroundColor = 0
+    var backgroundColor = 0
         set(value) {
             wrapper?.setBackgroundColor(value)
             field = value
@@ -74,7 +74,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
             val cView = FrameLayout(mActivity)
             cView.id = Random().nextInt(Int.MAX_VALUE - 2) + 1
             cView.layoutParams = ViewGroup.LayoutParams(mWidth, mHeight)
-            cView.setBackgroundColor(mBackgroundColor)
+            cView.setBackgroundColor(backgroundColor)
             cView.translationZ = initialTranslationZ
             cView.translationX = mInitialTranslation.x.toFloat()
             cView.translationY = mInitialTranslation.y.toFloat()
@@ -86,7 +86,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
             ft.replace(cView.id, newInst as Fragment)
             ft.commit()
 
-            fragment = newInst
+            mFragment = newInst
         }
     }
 
@@ -111,7 +111,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
      * @param requestCode Request code of the permission
      * @param success True if all permissions succeeded
      */
-    internal fun onPermissionResponse(requestCode: Int, success: Boolean) = fragment?.onPermissionResponse(requestCode, success)
+    internal fun onPermissionResponse(requestCode: Int, success: Boolean) = mFragment?.onPermissionResponse(requestCode, success)
 
     /**
      * Called when state change is finished
@@ -120,8 +120,8 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
      */
     internal fun onStateChange(entering: Boolean) {
         if (entering)
-            fragment?.onEnter(mActivity)
+            mFragment?.onEnter(mActivity)
         else
-            fragment?.onLeave(mActivity)
+            mFragment?.onLeave(mActivity)
     }
 }
