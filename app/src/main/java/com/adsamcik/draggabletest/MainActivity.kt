@@ -30,7 +30,10 @@ class MainActivity : FragmentActivity() {
         leftButton.translationX = dpToPx(this, 16).toFloat()
         leftButton.setTarget(parent, DragTargetAnchor.TopRight, 8)
         leftButton.targetTranslationZ = 200f
-        leftButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(-displayMetrics.widthPixels, 0), parent, DragTargetAnchor.Right, 0))
+        val payload = DraggablePayload(this, ViewClass::class.java, Point(dpToPx(this, 32), 0), parent, DragTargetAnchor.Bottom, 0)
+        payload.initialTranslationZ = -1f
+        payload.targetTranslationZ = 5f
+        leftButton.addPayload(payload)
 
         rightButton.dragAxis = DragAxis.X
         rightButton.translationX = -dpToPx(this, 16).toFloat()
