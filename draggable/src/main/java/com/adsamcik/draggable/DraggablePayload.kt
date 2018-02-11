@@ -2,7 +2,6 @@ package com.adsamcik.draggable
 
 import android.annotation.SuppressLint
 import android.graphics.Point
-import android.support.annotation.ColorInt
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.view.ViewGroup
@@ -20,52 +19,52 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
                           private val mWidth: Int = MATCH_PARENT,
                           private val mHeight: Int = MATCH_PARENT) where T : Fragment, T : IOnDemandView {
     private var mWrapper: FrameLayout? = null
-    private var mMarginPx = Utility.dpToPx(mActivity, mMarginDp)
     private var fragment: IOnDemandView? = null
-
-    private var mBackgroundColor = 0
-
-    private var mInitialTranslationZ: Float = 0f
-    private var mTargetTranslationZ: Float = 0f
+    private var mMargin = Utility.dpToPx(mActivity, mMarginDp)
 
     /**
-     * Sets payloads background
-     * Can be called even after view is visible
-     *
-     * @param color Color int as ARGB
+     * Background color
      */
-    fun setBackgroundColor(@ColorInt color: Int) {
-        mWrapper?.setBackgroundColor(color)
-        mBackgroundColor = color
-    }
+    var mBackgroundColor = 0
+        set(value) {
+            mWrapper?.setBackgroundColor(value)
+            field = value
+        }
+
+    /**
+     * Initial translation z
+     *
+     * Does not update current translation z because payload does not store state information
+     */
+    var mInitialTranslationZ: Float = 0f
+
+    /**
+     *  Target translation z
+     *
+     *  Does not update current translation z because payload does not store state information
+     */
+    var mTargetTranslationZ: Float = 0f
 
     /**
      * Sets translation z (elevation)
      * This sets both initial and target translations to given value
+     * Updates current translation z
      *
      * @param translationZ Desired translation z
      */
     fun setTranslationZ(translationZ: Float) {
         mInitialTranslationZ = translationZ
         mTargetTranslationZ = translationZ
+        mWrapper?.translationZ = translationZ
     }
 
     /**
-     * Sets initial translation z (elevation)
+     * Set directional margin
      *
-     * @param translationZ Desired translation z
+     * Does not update current margin because payload does not store state information
      */
-    fun setInitialTranslationZ(translationZ: Float) {
-        mInitialTranslationZ = translationZ
-    }
-
-    /**
-     * Sets target translation z (elevation)
-     *
-     * @param translationZ Desired translation z
-     */
-    fun setTargetTranslationZ(translationZ: Float) {
-        mTargetTranslationZ = translationZ
+    fun setMargin(margin: Int) {
+        mMargin = Utility.dpToPx(mActivity, margin)
     }
 
     /**
@@ -101,7 +100,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 
         val wrapper = mWrapper!!
 
-        val targetTranslation = Utility.calculateTargetTranslation(wrapper, mParent, mAnchor, mMarginPx)
+        val targetTranslation = Utility.calculateTargetTranslation(wrapper, mParent, mAnchor, mMargin)
         wrapper.translationX = mInitialTranslation.x.toFloat() + (targetTranslation.x - mInitialTranslation.x) * percentage
         wrapper.translationY = mInitialTranslation.y.toFloat() + (targetTranslation.y - mInitialTranslation.y) * percentage
 
