@@ -11,50 +11,79 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.animation.LinearInterpolator
 
+typealias StateListener = () -> Unit
 
 class DraggableImageButton : AppCompatImageButton {
-    private val mDeadZone = Utility.dpToPx(context, 16)
+    /**
+     * Deadzone acts as an area in which every movement is still recognized as click
+     * Default value is 16 dp
+     */
+    var deadZone = Utility.dpToPx(context, 16)
+        set(value) {
+            field = Utility.dpToPx(context, value)
+        }
 
+    /**
+     * Axis along which object can be dragged
+     * Note: Axis XY might not work yet
+     */
+    var dragAxis = DragAxis.None
+
+
+    /**
+     * Translation Z in the default state
+     */
+    var defaultTranslationZ = translationZ
+
+    /**
+     * Translation Z in the target state
+     */
+    var targetTranslationZ = translationZ
+
+    /**
+     * Target view which is used for target
+     */
+    var targetView: View? = null
+
+    /**
+     * Anchor sets to which side of the [targetView] should the button
+     * attach in target position
+     */
+    var anchor = DragTargetAnchor.TopLeft
+
+    /**
+     * Margin in density independent pixels
+     */
+    var marginDp = 0
+
+
+    private var mCurrentState = false
+    private val payloads = ArrayList<DraggablePayload<*>>()
+    private var activeAnimation: ValueAnimator? = null
+
+    //Listeners
+    var onEnterInitialStateListener: StateListener? = null
+    var onEnterTargetStateListener: StateListener? = null
+
+    //Translation X and Y
     private var mInitialTranslation: PointF = PointF()
     private var mTargetTranslation: PointF = PointF()
 
-    private var mCurrentState = false
+    //Gesture variables
     private var mTouchInitialPosition: PointF = PointF()
-
-
-    private var mDragAxis = DragAxis.None
-
-    private var mTargetView: View? = null
-    private var mAnchor = DragTargetAnchor.TopLeft
-    private var mMarginDp = 0
-
-    private val payloads = ArrayList<DraggablePayload<*>>()
-
-    private var activeAnimation: ValueAnimator? = null
-
-    private var defaultTranslationZ = translationZ
-    private var targetTranslationZ = translationZ
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     /**
-     * Sets dragging axis
-     * Note:  XY axis is not yet supported
-     */
-    fun setDrag(axis: DragAxis) {
-        mDragAxis = axis
-    }
-
-    /**
      * Sets target position view, anchor on that view and margin
      * This is used to determine the second position of the button
      */
     fun setTarget(target: View, anchor: DragTargetAnchor, marginDp: Int) {
-        this.mTargetView = target
-        this.mAnchor = anchor
-        this.mMarginDp = marginDp
+        this.targetView = target
+        this.anchor = anchor
+        this.marginDp = marginDp
 
         mInitialTranslation.x = translationX
         mInitialTranslation.y = translationY
@@ -70,30 +99,10 @@ class DraggableImageButton : AppCompatImageButton {
 
     /**
      * Removes payload
+     * Does not destroy or detach the view
      */
     fun removePayload(payload: DraggablePayload<*>) {
         payloads.remove(payload)
-    }
-
-    /**
-     * Sets target translationZ
-     * In some cases it might be desired to have different Z translation in the final position
-     */
-    fun setTargetTranslationZ(translation: Float) {
-        targetTranslationZ = translation
-        if (mCurrentState && activeAnimation == null)
-            translationZ = translation
-    }
-
-    /**
-     * Sets default translationZ
-     * In some cases it might be desired to have different Z translation in the final position
-     */
-    override fun setTranslationZ(translationZ: Float) {
-        defaultTranslationZ = translationZ
-
-        if (!mCurrentState && activeAnimation == null)
-            super.setTranslationZ(translationZ)
     }
 
     /**
@@ -107,7 +116,7 @@ class DraggableImageButton : AppCompatImageButton {
     override fun performClick(): Boolean {
         super.performClick()
 
-        if (mTargetView != null && this.mDragAxis != DragAxis.None) {
+        if (targetView != null && this.dragAxis != DragAxis.None) {
             moveToState(!mCurrentState)
         }
 
@@ -119,6 +128,10 @@ class DraggableImageButton : AppCompatImageButton {
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     payloads.forEach { it.onStateChange(state) }
+                    if (state)
+                        onEnterInitialStateListener?.invoke()
+                    else
+                        onEnterTargetStateListener?.invoke()
                 }
             })
     }
@@ -126,12 +139,12 @@ class DraggableImageButton : AppCompatImageButton {
     private fun moveToState(state: Boolean) {
         var target: Float
         var animator: ValueAnimator? = null
-        if (this.mDragAxis == DragAxis.X || this.mDragAxis == DragAxis.XY) {
+        if (this.dragAxis == DragAxis.X || this.dragAxis == DragAxis.XY) {
             target = if (state) mTargetTranslation.x else mInitialTranslation.x
             animator = animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
         }
 
-        if (this.mDragAxis == DragAxis.Y || this.mDragAxis == DragAxis.XY) {
+        if (this.dragAxis == DragAxis.Y || this.dragAxis == DragAxis.XY) {
             target = if (state) mTargetTranslation.y else mInitialTranslation.y
             animator = animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
         }
@@ -167,7 +180,7 @@ class DraggableImageButton : AppCompatImageButton {
     }
 
     private fun setHorizontalTranslation(desire: Float) {
-        if (mTargetView != null) {
+        if (targetView != null) {
             if (Utility.between(mInitialTranslation.x, mTargetTranslation.x, desire)) {
                 translationX = desire
                 val percentage = Utility.betweenInPercent(mInitialTranslation.x, mTargetTranslation.x, desire)
@@ -179,7 +192,7 @@ class DraggableImageButton : AppCompatImageButton {
     }
 
     private fun setVerticalTranslation(desire: Float) {
-        if (mTargetView != null) {
+        if (targetView != null) {
             if (Utility.between(mInitialTranslation.y, mTargetTranslation.y, desire)) {
                 translationY = desire
                 val percentage = Utility.betweenInPercent(mInitialTranslation.y, mTargetTranslation.y, desire)
@@ -193,11 +206,11 @@ class DraggableImageButton : AppCompatImageButton {
     private fun updateTranslationZ(percentage: Float) {
         if (defaultTranslationZ != targetTranslationZ) {
             val translationZ = defaultTranslationZ + (targetTranslationZ - defaultTranslationZ) * percentage
-            this.translationZ = translationZ + 1
+            super.setTranslationZ(translationZ)
         }
     }
 
-    private fun calculateTargetTranslation() = Utility.calculateTargetTranslation(this, mTargetView!!, mAnchor, Utility.dpToPx(context, mMarginDp))
+    private fun calculateTargetTranslation() = Utility.calculateTargetTranslation(this, targetView!!, anchor, Utility.dpToPx(context, marginDp))
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         val x = event!!.x
@@ -222,18 +235,18 @@ class DraggableImageButton : AppCompatImageButton {
                 val distanceX = Math.abs(changeX)
                 val distanceY = Math.abs(changeY)
 
-                if (distanceX < mDeadZone && distanceY < mDeadZone)
+                if (distanceX < deadZone && distanceY < deadZone)
                     performClick()
-                else if (mTargetView != null) {
+                else if (targetView != null) {
                     var move = false
 
                     mTargetTranslation = calculateTargetTranslation()
 
-                    if (mDragAxis.isHorizontal() && mDragAxis.isVertical()) {
+                    if (dragAxis.isHorizontal() && dragAxis.isVertical()) {
                         TODO("This is not yet implemented")
-                    } else if (mDragAxis.isVertical()) {
+                    } else if (dragAxis.isVertical()) {
                         move = (Math.abs(translationY - mInitialTranslation.y) > Math.abs(translationY - mTargetTranslation.y)) xor mCurrentState
-                    } else if (mDragAxis.isHorizontal()) {
+                    } else if (dragAxis.isHorizontal()) {
                         move = (Math.abs(translationX - mInitialTranslation.x) > Math.abs(translationX - mTargetTranslation.x)) xor mCurrentState
                     }
 
@@ -248,10 +261,10 @@ class DraggableImageButton : AppCompatImageButton {
             MotionEvent.ACTION_POINTER_UP -> {
             }
             MotionEvent.ACTION_MOVE -> {
-                if (this.mDragAxis == DragAxis.X || this.mDragAxis == DragAxis.XY)
+                if (this.dragAxis == DragAxis.X || this.dragAxis == DragAxis.XY)
                     setHorizontalTranslation(translationX + x)
 
-                if (this.mDragAxis == DragAxis.Y || this.mDragAxis == DragAxis.XY)
+                if (this.dragAxis == DragAxis.Y || this.dragAxis == DragAxis.XY)
                     setVerticalTranslation(translationY + y)
             }
         }
