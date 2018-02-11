@@ -230,8 +230,8 @@ class DraggableImageButton : AppCompatImageButton {
                 mPayloads.forEach { it.initializeView() }
             }
             MotionEvent.ACTION_UP -> {
-                val changeX = event.rawX - mTouchLastPosition.x
-                val changeY = event.rawY - mTouchLastPosition.y
+                val changeX = event.rawX - mTouchInitialPosition.x
+                val changeY = event.rawY - mTouchInitialPosition.y
                 val distanceX = Math.abs(changeX)
                 val distanceY = Math.abs(changeY)
 
