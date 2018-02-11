@@ -1,6 +1,7 @@
 package com.adsamcik.draggabletest
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
@@ -48,7 +49,8 @@ class MainActivity : FragmentActivity() {
         bottomButton.setTarget(parent, DragTargetAnchor.TopRight, 8)
         bottomButton.targetTranslationZ = 200f
         bottomButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, displayMetrics.heightPixels), parent, DragTargetAnchor.Top, 0))
-
+        bottomButton.onEnterInitialStateListener = { it.setBackgroundColor(Color.RED)}
+        bottomButton.onEnterTargetStateListener = { it.setBackgroundColor(Color.GREEN)}
 
 
         //button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent, DragTargetAnchor.Middle, 0, WRAP_CONTENT, WRAP_CONTENT))
