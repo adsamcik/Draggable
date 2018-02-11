@@ -16,13 +16,12 @@ DraggableImageButton.
 # Example (Kotlin)
 
     val button = findViewById<DraggableImageButton>(R.id.leftRightButton)
-    button.setDrag(DragAxis.Y) //sets axis along which the drag will happen
+    button.dragAxis = DragAxis.Y //sets axis along which the drag will happen
 
     val parent = button.parent as View //finds parent
-    parent.measure(View.MeasureSpec.AT_MOST, View.MeasureSpec.AT_MOST)
 
     button.setTarget(parent, DragTargetAnchor.BottomRight, 8) //Sets target, anchor and margin
-    button.setTargetTranslationZ(200f) // sets translationZ in target position
+    button.targetTranslationZ = 200f // sets translationZ in target position
     
     //Payload
     val payload = DraggablePayload(this, ViewClass::class.java, Point(-1080, 0), parent as ViewGroup, DragTargetAnchor.TopRight, 0)
