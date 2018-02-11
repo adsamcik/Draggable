@@ -41,14 +41,14 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
      *
      * Does not update current translation z because payload does not store state information
      */
-    var mInitialTranslationZ: Float = 0f
+    var initialTranslationZ: Float = 0f
 
     /**
      *  Target translation z
      *
      *  Does not update current translation z because payload does not store state information
      */
-    var mTargetTranslationZ: Float = 0f
+    var targetTranslationZ: Float = 0f
 
     /**
      * Sets translation z (elevation)
@@ -58,8 +58,8 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
      * @param translationZ Desired translation z
      */
     fun setTranslationZ(translationZ: Float) {
-        mInitialTranslationZ = translationZ
-        mTargetTranslationZ = translationZ
+        initialTranslationZ = translationZ
+        targetTranslationZ = translationZ
         wrapper?.translationZ = translationZ
     }
 
@@ -75,7 +75,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
             cView.id = Random().nextInt(Int.MAX_VALUE - 2) + 1
             cView.layoutParams = ViewGroup.LayoutParams(mWidth, mHeight)
             cView.setBackgroundColor(mBackgroundColor)
-            cView.translationZ = mInitialTranslationZ
+            cView.translationZ = initialTranslationZ
             cView.translationX = mInitialTranslation.x.toFloat()
             cView.translationY = mInitialTranslation.y.toFloat()
             mParent.addView(cView)
@@ -100,8 +100,8 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         wrapper.translationX = mInitialTranslation.x.toFloat() + (targetTranslation.x - mInitialTranslation.x) * percentage
         wrapper.translationY = mInitialTranslation.y.toFloat() + (targetTranslation.y - mInitialTranslation.y) * percentage
 
-        if (mInitialTranslationZ != mTargetTranslationZ)
-            wrapper.translationZ = mInitialTranslationZ + (mTargetTranslationZ - mInitialTranslationZ) * percentage
+        if (initialTranslationZ != targetTranslationZ)
+            wrapper.translationZ = initialTranslationZ + (targetTranslationZ - initialTranslationZ) * percentage
 
     }
 
