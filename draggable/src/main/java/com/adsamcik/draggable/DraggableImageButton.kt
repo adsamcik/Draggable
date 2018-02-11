@@ -56,14 +56,13 @@ class DraggableImageButton : AppCompatImageButton {
      */
     var marginDp = 0
 
-
-    private var mCurrentState = false
-    private val payloads = ArrayList<DraggablePayload<*>>()
-    private var activeAnimation: ValueAnimator? = null
-
     //Listeners
     var onEnterInitialStateListener: StateListener? = null
     var onEnterTargetStateListener: StateListener? = null
+
+    private var mCurrentState = false
+    private val mPayloads = ArrayList<DraggablePayload<*>>()
+    private var mActiveAnimation: ValueAnimator? = null
 
     //Translation X and Y
     private var mInitialTranslation: PointF = PointF()
@@ -94,7 +93,7 @@ class DraggableImageButton : AppCompatImageButton {
      * Payloads cannot be dragged and are dependent on this buttons drag position
      */
     fun addPayload(payload: DraggablePayload<*>) {
-        payloads.add(payload)
+        mPayloads.add(payload)
     }
 
     /**
@@ -102,7 +101,7 @@ class DraggableImageButton : AppCompatImageButton {
      * Does not destroy or detach the view
      */
     fun removePayload(payload: DraggablePayload<*>) {
-        payloads.remove(payload)
+        mPayloads.remove(payload)
     }
 
     /**
@@ -110,7 +109,7 @@ class DraggableImageButton : AppCompatImageButton {
      * Otherwise permission won't be received, because they require activity
      */
     fun onPermissionResponse(requestCode: Int, success: Boolean) {
-        payloads.forEach { (it as IOnDemandView).onPermissionResponse(requestCode, success) }
+        mPayloads.forEach { (it as IOnDemandView).onPermissionResponse(requestCode, success) }
     }
 
     override fun performClick(): Boolean {
@@ -127,7 +126,7 @@ class DraggableImageButton : AppCompatImageButton {
         if (state != mCurrentState)
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
-                    payloads.forEach { it.onStateChange(state) }
+                    mPayloads.forEach { it.onStateChange(state) }
                     if (state)
                         onEnterInitialStateListener?.invoke()
                     else
@@ -167,7 +166,7 @@ class DraggableImageButton : AppCompatImageButton {
 
             assignListener.invoke(value)
             val percentage = Utility.betweenInPercent(initialConstraintTranslation, targetConstraintTranslation, value)
-            payloads.forEach { payload -> payload.onDrag(percentage) }
+            mPayloads.forEach { payload -> payload.onDrag(percentage) }
 
             updateTranslationZ(percentage)
         }
@@ -175,7 +174,7 @@ class DraggableImageButton : AppCompatImageButton {
         valueAnimator.interpolator = LinearInterpolator()
         valueAnimator.duration = 200
         valueAnimator.start()
-        activeAnimation = valueAnimator
+        mActiveAnimation = valueAnimator
         return valueAnimator
     }
 
@@ -184,7 +183,7 @@ class DraggableImageButton : AppCompatImageButton {
             if (Utility.between(mInitialTranslation.x, mTargetTranslation.x, desire)) {
                 translationX = desire
                 val percentage = Utility.betweenInPercent(mInitialTranslation.x, mTargetTranslation.x, desire)
-                payloads.forEach { payload -> payload.onDrag(percentage) }
+                mPayloads.forEach { payload -> payload.onDrag(percentage) }
                 updateTranslationZ(percentage)
             }
         } else
@@ -196,7 +195,7 @@ class DraggableImageButton : AppCompatImageButton {
             if (Utility.between(mInitialTranslation.y, mTargetTranslation.y, desire)) {
                 translationY = desire
                 val percentage = Utility.betweenInPercent(mInitialTranslation.y, mTargetTranslation.y, desire)
-                payloads.forEach { payload -> payload.onDrag(percentage) }
+                mPayloads.forEach { payload -> payload.onDrag(percentage) }
                 updateTranslationZ(percentage)
             }
         } else
@@ -222,12 +221,12 @@ class DraggableImageButton : AppCompatImageButton {
 
                 mTargetTranslation = calculateTargetTranslation()
 
-                if (activeAnimation != null) {
-                    activeAnimation!!.cancel()
-                    activeAnimation = null
+                if (mActiveAnimation != null) {
+                    mActiveAnimation!!.cancel()
+                    mActiveAnimation = null
                 }
 
-                payloads.forEach { it.initializeView() }
+                mPayloads.forEach { it.initializeView() }
             }
             MotionEvent.ACTION_UP -> {
                 val changeX = event.rawX - mTouchInitialPosition.x
