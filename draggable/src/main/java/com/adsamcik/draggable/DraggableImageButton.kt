@@ -11,7 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.animation.LinearInterpolator
 
-typealias StateListener = () -> Unit
+typealias StateListener = (button: DraggableImageButton) -> Unit
 
 class DraggableImageButton : AppCompatImageButton {
     /**
@@ -123,16 +123,18 @@ class DraggableImageButton : AppCompatImageButton {
     }
 
     private fun handleAnimatorListeners(animator: ValueAnimator, state: Boolean) {
-        if (state != mCurrentState)
+        if (state != mCurrentState) {
+            val button = this
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     mPayloads.forEach { it.onStateChange(state) }
                     if (state)
-                        onEnterInitialStateListener?.invoke()
+                        onEnterInitialStateListener?.invoke(button)
                     else
-                        onEnterTargetStateListener?.invoke()
+                        onEnterTargetStateListener?.invoke(button)
                 }
             })
+        }
     }
 
     private fun moveToState(state: Boolean) {
