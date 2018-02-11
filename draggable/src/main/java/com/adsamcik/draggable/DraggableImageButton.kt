@@ -65,11 +65,12 @@ class DraggableImageButton : AppCompatImageButton {
     private var mActiveAnimation: ValueAnimator? = null
 
     //Translation X and Y
-    private var mInitialTranslation: PointF = PointF()
-    private var mTargetTranslation: PointF = PointF()
+    private var mInitialTranslation = PointF()
+    private var mTargetTranslation = PointF()
 
     //Gesture variables
-    private var mTouchInitialPosition: PointF = PointF()
+    private var mTouchInitialPosition = PointF()
+    private var mTouchLastPosition = PointF()
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -213,9 +214,7 @@ class DraggableImageButton : AppCompatImageButton {
 
     private fun calculateTargetTranslation() = Utility.calculateTargetTranslation(this, targetView!!, anchor, Utility.dpToPx(context, marginDp))
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        val x = event!!.x
-        val y = event.y
+    override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action and MotionEvent.ACTION_MASK) {
             MotionEvent.ACTION_DOWN -> {
                 mTouchInitialPosition.x = event.rawX
@@ -231,8 +230,8 @@ class DraggableImageButton : AppCompatImageButton {
                 mPayloads.forEach { it.initializeView() }
             }
             MotionEvent.ACTION_UP -> {
-                val changeX = event.rawX - mTouchInitialPosition.x
-                val changeY = event.rawY - mTouchInitialPosition.y
+                val changeX = event.rawX - mTouchLastPosition.x
+                val changeY = event.rawY - mTouchLastPosition.y
                 val distanceX = Math.abs(changeX)
                 val distanceY = Math.abs(changeY)
 
@@ -257,18 +256,19 @@ class DraggableImageButton : AppCompatImageButton {
                         moveToState(mCurrentState)
                 }
             }
-            MotionEvent.ACTION_POINTER_DOWN -> {
-            }
-            MotionEvent.ACTION_POINTER_UP -> {
-            }
             MotionEvent.ACTION_MOVE -> {
+                val changeX = event.rawX - mTouchLastPosition.x
+                val changeY = event.rawY - mTouchLastPosition.y
                 if (this.dragAxis == DragAxis.X || this.dragAxis == DragAxis.XY)
-                    setHorizontalTranslation(translationX + x)
+                    setHorizontalTranslation(translationX + changeX)
 
                 if (this.dragAxis == DragAxis.Y || this.dragAxis == DragAxis.XY)
-                    setVerticalTranslation(translationY + y)
+                    setVerticalTranslation(translationY + changeY)
             }
         }
+
+        mTouchLastPosition.x = event.rawX
+        mTouchLastPosition.y = event.rawY
         return true
     }
 }
