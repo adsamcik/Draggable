@@ -32,7 +32,7 @@ class DraggableImageButton : AppCompatImageButton {
 
     private var activeAnimation: ValueAnimator? = null
 
-    private var initialTranslationZ = translationZ
+    private var defaultTranslationZ = translationZ
     private var targetTranslationZ = translationZ
 
     constructor(context: Context?) : super(context)
@@ -81,6 +81,19 @@ class DraggableImageButton : AppCompatImageButton {
      */
     fun setTargetTranslationZ(translation: Float) {
         targetTranslationZ = translation
+        if (mCurrentState && activeAnimation == null)
+            translationZ = translation
+    }
+
+    /**
+     * Sets default translationZ
+     * In some cases it might be desired to have different Z translation in the final position
+     */
+    override fun setTranslationZ(translationZ: Float) {
+        defaultTranslationZ = translationZ
+
+        if (!mCurrentState && activeAnimation == null)
+            super.setTranslationZ(translationZ)
     }
 
     /**
@@ -178,10 +191,9 @@ class DraggableImageButton : AppCompatImageButton {
     }
 
     private fun updateTranslationZ(percentage: Float) {
-        if (initialTranslationZ != targetTranslationZ) {
-            val translationZ = initialTranslationZ + (targetTranslationZ - initialTranslationZ) * percentage
+        if (defaultTranslationZ != targetTranslationZ) {
+            val translationZ = defaultTranslationZ + (targetTranslationZ - defaultTranslationZ) * percentage
             this.translationZ = translationZ + 1
-            payloads.forEach { it.setTranslationZ(translationZ) }
         }
     }
 

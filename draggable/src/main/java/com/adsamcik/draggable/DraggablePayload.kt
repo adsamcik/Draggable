@@ -25,6 +25,9 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 
     private var mBackgroundColor = 0
 
+    private var mInitialTranslationZ: Float = 0f
+    private var mTargetTranslationZ: Float = 0f
+
     /**
      * Sets payloads background
      * Can be called even after view is visible
@@ -34,6 +37,35 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     fun setBackgroundColor(@ColorInt color: Int) {
         mWrapper?.setBackgroundColor(color)
         mBackgroundColor = color
+    }
+
+    /**
+     * Sets translation z (elevation)
+     * This sets both initial and target translations to given value
+     *
+     * @param translationZ Desired translation z
+     */
+    fun setTranslationZ(translationZ: Float) {
+        mInitialTranslationZ = translationZ
+        mTargetTranslationZ = translationZ
+    }
+
+    /**
+     * Sets initial translation z (elevation)
+     *
+     * @param translationZ Desired translation z
+     */
+    fun setInitialTranslationZ(translationZ: Float) {
+        mInitialTranslationZ = translationZ
+    }
+
+    /**
+     * Sets target translation z (elevation)
+     *
+     * @param translationZ Desired translation z
+     */
+    fun setTargetTranslationZ(translationZ: Float) {
+        mTargetTranslationZ = translationZ
     }
 
     /**
@@ -63,20 +95,19 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         }
     }
 
-    internal fun setTranslationZ(value: Float) {
-        if (mWrapper == null)
-            throw IllegalStateException("mWrapper was not initialized")
-
-        mWrapper!!.translationZ = value
-    }
-
     internal fun onDrag(percentage: Float) {
         if (mWrapper == null)
             throw IllegalStateException("mWrapper was not initialized")
 
-        val targetTranslation = Utility.calculateTargetTranslation(mWrapper!!, mParent, mAnchor, mMarginPx)
-        mWrapper!!.translationX = mInitialTranslation.x.toFloat() + (targetTranslation.x - mInitialTranslation.x) * percentage
-        mWrapper!!.translationY = mInitialTranslation.y.toFloat() + (targetTranslation.y - mInitialTranslation.y) * percentage
+        val wrapper = mWrapper!!
+
+        val targetTranslation = Utility.calculateTargetTranslation(wrapper, mParent, mAnchor, mMarginPx)
+        wrapper.translationX = mInitialTranslation.x.toFloat() + (targetTranslation.x - mInitialTranslation.x) * percentage
+        wrapper.translationY = mInitialTranslation.y.toFloat() + (targetTranslation.y - mInitialTranslation.y) * percentage
+
+        if (mInitialTranslationZ != mTargetTranslationZ)
+            wrapper.translationZ = mInitialTranslationZ + (mTargetTranslationZ - mInitialTranslationZ) * percentage
+
     }
 
     /**
