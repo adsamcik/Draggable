@@ -59,15 +59,6 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     }
 
     /**
-     * Set directional margin
-     *
-     * Does not update current margin because payload does not store state information
-     */
-    fun setMargin(margin: Int) {
-        mMargin = Utility.dpToPx(mActivity, margin)
-    }
-
-    /**
      * Initializes view
      * Does nothing if view is already created
      * It is called automatically when drag starts
