@@ -318,12 +318,13 @@ class DraggableImageButton : AppCompatImageButton {
                     if (dragAxis.isHorizontal() && dragAxis.isVertical()) {
                         TODO("This is not yet implemented")
                     } else if (dragAxis.isVertical()) {
-                        move = (Math.abs(translationY - mInitialTranslation.y) > Math.abs(translationY - mTargetTranslation.y)) or
-                                (velocityTracker.yVelocity in mMinFlingVelocity..mMaxFlingVelocity) xor
-                                mCurrentState
+                        val velocity = Math.abs(velocityTracker.yVelocity)
+                        move = (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
+                                (Math.abs(translationY - mInitialTranslation.y) > Math.abs(translationY - mTargetTranslation.y)) xor mCurrentState
                     } else if (dragAxis.isHorizontal()) {
-                        move = (Math.abs(translationX - mInitialTranslation.x) > Math.abs(translationX - mTargetTranslation.x)) or
-                                (velocityTracker.xVelocity in mMinFlingVelocity..mMaxFlingVelocity) xor
+                        val velocity = Math.abs(velocityTracker.xVelocity)
+                        move = (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
+                                (Math.abs(translationX - mInitialTranslation.x) > Math.abs(translationX - mTargetTranslation.x)) xor
                                 mCurrentState
                     }
 
@@ -343,13 +344,13 @@ class DraggableImageButton : AppCompatImageButton {
 
                 if (this.dragAxis == DragAxis.X || this.dragAxis == DragAxis.XY) {
                     setHorizontalTranslation(translationX + changeX)
-                    if (event.rawX - mTouchInitialPosition.x > mSlop)
+                    if (Math.abs(event.rawX - mTouchInitialPosition.x) > mSlop)
                         mClick = false
                 }
 
                 if (this.dragAxis == DragAxis.Y || this.dragAxis == DragAxis.XY) {
                     setVerticalTranslation(translationY + changeY)
-                    if (event.rawY - mTouchInitialPosition.y > mSlop)
+                    if (Math.abs(event.rawY - mTouchInitialPosition.y) > mSlop)
                         mClick = false
                 }
             }
