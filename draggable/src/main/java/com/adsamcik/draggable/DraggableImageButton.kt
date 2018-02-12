@@ -141,6 +141,19 @@ class DraggableImageButton : AppCompatImageButton {
         }
     }
 
+    fun restoreDefaultTouchArea() {
+        if (mTouchDelegate != null) {
+            val parent = parent as View
+            val delegate = parent.touchDelegate
+            if (delegate is TouchDelegateComposite) {
+                delegate.removeDelegate(mTouchDelegate!!)
+                
+                if (delegate.count == 0)
+                    parent.touchDelegate = null
+            }
+        }
+    }
+
     override fun performClick(): Boolean {
         super.performClick()
 
