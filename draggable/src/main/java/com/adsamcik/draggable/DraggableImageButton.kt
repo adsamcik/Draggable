@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.PointF
+import android.graphics.Rect
 import android.support.v7.widget.AppCompatImageButton
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -72,6 +73,8 @@ class DraggableImageButton : AppCompatImageButton {
     private var mTouchInitialPosition = PointF()
     private var mTouchLastPosition = PointF()
 
+    private var mTouchDelegateComposite: TouchDelegateComposite? = null
+
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -111,6 +114,25 @@ class DraggableImageButton : AppCompatImageButton {
      */
     fun onPermissionResponse(requestCode: Int, success: Boolean) {
         mPayloads.forEach { (it as IOnDemandView).onPermissionResponse(requestCode, success) }
+    }
+
+    fun increaseTouchAreBy(value: Int) {
+        increaseTouchAreaBy(value, value, value, value)
+    }
+
+    fun increaseTouchAreaBy(left: Int, top: Int, right: Int, bottom: Int) {
+        val parentView = parent as View
+        parentView.post {
+            val hitRect = Rect()
+            //getHitRect(hitRect)
+
+            hitRect.left -= left
+            hitRect.top -= top
+            hitRect.right += right
+            hitRect.bottom += bottom
+
+            TouchDelegateComposite.addTouchDelegateOn(parentView, DraggableTouchDelegate(hitRect, this))
+        }
     }
 
     override fun performClick(): Boolean {

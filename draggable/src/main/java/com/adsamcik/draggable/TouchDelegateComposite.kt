@@ -1,6 +1,7 @@
 package com.adsamcik.draggable
 
 import android.graphics.Rect
+import android.text.method.Touch
 import android.view.MotionEvent
 import android.view.TouchDelegate
 import android.view.View
@@ -14,7 +15,11 @@ internal class TouchDelegateComposite(view: View) : TouchDelegate(emptyRect, vie
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        val x = event.x
+        val y = event.y
+
         delegates.forEach {
+            event.setLocation(x, y)
             if(it.onTouchEvent(event))
                 return true
         }
