@@ -9,21 +9,15 @@ import android.graphics.Rect
 import android.support.v7.widget.AppCompatImageButton
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.VelocityTracker
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.animation.LinearInterpolator
+
 
 typealias StateListener = (button: DraggableImageButton) -> Unit
 
 class DraggableImageButton : AppCompatImageButton {
-    /**
-     * Deadzone acts as an area in which every movement is still recognized as click
-     * Default value is 16 dp
-     */
-    var deadZone = Utility.dpToPx(context, 16)
-        set(value) {
-            field = Utility.dpToPx(context, value)
-        }
-
     /**
      * Axis along which object can be dragged
      * Note: Axis XY might not work yet
@@ -72,12 +66,26 @@ class DraggableImageButton : AppCompatImageButton {
     //Gesture variables
     private var mTouchInitialPosition = PointF()
     private var mTouchLastPosition = PointF()
+    private var mVelocityTracker: VelocityTracker? = null
+    private var mClick: Boolean = true
+
+    private val mSlop: Int
+    private val mMaxFlingVelocity: Int
+    private val mMinFlingVelocity: Int
+
 
     private var mTouchDelegate: DraggableTouchDelegate? = null
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    init {
+        val vc = ViewConfiguration.get(context)
+        mSlop = vc.scaledTouchSlop
+        mMinFlingVelocity = vc.scaledMinimumFlingVelocity
+        mMaxFlingVelocity = vc.scaledMaximumFlingVelocity
+    }
 
     /**
      * All payloads attached to the button
@@ -284,32 +292,39 @@ class DraggableImageButton : AppCompatImageButton {
 
                 mTargetTranslation = calculateTargetTranslation()
 
+                mClick = true
+
                 if (mActiveAnimation != null) {
                     mActiveAnimation!!.cancel()
                     mActiveAnimation = null
                 }
 
                 mPayloads.forEach { it.initializeView() }
+
+                mVelocityTracker = VelocityTracker.obtain()
+                mVelocityTracker!!.addMovement(event)
             }
             MotionEvent.ACTION_UP -> {
-                val changeX = event.rawX - mTouchInitialPosition.x
-                val changeY = event.rawY - mTouchInitialPosition.y
-                val distanceX = Math.abs(changeX)
-                val distanceY = Math.abs(changeY)
-
-                if (distanceX < deadZone && distanceY < deadZone)
+                val velocityTracker = mVelocityTracker!!
+                if (mClick)
                     performClick()
                 else if (targetView != null) {
                     var move = false
 
                     mTargetTranslation = calculateTargetTranslation()
 
+                    velocityTracker.computeCurrentVelocity(1000)
+
                     if (dragAxis.isHorizontal() && dragAxis.isVertical()) {
                         TODO("This is not yet implemented")
                     } else if (dragAxis.isVertical()) {
-                        move = (Math.abs(translationY - mInitialTranslation.y) > Math.abs(translationY - mTargetTranslation.y)) xor mCurrentState
+                        move = (Math.abs(translationY - mInitialTranslation.y) > Math.abs(translationY - mTargetTranslation.y)) or
+                                (velocityTracker.yVelocity in mMinFlingVelocity..mMaxFlingVelocity) xor
+                                mCurrentState
                     } else if (dragAxis.isHorizontal()) {
-                        move = (Math.abs(translationX - mInitialTranslation.x) > Math.abs(translationX - mTargetTranslation.x)) xor mCurrentState
+                        move = (Math.abs(translationX - mInitialTranslation.x) > Math.abs(translationX - mTargetTranslation.x)) or
+                                (velocityTracker.xVelocity in mMinFlingVelocity..mMaxFlingVelocity) xor
+                                mCurrentState
                     }
 
                     if (move)
@@ -317,15 +332,26 @@ class DraggableImageButton : AppCompatImageButton {
                     else
                         moveToState(mCurrentState)
                 }
+
+                velocityTracker.recycle()
             }
             MotionEvent.ACTION_MOVE -> {
+                mVelocityTracker!!.addMovement(event)
+
                 val changeX = event.rawX - mTouchLastPosition.x
                 val changeY = event.rawY - mTouchLastPosition.y
-                if (this.dragAxis == DragAxis.X || this.dragAxis == DragAxis.XY)
-                    setHorizontalTranslation(translationX + changeX)
 
-                if (this.dragAxis == DragAxis.Y || this.dragAxis == DragAxis.XY)
+                if (this.dragAxis == DragAxis.X || this.dragAxis == DragAxis.XY) {
+                    setHorizontalTranslation(translationX + changeX)
+                    if (event.rawX - mTouchInitialPosition.x > mSlop)
+                        mClick = false
+                }
+
+                if (this.dragAxis == DragAxis.Y || this.dragAxis == DragAxis.XY) {
                     setVerticalTranslation(translationY + changeY)
+                    if (event.rawY - mTouchInitialPosition.y > mSlop)
+                        mClick = false
+                }
             }
         }
 
