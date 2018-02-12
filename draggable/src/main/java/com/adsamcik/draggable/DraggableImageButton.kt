@@ -116,10 +116,23 @@ class DraggableImageButton : AppCompatImageButton {
         mPayloads.forEach { (it as IOnDemandView).onPermissionResponse(requestCode, success) }
     }
 
+    /**
+     * Increases touch area of the button by given value on all sides in pixels
+     *
+     * @param value Extend touch area uniformly on all sides by this value in pixels
+     */
     fun increaseTouchAreaBy(value: Int) {
         increaseTouchAreaBy(value, value, value, value)
     }
 
+    /**
+     * Increases touch area of the button by given values in pixels
+     *
+     * @param left Extend touch are to the left by pixels
+     * @param top Extend touch area above by pixels
+     * @param right Extend touch are to the right by pixels
+     * @param bottom Extend touch are below by pixels
+     */
     fun increaseTouchAreaBy(left: Int, top: Int, right: Int, bottom: Int) {
         if (mTouchDelegate == null) {
             val parentView = parent as View
@@ -141,13 +154,16 @@ class DraggableImageButton : AppCompatImageButton {
         }
     }
 
+    /**
+     * Restores default touch area of the button
+     */
     fun restoreDefaultTouchArea() {
         if (mTouchDelegate != null) {
             val parent = parent as View
             val delegate = parent.touchDelegate
             if (delegate is TouchDelegateComposite) {
                 delegate.removeDelegate(mTouchDelegate!!)
-                
+
                 if (delegate.count == 0)
                     parent.touchDelegate = null
             }
