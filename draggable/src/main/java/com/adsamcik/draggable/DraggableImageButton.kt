@@ -80,6 +80,11 @@ class DraggableImageButton : AppCompatImageButton {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     /**
+     * All payloads attached to the button
+     */
+    val payloads get() = mPayloads.toArray()
+
+    /**
      * Sets target position view, anchor on that view and margin
      * This is used to determine the second position of the button
      */
