@@ -1,28 +1,30 @@
 package com.adsamcik.draggable
 
 import android.graphics.Rect
+import android.util.Log
 import android.view.MotionEvent
 import android.view.TouchDelegate
 import android.view.View
 
-internal class DraggableTouchDelegate(private val rect: Rect, private val view: View) : TouchDelegate(Rect(), view) {
-    private val mOffsetRect = Rect()
+internal class DraggableTouchDelegate(private val mOffsetRect: Rect, private val view: View) : TouchDelegate(Rect(), view) {
+    private val mHitRect = Rect()
 
     private var mDelegateTargeted = false
 
-    fun updateOffsetRect() {
+    private fun updateHitRect() {
         //view.getHitRect(mOffsetRect)
-        val tX = view.translationX.toInt()
-        val tY = view.translationY.toInt()
-        mOffsetRect.left = view.left + tX - rect.left
-        mOffsetRect.top = view.top + tY - rect.top
-        mOffsetRect.right = view.right + tX + rect.right
-        mOffsetRect.bottom = view.bottom + tY + rect.bottom
+        val tX = view.x.toInt()
+        val tY = view.y.toInt()
+        mHitRect.left = tX - mOffsetRect.left
+        mHitRect.top = tY - mOffsetRect.top
+        mHitRect.right = tX + view.width + mOffsetRect.right
+        mHitRect.bottom = tY + view.height + mOffsetRect.bottom
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        updateOffsetRect()
+        updateHitRect()
         var sendToDelegate = false
+        Log.d("TAG", mHitRect.flattenToString())
         when (event.action) {
             MotionEvent.ACTION_UP -> {
                 if (mDelegateTargeted) {
@@ -31,7 +33,7 @@ internal class DraggableTouchDelegate(private val rect: Rect, private val view: 
                 }
             }
             MotionEvent.ACTION_DOWN -> {
-                if (mOffsetRect.contains(event.x.toInt(), event.y.toInt())) {
+                if (mHitRect.contains(event.x.toInt(), event.y.toInt())) {
                     mDelegateTargeted = true
                     sendToDelegate = true
                 }

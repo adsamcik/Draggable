@@ -116,7 +116,7 @@ class DraggableImageButton : AppCompatImageButton {
         mPayloads.forEach { (it as IOnDemandView).onPermissionResponse(requestCode, success) }
     }
 
-    fun increaseTouchAreBy(value: Int) {
+    fun increaseTouchAreaBy(value: Int) {
         increaseTouchAreaBy(value, value, value, value)
     }
 
@@ -126,10 +126,10 @@ class DraggableImageButton : AppCompatImageButton {
             val hitRect = Rect()
             //getHitRect(hitRect)
 
-            hitRect.left -= left
-            hitRect.top -= top
-            hitRect.right += right
-            hitRect.bottom += bottom
+            hitRect.left = left
+            hitRect.top = top
+            hitRect.right = right
+            hitRect.bottom = bottom
 
             TouchDelegateComposite.addTouchDelegateOn(parentView, DraggableTouchDelegate(hitRect, this))
         }
