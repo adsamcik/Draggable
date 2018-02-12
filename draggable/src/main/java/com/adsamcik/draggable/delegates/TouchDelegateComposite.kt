@@ -1,4 +1,4 @@
-package com.adsamcik.draggable
+package com.adsamcik.draggable.delegates
 
 import android.graphics.Rect
 import android.view.MotionEvent
@@ -7,14 +7,14 @@ import android.view.View
 
 
 internal class TouchDelegateComposite(view: View) : TouchDelegate(emptyRect, view) {
-    private val delegates = ArrayList<TouchDelegate>()
+    private val delegates = ArrayList<AbstractTouchDelegate>()
     val count: Int get() = delegates.size
 
-    fun addDelegate(delegate: TouchDelegate) {
+    fun addDelegate(delegate: AbstractTouchDelegate) {
         delegates.add(delegate)
     }
 
-    fun removeDelegate(delegate: TouchDelegate) {
+    fun removeDelegate(delegate: AbstractTouchDelegate) {
         delegates.remove(delegate)
     }
 
@@ -22,6 +22,7 @@ internal class TouchDelegateComposite(view: View) : TouchDelegate(emptyRect, vie
         val x = event.x
         val y = event.y
 
+        delegates.sortByDescending { it.view.translationZ}
         delegates.forEach {
             event.setLocation(x, y)
             if (it.onTouchEvent(event))
@@ -34,7 +35,7 @@ internal class TouchDelegateComposite(view: View) : TouchDelegate(emptyRect, vie
     companion object {
         val emptyRect = Rect()
 
-        fun addTouchDelegateOn(view: View, delegate: TouchDelegate): TouchDelegateComposite {
+        fun addTouchDelegateOn(view: View, delegate: AbstractTouchDelegate): TouchDelegateComposite {
             val composite = addTouchDelegateOn(view)
             composite.addDelegate(delegate)
             return composite
@@ -48,7 +49,7 @@ internal class TouchDelegateComposite(view: View) : TouchDelegate(emptyRect, vie
 
             val composite = TouchDelegateComposite(view)
             if (delegate != null)
-                composite.addDelegate(delegate)
+                composite.addDelegate(WrapperTouchDelegate(view,    delegate))
 
             view.touchDelegate = composite
             return composite

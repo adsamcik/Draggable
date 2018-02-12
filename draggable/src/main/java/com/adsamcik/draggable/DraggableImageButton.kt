@@ -13,6 +13,8 @@ import android.view.VelocityTracker
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.animation.LinearInterpolator
+import com.adsamcik.draggable.delegates.DraggableTouchDelegate
+import com.adsamcik.draggable.delegates.TouchDelegateComposite
 
 
 typealias StateListener = (button: DraggableImageButton) -> Unit

@@ -1,12 +1,11 @@
-package com.adsamcik.draggable
+package com.adsamcik.draggable.delegates
 
 import android.graphics.Rect
 import android.util.Log
 import android.view.MotionEvent
-import android.view.TouchDelegate
 import android.view.View
 
-internal class DraggableTouchDelegate(private val mOffsetRect: Rect, private val view: View) : TouchDelegate(Rect(), view) {
+internal class DraggableTouchDelegate(private val mOffsetRect: Rect, override val view: View) : AbstractTouchDelegate() {
     private val mHitRect = Rect()
 
     private var mDelegateTargeted = false
