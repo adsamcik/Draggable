@@ -73,7 +73,7 @@ class DraggableImageButton : AppCompatImageButton {
     private var mTouchInitialPosition = PointF()
     private var mTouchLastPosition = PointF()
 
-    private var mTouchDelegateComposite: TouchDelegateComposite? = null
+    private var mTouchDelegate: DraggableTouchDelegate? = null
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -121,17 +121,23 @@ class DraggableImageButton : AppCompatImageButton {
     }
 
     fun increaseTouchAreaBy(left: Int, top: Int, right: Int, bottom: Int) {
-        val parentView = parent as View
-        parentView.post {
-            val hitRect = Rect()
-            //getHitRect(hitRect)
+        if (mTouchDelegate == null) {
+            val parentView = parent as View
+            parentView.post {
+                val hitRect = Rect()
+                //getHitRect(hitRect)
 
-            hitRect.left = left
-            hitRect.top = top
-            hitRect.right = right
-            hitRect.bottom = bottom
+                hitRect.left = left
+                hitRect.top = top
+                hitRect.right = right
+                hitRect.bottom = bottom
 
-            TouchDelegateComposite.addTouchDelegateOn(parentView, DraggableTouchDelegate(hitRect, this))
+                val touchDelegate = DraggableTouchDelegate(hitRect, this)
+                TouchDelegateComposite.addTouchDelegateOn(parentView, touchDelegate)
+                mTouchDelegate = touchDelegate
+            }
+        } else {
+            mTouchDelegate!!.updateOffsets(left, top, right, bottom)
         }
     }
 

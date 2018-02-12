@@ -21,6 +21,13 @@ internal class DraggableTouchDelegate(private val mOffsetRect: Rect, private val
         mHitRect.bottom = tY + view.height + mOffsetRect.bottom
     }
 
+    fun updateOffsets(left: Int, top: Int, right: Int, bottom: Int) {
+        mOffsetRect.left = left
+        mOffsetRect.top = top
+        mOffsetRect.right = right
+        mOffsetRect.bottom = bottom
+    }
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         updateHitRect()
         var sendToDelegate = false
