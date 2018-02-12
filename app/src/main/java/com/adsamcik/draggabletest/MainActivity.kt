@@ -46,14 +46,16 @@ class MainActivity : FragmentActivity() {
         topButton.setTarget(parent, DragTargetAnchor.BottomRight, 8)
         topButton.targetTranslationZ = 200f
         topButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, -displayMetrics.heightPixels), parent, DragTargetAnchor.Bottom, 0))
+        topButton.increaseTouchAreaBy(dpToPx(this, 32))
 
         bottomButton.dragAxis = DragAxis.Y
         bottomButton.translationY = -dpToPx(this, 56).toFloat()
         bottomButton.setTarget(parent, DragTargetAnchor.TopRight, 8)
         bottomButton.targetTranslationZ = 200f
         bottomButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, displayMetrics.heightPixels), parent, DragTargetAnchor.Top, 0))
-        bottomButton.onEnterInitialStateListener = { it.setBackgroundColor(Color.RED)}
-        bottomButton.onEnterTargetStateListener = { it.setBackgroundColor(Color.GREEN)}
+        bottomButton.onEnterInitialStateListener = { it.setBackgroundColor(Color.RED) }
+        bottomButton.onEnterTargetStateListener = { it.setBackgroundColor(Color.GREEN) }
+        bottomButton.increaseTouchAreaBy(dpToPx(this, 32), dpToPx(this, 8), dpToPx(this, 8), dpToPx(this, 8))
 
 
         //button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent, DragTargetAnchor.Middle, 0, WRAP_CONTENT, WRAP_CONTENT))
