@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentTransaction.TRANSIT_NONE
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -23,6 +25,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
                           private val mHeight: Int = MATCH_PARENT) where T : Fragment, T : IOnDemandView {
     private var mFragment: T? = null
     private var mMargin = Utility.dpToPx(mActivity, mMarginDp)
+    private var timerTask: TimerTask? = null
 
     /**
      * Wrapper of payloads fragment
@@ -100,12 +103,18 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
             ft.commit()
 
             mFragment = newInst
+        } else if (timerTask != null) {
+            timerTask!!.cancel()
         }
     }
 
     internal fun onDrag(percentage: Float) {
         if (wrapper == null)
             throw IllegalStateException("mWrapper was not initialized")
+        else if (timerTask != null) {
+            timerTask!!.cancel()
+            timerTask = null
+        }
 
         val wrapper = wrapper!!
 
@@ -120,7 +129,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 
     internal fun onInitialPosition() {
         if (destroyPayloadAfter > IMMEDIATELY) {
-            Timer("Destroy", true).schedule(destroyPayloadAfter) { destroyFragment() }
+            timerTask = Timer("Destroy", true).schedule(destroyPayloadAfter) { destroyFragment() }
         } else if (destroyPayloadAfter == IMMEDIATELY) {
             destroyFragment()
         }
@@ -134,6 +143,13 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         ft.remove(mFragment)
         ft.setTransition(TRANSIT_NONE)
         ft.commit()
+
+        mFragment = null
+        launch(UI) {
+            mParent.removeView(wrapper)
+            wrapper = null
+        }
+
     }
 
     /**
@@ -150,7 +166,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
      * @param state Current button state
      */
     internal fun onStateChange(state: DraggableImageButton.State) {
-        when(state) {
+        when (state) {
             DraggableImageButton.State.INITIAL -> mFragment?.onEnter(mActivity)
             DraggableImageButton.State.TARGET -> mFragment?.onLeave(mActivity)
         }
