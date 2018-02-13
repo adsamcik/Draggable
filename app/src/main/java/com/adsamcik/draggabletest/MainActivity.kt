@@ -35,7 +35,7 @@ class MainActivity : FragmentActivity() {
         payload.targetTranslationZ = 5f
         payload.destroyPayloadAfter = 500
         leftButton.addPayload(payload)
-        leftButton.onPayloadInitialized = { it.view!!.setBackgroundColor(Color.BLUE) }
+        payload.onInitialized = { it.view!!.setBackgroundColor(Color.BLUE) }
 
         rightButton.dragAxis = DragAxis.X
         rightButton.translationX = -dpToPx(this, 16).toFloat()
