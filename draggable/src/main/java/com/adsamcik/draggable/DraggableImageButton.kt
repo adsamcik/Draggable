@@ -103,7 +103,7 @@ class DraggableImageButton : AppCompatImageButton {
     /**
      * All payloads attached to the button
      */
-    val payloads get() = mPayloads.toArray()
+    val payloads: Array<out DraggablePayload<*>> get() = mPayloads.toTypedArray()
 
     /**
      * Sets target position view, anchor on that view and margin
