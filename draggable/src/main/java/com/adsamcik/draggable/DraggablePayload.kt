@@ -28,6 +28,16 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     private var timerTask: TimerTask? = null
 
     /**
+     * Called after fragment is initialized
+     */
+    var onInitialized: PayloadListener? = null
+
+    /**
+     * Called before fragment is destroyed
+     */
+    var onBeforeDestroyed: PayloadListener? = null
+
+    /**
      * Wrapper of payloads fragment
      */
     var wrapper: FrameLayout? = null
@@ -82,7 +92,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
      * It is called automatically when drag starts
      */
     @SuppressLint("ResourceType")
-    fun initializeView(payloadListener: PayloadListener?) {
+    fun initializeView() {
         if (wrapper == null) {
             val cView = FrameLayout(mActivity)
             cView.id = Random().nextInt(Int.MAX_VALUE - 2) + 1
@@ -98,8 +108,8 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
             val ft = mActivity.supportFragmentManager.beginTransaction()
             ft.replace(cView.id, newInst as Fragment)
             ft.setTransition(TRANSIT_FRAGMENT_FADE)
-            if (payloadListener != null)
-                ft.runOnCommit { payloadListener.invoke(newInst) }
+            if (onInitialized != null)
+                ft.runOnCommit { onInitialized?.invoke(newInst) }
             ft.commit()
 
             mFragment = newInst
@@ -138,6 +148,8 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     private fun destroyFragment() {
         if (mFragment == null)
             throw RuntimeException("Fragment is already null")
+
+        onBeforeDestroyed?.invoke(mFragment!!)
 
         val ft = mActivity.supportFragmentManager.beginTransaction()
         ft.remove(mFragment)

@@ -54,7 +54,6 @@ class DraggableImageButton : AppCompatImageButton {
     //Listeners
     var onEnterInitialStateListener: StateListener? = null
     var onEnterTargetStateListener: StateListener? = null
-    var onPayloadInitialized: PayloadListener? = null
 
     //Animation parameters
     /**
@@ -315,7 +314,7 @@ class DraggableImageButton : AppCompatImageButton {
                     mActiveAnimation = null
                 }
 
-                mPayloads.forEach { it.initializeView(onPayloadInitialized) }
+                mPayloads.forEach { it.initializeView() }
 
                 mVelocityTracker = VelocityTracker.obtain()
                 mVelocityTracker!!.addMovement(event)
