@@ -33,14 +33,15 @@ class MainActivity : FragmentActivity() {
         val payload = DraggablePayload(this, ViewClass::class.java, Point(dpToPx(this, 32), 0), parent, DragTargetAnchor.Bottom, 0)
         payload.initialTranslationZ = -1f
         payload.targetTranslationZ = 5f
+        payload.destroyPayloadAfter = 500
         leftButton.addPayload(payload)
+        leftButton.onPayloadInitialized = { it.view!!.setBackgroundColor(Color.BLUE) }
 
         rightButton.dragAxis = DragAxis.X
         rightButton.translationX = -dpToPx(this, 16).toFloat()
         rightButton.setTarget(parent, DragTargetAnchor.TopLeft, 8)
         rightButton.targetTranslationZ = 200f
         rightButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(displayMetrics.widthPixels, 0), parent, DragTargetAnchor.Left, 0))
-        rightButton.onPayloadInitialized = { it.view!!.setBackgroundColor(Color.BLUE) }
 
         topButton.dragAxis = DragAxis.Y
         topButton.translationY = dpToPx(this, 16).toFloat()
