@@ -1,4 +1,10 @@
 # Changelog
+## [0.3.0] - 13-2-2018
+
+- Add support for extended touch area
+- Add fling
+- Improved overall gesture handling
+- Exposed animation interpolator, length and payloads
 
 ## [0.2.0] - 11-2-2018
 
