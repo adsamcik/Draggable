@@ -1,4 +1,11 @@
 # Changelog
+
+## [0.4.0] - 13-2-2018
+
+- Add support for timed payload destruction
+- Reworked internal states and fixed several bugs cause with unclear state value
+- Add onPayloadInitialized listener
+
 ## [0.3.0] - 13-2-2018
 
 - Add support for extended touch area
