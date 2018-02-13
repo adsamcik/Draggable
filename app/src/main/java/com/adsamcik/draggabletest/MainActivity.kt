@@ -40,6 +40,7 @@ class MainActivity : FragmentActivity() {
         rightButton.setTarget(parent, DragTargetAnchor.TopLeft, 8)
         rightButton.targetTranslationZ = 200f
         rightButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(displayMetrics.widthPixels, 0), parent, DragTargetAnchor.Left, 0))
+        rightButton.onPayloadInitialized = { it.view!!.setBackgroundColor(Color.BLUE) }
 
         topButton.dragAxis = DragAxis.Y
         topButton.translationY = dpToPx(this, 16).toFloat()

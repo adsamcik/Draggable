@@ -18,8 +18,6 @@ import com.adsamcik.draggable.delegates.DraggableTouchDelegate
 import com.adsamcik.draggable.delegates.TouchDelegateComposite
 
 
-typealias StateListener = (button: DraggableImageButton) -> Unit
-
 class DraggableImageButton : AppCompatImageButton {
     /**
      * Axis along which object can be dragged
@@ -56,6 +54,7 @@ class DraggableImageButton : AppCompatImageButton {
     //Listeners
     var onEnterInitialStateListener: StateListener? = null
     var onEnterTargetStateListener: StateListener? = null
+    var onPayloadInitialized: PayloadListener? = null
 
     //Animation parameters
     /**
@@ -314,7 +313,7 @@ class DraggableImageButton : AppCompatImageButton {
                     mActiveAnimation = null
                 }
 
-                mPayloads.forEach { it.initializeView() }
+                mPayloads.forEach { it.initializeView(onPayloadInitialized) }
 
                 mVelocityTracker = VelocityTracker.obtain()
                 mVelocityTracker!!.addMovement(event)

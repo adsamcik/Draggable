@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Point
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
+import android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
@@ -69,7 +70,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
      * It is called automatically when drag starts
      */
     @SuppressLint("ResourceType")
-    fun initializeView() {
+    fun initializeView(payloadListener: PayloadListener?) {
         if (wrapper == null) {
             val cView = FrameLayout(mActivity)
             cView.id = Random().nextInt(Int.MAX_VALUE - 2) + 1
@@ -84,6 +85,9 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
             val newInst = mClass.newInstance()
             val ft = mActivity.supportFragmentManager.beginTransaction()
             ft.replace(cView.id, newInst as Fragment)
+            ft.setTransition(TRANSIT_FRAGMENT_FADE)
+            if (payloadListener != null)
+                ft.runOnCommit { payloadListener.invoke(newInst) }
             ft.commit()
 
             mFragment = newInst
