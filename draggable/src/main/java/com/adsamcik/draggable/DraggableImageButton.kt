@@ -226,12 +226,12 @@ class DraggableImageButton : AppCompatImageButton {
         var target: Float
         var animator: ValueAnimator? = null
         if (this.dragAxis == DragAxis.X || this.dragAxis == DragAxis.XY) {
-            target = if (mState == State.INITIAL) mTargetTranslation.x else mInitialTranslation.x
+            target = if (mState == State.INITIAL) mInitialTranslation.x else mTargetTranslation.x
             animator = animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
         }
 
         if (this.dragAxis == DragAxis.Y || this.dragAxis == DragAxis.XY) {
-            target = if (mState == State.INITIAL) mTargetTranslation.y else mInitialTranslation.y
+            target = if (mState == State.INITIAL) mInitialTranslation.y else mTargetTranslation.y
             animator = animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
         }
 
@@ -336,12 +336,13 @@ class DraggableImageButton : AppCompatImageButton {
                     } else if (dragAxis.isVertical()) {
                         val velocity = Math.abs(velocityTracker.yVelocity)
                         move = (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
-                                (Math.abs(translationY - mInitialTranslation.y) > Math.abs(translationY - mTargetTranslation.y)) xor
+                                (Math.abs(translationY - mInitialTranslation.y) < Math.abs(translationY - mTargetTranslation.y)) xor
                                 (mCurrentState == State.INITIAL)
                     } else if (dragAxis.isHorizontal()) {
                         val velocity = Math.abs(velocityTracker.xVelocity)
+                        val translationX = translationX
                         move = (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
-                                (Math.abs(translationX - mInitialTranslation.x) > Math.abs(translationX - mTargetTranslation.x)) xor
+                                (Math.abs(translationX - mInitialTranslation.x) < Math.abs(translationX - mTargetTranslation.x)) xor
                                 (mCurrentState == State.INITIAL)
                     }
 
