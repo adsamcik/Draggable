@@ -5,10 +5,12 @@ import android.graphics.Point
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
+import android.support.v4.app.FragmentTransaction.TRANSIT_NONE
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import java.util.*
+import kotlin.concurrent.schedule
 
 
 class DraggablePayload<T>(private val mActivity: FragmentActivity,
@@ -19,7 +21,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
                           mMarginDp: Int,
                           private val mWidth: Int = MATCH_PARENT,
                           private val mHeight: Int = MATCH_PARENT) where T : Fragment, T : IOnDemandView {
-    private var mFragment: IOnDemandView? = null
+    private var mFragment: T? = null
     private var mMargin = Utility.dpToPx(mActivity, mMarginDp)
 
     /**
@@ -36,6 +38,13 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
             wrapper?.setBackgroundColor(value)
             field = value
         }
+
+    /**
+     * Determines time after which payloads are destroyed in initial state in miliseconds
+     *
+     * Negative numbers serve as infinite
+     */
+    var destroyPayloadAfter: Long = -1
 
     /**
      * Initial translation z
@@ -109,6 +118,24 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 
     }
 
+    internal fun onInitialPosition() {
+        if (destroyPayloadAfter > IMMEDIATELY) {
+            Timer("Destroy", true).schedule(destroyPayloadAfter) { destroyFragment() }
+        } else if (destroyPayloadAfter == IMMEDIATELY) {
+            destroyFragment()
+        }
+    }
+
+    private fun destroyFragment() {
+        if (mFragment == null)
+            throw RuntimeException("Fragment is already null")
+
+        val ft = mActivity.supportFragmentManager.beginTransaction()
+        ft.remove(mFragment)
+        ft.setTransition(TRANSIT_NONE)
+        ft.commit()
+    }
+
     /**
      * Called when there is permission response
      *
@@ -120,12 +147,17 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     /**
      * Called when state change is finished
      *
-     * @param entering True if view went to active state
+     * @param state Current button state
      */
-    internal fun onStateChange(entering: Boolean) {
-        if (entering)
-            mFragment?.onEnter(mActivity)
-        else
-            mFragment?.onLeave(mActivity)
+    internal fun onStateChange(state: DraggableImageButton.State) {
+        when(state) {
+            DraggableImageButton.State.INITIAL -> mFragment?.onEnter(mActivity)
+            DraggableImageButton.State.TARGET -> mFragment?.onLeave(mActivity)
+        }
+    }
+
+    companion object {
+        const val NEVER = -1L
+        const val IMMEDIATELY = 0L
     }
 }

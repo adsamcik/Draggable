@@ -68,7 +68,7 @@ class DraggableImageButton : AppCompatImageButton {
     var animationInterpolator: TimeInterpolator = LinearInterpolator()
 
 
-    private var mCurrentState = false
+    private var mCurrentState = State.INITIAL
     private val mPayloads = ArrayList<DraggablePayload<*>>()
     private var mActiveAnimation: ValueAnimator? = null
 
@@ -205,38 +205,40 @@ class DraggableImageButton : AppCompatImageButton {
         return true
     }
 
-    private fun handleAnimatorListeners(animator: ValueAnimator, state: Boolean) {
-        if (state != mCurrentState) {
-            val button = this
-            animator.addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator) {
+    private fun handleAnimatorListeners(animator: ValueAnimator, state: State) {
+        val button = this
+        animator.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                if (state != mCurrentState) {
                     mPayloads.forEach { it.onStateChange(state) }
-                    if (state)
+                    if (state == State.INITIAL)
                         onEnterInitialStateListener?.invoke(button)
                     else
                         onEnterTargetStateListener?.invoke(button)
-                }
-            })
-        }
+                } else if (state == State.INITIAL)
+                    mPayloads.forEach { it.onInitialPosition() }
+            }
+        })
+
     }
 
-    private fun moveToState(state: Boolean) {
+    private fun moveToState(mState: State) {
         var target: Float
         var animator: ValueAnimator? = null
         if (this.dragAxis == DragAxis.X || this.dragAxis == DragAxis.XY) {
-            target = if (state) mTargetTranslation.x else mInitialTranslation.x
+            target = if (mState == State.INITIAL) mTargetTranslation.x else mInitialTranslation.x
             animator = animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
         }
 
         if (this.dragAxis == DragAxis.Y || this.dragAxis == DragAxis.XY) {
-            target = if (state) mTargetTranslation.y else mInitialTranslation.y
+            target = if (mState == State.INITIAL) mTargetTranslation.y else mInitialTranslation.y
             animator = animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
         }
 
         if (animator != null)
-            handleAnimatorListeners(animator, state)
+            handleAnimatorListeners(animator, mState)
 
-        mCurrentState = state
+        mCurrentState = mState
     }
 
     private fun animate(initialConstraintTranslation: Float,
@@ -334,12 +336,13 @@ class DraggableImageButton : AppCompatImageButton {
                     } else if (dragAxis.isVertical()) {
                         val velocity = Math.abs(velocityTracker.yVelocity)
                         move = (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
-                                (Math.abs(translationY - mInitialTranslation.y) > Math.abs(translationY - mTargetTranslation.y)) xor mCurrentState
+                                (Math.abs(translationY - mInitialTranslation.y) > Math.abs(translationY - mTargetTranslation.y)) xor
+                                (mCurrentState == State.INITIAL)
                     } else if (dragAxis.isHorizontal()) {
                         val velocity = Math.abs(velocityTracker.xVelocity)
                         move = (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
                                 (Math.abs(translationX - mInitialTranslation.x) > Math.abs(translationX - mTargetTranslation.x)) xor
-                                mCurrentState
+                                (mCurrentState == State.INITIAL)
                     }
 
                     if (move)
@@ -373,5 +376,16 @@ class DraggableImageButton : AppCompatImageButton {
         mTouchLastPosition.x = event.rawX
         mTouchLastPosition.y = event.rawY
         return true
+    }
+
+    enum class State {
+        INITIAL {
+            override operator fun not() = TARGET
+        },
+        TARGET {
+            override operator fun not() = INITIAL
+        };
+
+        abstract operator fun not(): State
     }
 }
