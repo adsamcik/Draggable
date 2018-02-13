@@ -2,6 +2,7 @@ package com.adsamcik.draggable
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.animation.TimeInterpolator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.PointF
@@ -25,7 +26,6 @@ class DraggableImageButton : AppCompatImageButton {
      * Note: Axis XY might not work yet
      */
     var dragAxis = DragAxis.None
-
 
     /**
      * Translation Z in the default state
@@ -57,6 +57,18 @@ class DraggableImageButton : AppCompatImageButton {
     var onEnterInitialStateListener: StateListener? = null
     var onEnterTargetStateListener: StateListener? = null
 
+    //Animation parameters
+    /**
+     * Full length of the animation in milliseconds
+     */
+    var fullAnimationLength: Long = 250
+
+    /**
+     * Animation interpolator
+     */
+    var animationInterpolator: TimeInterpolator = LinearInterpolator()
+
+
     private var mCurrentState = false
     private val mPayloads = ArrayList<DraggablePayload<*>>()
     private var mActiveAnimation: ValueAnimator? = null
@@ -74,7 +86,6 @@ class DraggableImageButton : AppCompatImageButton {
     private val mSlop: Int
     private val mMaxFlingVelocity: Int
     private val mMinFlingVelocity: Int
-
 
     private var mTouchDelegate: DraggableTouchDelegate? = null
 
@@ -246,8 +257,10 @@ class DraggableImageButton : AppCompatImageButton {
             updateTranslationZ(percentage)
         }
 
-        valueAnimator.interpolator = LinearInterpolator()
-        valueAnimator.duration = 200
+
+        //Shortening animations by percentage does not look very good even with linear interpolation
+        valueAnimator.interpolator = animationInterpolator
+        valueAnimator.duration = fullAnimationLength
         valueAnimator.start()
         mActiveAnimation = valueAnimator
         return valueAnimator
