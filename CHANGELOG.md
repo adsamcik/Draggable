@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4.1] - 13-2-2018
+
+- Add onBeforeDestroyed to Payload
+- Moved onInitialized to Payload
+
 ## [0.4.0] - 13-2-2018
 
 - Add support for timed payload destruction
