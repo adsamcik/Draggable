@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.5.1] - 22-2-2018
+
+- Fix swapped onEnter/onExit events
+- Remove Log
 
 ## [0.5.0] - 22-2-2018
 
@@ -7,7 +11,6 @@
 - Changed onEnterState
 - Add forEachPayload
 - Fix bugs
-
 
 ## [0.4.1] - 13-2-2018
 
@@ -38,7 +41,6 @@
 ## [0.1.2] - 10-2-2018
 
 - Fixed payload moving in opposite direction when moving button from higher coordinate to lower coordinate
-
 
 ## [0.1.1] - 10-2-2018
 
