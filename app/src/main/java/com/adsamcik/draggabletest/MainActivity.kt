@@ -9,6 +9,7 @@ import android.util.DisplayMetrics
 import android.view.ViewGroup
 import com.adsamcik.draggable.DragAxis
 import com.adsamcik.draggable.DragTargetAnchor
+import com.adsamcik.draggable.DraggableImageButton
 import com.adsamcik.draggable.DraggablePayload
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -55,8 +56,12 @@ class MainActivity : FragmentActivity() {
         bottomButton.setTarget(parent, DragTargetAnchor.TopRight, 8)
         bottomButton.targetTranslationZ = 200f
         bottomButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, displayMetrics.heightPixels), parent, DragTargetAnchor.Top, 0))
-        bottomButton.onEnterInitialStateListener = { it.setBackgroundColor(Color.RED) }
-        bottomButton.onEnterStateListener = { it.setBackgroundColor(Color.GREEN) }
+        bottomButton.onEnterStateListener = { button, state ->
+            when (state) {
+                DraggableImageButton.State.INITIAL -> button.setBackgroundColor(Color.GREEN)
+                DraggableImageButton.State.TARGET -> button.setBackgroundColor(Color.RED)
+            }
+        }
         bottomButton.increaseTouchAreaBy(dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64))
 
 
