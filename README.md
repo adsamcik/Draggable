@@ -15,8 +15,10 @@ Every major change will increment first number
 Every breaking change will increment second number
 Every minor change will increment third number
 
-Eg. 0.1.0 -> 0.1.1 was most likely a bugfix
-    0.1.1 -> 0.2.0 could change how public method works or remove it entirely
+Eg. 
+
+    0.1.0 -> 0.1.1 was most likely a bugfix
+    0.1.1 -> 0.2.0 could change how public method works or remove it entirely 
     0.2.0 -> 1.0.0 there has been large change in the project (can be just under the hood though)
 
 # Features

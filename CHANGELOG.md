@@ -1,5 +1,14 @@
 # Changelog
 
+
+## [0.5.0] - 22-2-2018
+
+- Add onLeaveState
+- Changed onEnterState
+- Add forEachPayload
+- Fix bugs
+
+
 ## [0.4.1] - 13-2-2018
 
 - Add onBeforeDestroyed to Payload
