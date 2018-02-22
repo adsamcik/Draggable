@@ -179,8 +179,8 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
      */
     internal fun onStateChange(state: DraggableImageButton.State) {
         when (state) {
-            DraggableImageButton.State.INITIAL -> mFragment?.onEnter(mActivity)
-            DraggableImageButton.State.TARGET -> mFragment?.onLeave(mActivity)
+            DraggableImageButton.State.TARGET -> mFragment?.onEnter(mActivity)
+            DraggableImageButton.State.INITIAL -> mFragment?.onLeave(mActivity)
         }
     }
 
