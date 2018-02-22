@@ -9,7 +9,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka'
 
-ext.version = '0.4.1'
+ext.version = '0.5.0'
 
 android {
     compileSdkVersion 27
@@ -17,7 +17,7 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 7
+        versionCode 8
         versionName "$version"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
