@@ -2,8 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="160dp"
-    android:layout_height="160dp"
-    android:background="@color/colorAccent">
+    android:layout_height="160dp">
 
     <TextView
         android:layout_width="match_parent"

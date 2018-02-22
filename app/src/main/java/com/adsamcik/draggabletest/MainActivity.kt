@@ -55,11 +55,17 @@ class MainActivity : FragmentActivity() {
         bottomButton.translationY = -dpToPx(this, 56).toFloat()
         bottomButton.setTarget(parent, DragTargetAnchor.TopRight, 8)
         bottomButton.targetTranslationZ = 200f
-        bottomButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, displayMetrics.heightPixels), parent, DragTargetAnchor.Top, 0))
+        bottomButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, displayMetrics.heightPixels / 2), parent, DragTargetAnchor.Top, 0))
         bottomButton.onEnterStateListener = { button, state ->
             when (state) {
-                DraggableImageButton.State.INITIAL -> button.setBackgroundColor(Color.GREEN)
-                DraggableImageButton.State.TARGET -> button.setBackgroundColor(Color.RED)
+                DraggableImageButton.State.INITIAL -> {
+                    button.setBackgroundColor(Color.GREEN)
+                    button.forEachPayload { it.backgroundColor = Color.GREEN }
+                }
+                DraggableImageButton.State.TARGET -> {
+                    button.setBackgroundColor(Color.RED)
+                    button.forEachPayload { it.backgroundColor = Color.RED }
+                }
             }
         }
         bottomButton.increaseTouchAreaBy(dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64))
