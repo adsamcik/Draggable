@@ -30,7 +30,6 @@ internal class DraggableTouchDelegate(private val mOffsetRect: Rect, override va
     override fun onTouchEvent(event: MotionEvent): Boolean {
         updateHitRect()
         var sendToDelegate = false
-        Log.d("TAG", mHitRect.flattenToString())
         when (event.action) {
             MotionEvent.ACTION_UP -> {
                 if (mDelegateTargeted) {
