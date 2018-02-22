@@ -206,12 +206,15 @@ class DraggableImageButton : AppCompatImageButton {
 
     private fun handleAnimatorListeners(animator: ValueAnimator, state: State) {
         val button = this
+        val stateChange = state != mCurrentState
         animator.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
-                if (state != mCurrentState) {
+                if (stateChange) {
                     mPayloads.forEach { it.onStateChange(state) }
                     onEnterStateListener?.invoke(button, state)
-                } else if (state == State.INITIAL)
+                }
+
+                if (state == State.INITIAL)
                     mPayloads.forEach { it.onInitialPosition() }
             }
         })
