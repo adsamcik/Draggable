@@ -56,7 +56,7 @@ class MainActivity : FragmentActivity() {
         bottomButton.targetTranslationZ = 200f
         bottomButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, displayMetrics.heightPixels), parent, DragTargetAnchor.Top, 0))
         bottomButton.onEnterInitialStateListener = { it.setBackgroundColor(Color.RED) }
-        bottomButton.onEnterTargetStateListener = { it.setBackgroundColor(Color.GREEN) }
+        bottomButton.onEnterStateListener = { it.setBackgroundColor(Color.GREEN) }
         bottomButton.increaseTouchAreaBy(dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64))
 
 

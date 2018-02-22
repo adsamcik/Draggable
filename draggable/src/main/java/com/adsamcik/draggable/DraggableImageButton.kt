@@ -52,8 +52,8 @@ class DraggableImageButton : AppCompatImageButton {
     var marginDp = 0
 
     //Listeners
-    var onEnterInitialStateListener: StateListener? = null
-    var onEnterTargetStateListener: StateListener? = null
+    var onEnterStateListener: StateListener? = null
+    var onLeaveStateListener: StateListener? = null
 
     //Animation parameters
     /**
@@ -210,10 +210,7 @@ class DraggableImageButton : AppCompatImageButton {
             override fun onAnimationEnd(animation: Animator) {
                 if (state != mCurrentState) {
                     mPayloads.forEach { it.onStateChange(state) }
-                    if (state == State.INITIAL)
-                        onEnterInitialStateListener?.invoke(button)
-                    else
-                        onEnterTargetStateListener?.invoke(button)
+                    onEnterStateListener?.invoke(button, state)
                 } else if (state == State.INITIAL)
                     mPayloads.forEach { it.onInitialPosition() }
             }
@@ -318,6 +315,8 @@ class DraggableImageButton : AppCompatImageButton {
 
                 mVelocityTracker = VelocityTracker.obtain()
                 mVelocityTracker!!.addMovement(event)
+
+                onLeaveStateListener?.invoke(this, mCurrentState)
             }
             MotionEvent.ACTION_UP -> {
                 val velocityTracker = mVelocityTracker!!
