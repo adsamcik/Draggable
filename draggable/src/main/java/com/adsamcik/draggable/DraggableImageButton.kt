@@ -66,7 +66,6 @@ class DraggableImageButton : AppCompatImageButton {
      */
     var animationInterpolator: TimeInterpolator = LinearInterpolator()
 
-
     private var mCurrentState = State.INITIAL
     private val mPayloads = ArrayList<DraggablePayload<*>>()
     private var mActiveAnimation: ValueAnimator? = null
@@ -130,6 +129,15 @@ class DraggableImageButton : AppCompatImageButton {
      */
     fun removePayload(payload: DraggablePayload<*>) {
         mPayloads.remove(payload)
+    }
+
+    /**
+     * Runs given function on each payload
+     *
+     * @param func Function to run on each payload
+     */
+    fun forEachPayload(func: (DraggablePayload<*>) -> Unit) {
+        mPayloads.forEach(func)
     }
 
     /**
