@@ -34,6 +34,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 
     /**
      * Called before fragment is destroyed
+     * Fragment is not guaranteed to have a view
      */
     var onBeforeDestroyed: PayloadListener? = null
 
