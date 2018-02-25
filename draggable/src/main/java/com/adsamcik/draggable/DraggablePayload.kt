@@ -147,6 +147,8 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     private fun destroyFragment() {
         if (mFragment == null)
             throw RuntimeException("Fragment is already null")
+        else if (mFragment!!.isStateSaved)
+            return
 
         onBeforeDestroyed?.invoke(mFragment!!)
 
@@ -166,14 +168,6 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     private fun removeTimer() {
         timerTask?.cancel()
         timerTask = null
-    }
-
-    /**
-     * Called when payload should clean everything
-     */
-    fun cleanup() {
-        removeTimer()
-        destroyFragment()
     }
 
     /**
