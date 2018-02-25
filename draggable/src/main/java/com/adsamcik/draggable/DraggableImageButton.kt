@@ -390,7 +390,7 @@ class DraggableImageButton : AppCompatImageButton {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        payloads.forEach { it.onCancel() }
+        payloads.forEach { it.cleanup() }
     }
 
     enum class State {

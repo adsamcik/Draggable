@@ -168,10 +168,11 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     }
 
     /**
-     * Called when payload should stop what its doing immediately
+     * Called when payload should clean everything
      */
-    fun onCancel() {
+    fun cleanup() {
         removeTimer()
+        destroyFragment()
     }
 
     /**
