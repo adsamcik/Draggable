@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.5.2] - 25-2-2018
+
+- Add cleanup to payloads
+- Minor javadoc update
+
 ## [0.5.1] - 22-2-2018
 
 - Fix swapped onEnter/onExit events
