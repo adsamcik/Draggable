@@ -121,10 +121,8 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     internal fun onDrag(percentage: Float) {
         if (wrapper == null)
             throw IllegalStateException("mWrapper was not initialized")
-        else if (timerTask != null) {
-            timerTask!!.cancel()
-            timerTask = null
-        }
+
+        removeTimer()
 
         val wrapper = wrapper!!
 
@@ -162,6 +160,18 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
             wrapper = null
         }
 
+    }
+
+    private fun removeTimer() {
+        timerTask?.cancel()
+        timerTask = null
+    }
+
+    /**
+     * Called when payload should stop what its doing immediately
+     */
+    fun onCancel() {
+        removeTimer()
     }
 
     /**

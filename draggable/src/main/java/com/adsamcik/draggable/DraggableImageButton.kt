@@ -388,6 +388,11 @@ class DraggableImageButton : AppCompatImageButton {
         return true
     }
 
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        payloads.forEach { it.onCancel() }
+    }
+
     enum class State {
         INITIAL {
             override operator fun not() = TARGET
