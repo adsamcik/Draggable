@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.5.3] - 26-2-2018
+
+- Reverted previous cleanup add. Sorry for that :(
+- Resolved crash
+
 ## [0.5.2] - 25-2-2018
 
 - Add cleanup to payloads
