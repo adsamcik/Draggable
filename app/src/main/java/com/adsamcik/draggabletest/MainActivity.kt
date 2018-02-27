@@ -53,12 +53,26 @@ class MainActivity : FragmentActivity() {
         topPayload.onInitialized = { it.view!!.setBackgroundColor(Color.CYAN) }
         topButton.addPayload(topPayload)
 
+        topButton.onEnterStateListener = { button, state, axis ->
+            if (axis == DragAxis.Y) {
+                if (state == DraggableImageButton.State.INITIAL)
+                    button.setBackgroundColor(Color.YELLOW)
+                else
+                    button.setBackgroundColor(Color.BLUE)
+            } else {
+                if (state == DraggableImageButton.State.INITIAL)
+                    button.setBackgroundColor(Color.GRAY)
+                else
+                    button.setBackgroundColor(Color.GREEN)
+            }
+        }
+
         bottomButton.dragAxis = DragAxis.Y
         bottomButton.translationY = -dpToPx(this, 56).toFloat()
         bottomButton.setTarget(parent, DragTargetAnchor.TopRight, 8)
         bottomButton.targetTranslationZ = 200f
         bottomButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, displayMetrics.heightPixels / 2), parent, DragTargetAnchor.Top, 0))
-        bottomButton.onEnterStateListener = { button, state ->
+        bottomButton.onEnterStateListener = { button, state, _ ->
             when (state) {
                 DraggableImageButton.State.INITIAL -> {
                     button.setBackgroundColor(Color.GREEN)

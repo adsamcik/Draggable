@@ -52,8 +52,8 @@ class DraggableImageButton : AppCompatImageButton {
     var marginDp = 0
 
     //Listeners
-    var onEnterStateListener: StateListener? = null
-    var onLeaveStateListener: StateListener? = null
+    var onEnterStateListener: EnterStateListener? = null
+    var onLeaveStateListener: ExitStateListener? = null
 
     //Animation parameters
     /**
@@ -224,7 +224,7 @@ class DraggableImageButton : AppCompatImageButton {
             override fun onAnimationEnd(animation: Animator) {
                 if (stateChange) {
                     mPayloads.forEach { it.onStateChange(state) }
-                    onEnterStateListener?.invoke(button, state)
+                    onEnterStateListener?.invoke(button, state, mDragDirection)
                 }
 
                 if (state == State.INITIAL)
