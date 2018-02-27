@@ -12,10 +12,6 @@ enum class DragAxis {
     Y {
         override fun isHorizontal(): Boolean = false
         override fun isVertical(): Boolean = true
-    },
-    XY {
-        override fun isHorizontal(): Boolean = true
-        override fun isVertical(): Boolean = true
     };
 
     abstract fun isVertical(): Boolean

@@ -78,7 +78,7 @@ class DraggableImageButton : AppCompatImageButton {
     private var mTouchInitialPosition = PointF()
     private var mTouchLastPosition = PointF()
     private var mVelocityTracker: VelocityTracker? = null
-    private var mClick: Boolean = true
+    private var mDragDirection = DragAxis.None
 
     private val mSlop: Int
     private val mMaxFlingVelocity: Int
@@ -232,12 +232,10 @@ class DraggableImageButton : AppCompatImageButton {
     private fun moveToState(mState: State) {
         var target: Float
         var animator: ValueAnimator? = null
-        if (this.dragAxis == DragAxis.X || this.dragAxis == DragAxis.XY) {
+        if (dragAxis.isHorizontal()) {
             target = if (mState == State.INITIAL) mInitialTranslation.x else mTargetTranslation.x
             animator = animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
-        }
-
-        if (this.dragAxis == DragAxis.Y || this.dragAxis == DragAxis.XY) {
+        } else if (dragAxis.isVertical()) {
             target = if (mState == State.INITIAL) mInitialTranslation.y else mTargetTranslation.y
             animator = animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
         }
@@ -307,6 +305,9 @@ class DraggableImageButton : AppCompatImageButton {
 
     private fun calculateTargetTranslation() = Utility.calculateTargetTranslation(this, targetView!!, anchor, Utility.dpToPx(context, marginDp))
 
+    private var changeX = 0f
+    private var changeY = 0f
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action and MotionEvent.ACTION_MASK) {
             MotionEvent.ACTION_DOWN -> {
@@ -315,7 +316,7 @@ class DraggableImageButton : AppCompatImageButton {
 
                 mTargetTranslation = calculateTargetTranslation()
 
-                mClick = true
+                mDragDirection = DragAxis.None
 
                 if (mActiveAnimation != null) {
                     mActiveAnimation!!.cancel()
@@ -331,7 +332,7 @@ class DraggableImageButton : AppCompatImageButton {
             }
             MotionEvent.ACTION_UP -> {
                 val velocityTracker = mVelocityTracker!!
-                if (mClick)
+                if (mDragDirection == DragAxis.None)
                     performClick()
                 else if (targetView != null) {
                     var move = false
@@ -340,14 +341,12 @@ class DraggableImageButton : AppCompatImageButton {
 
                     velocityTracker.computeCurrentVelocity(1000)
 
-                    if (dragAxis.isHorizontal() && dragAxis.isVertical()) {
-                        TODO("This is not yet implemented")
-                    } else if (dragAxis.isVertical()) {
+                    if (dragAxis.isVertical() && mDragDirection.isVertical()) {
                         val velocity = Math.abs(velocityTracker.yVelocity)
                         move = (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
                                 (Math.abs(translationY - mInitialTranslation.y) < Math.abs(translationY - mTargetTranslation.y)) xor
                                 (mCurrentState == State.INITIAL)
-                    } else if (dragAxis.isHorizontal()) {
+                    } else if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
                         val velocity = Math.abs(velocityTracker.xVelocity)
                         val translationX = translationX
                         move = (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
@@ -366,19 +365,25 @@ class DraggableImageButton : AppCompatImageButton {
             MotionEvent.ACTION_MOVE -> {
                 mVelocityTracker!!.addMovement(event)
 
-                val changeX = event.rawX - mTouchLastPosition.x
-                val changeY = event.rawY - mTouchLastPosition.y
+                changeX = event.rawX - mTouchLastPosition.x
+                changeY = event.rawY - mTouchLastPosition.y
 
-                if (this.dragAxis == DragAxis.X || this.dragAxis == DragAxis.XY) {
-                    setHorizontalTranslation(translationX + changeX)
-                    if (Math.abs(event.rawX - mTouchInitialPosition.x) > mSlop)
-                        mClick = false
+                if (mDragDirection == DragAxis.None) {
+                    val xDiff = Math.abs(event.rawX - mTouchInitialPosition.x)
+                    val yDiff = Math.abs(event.rawY - mTouchInitialPosition.y)
+                    if (xDiff > yDiff) {
+                        if (xDiff > mSlop)
+                            mDragDirection = DragAxis.X
+                    } else {
+                        if (yDiff > mSlop)
+                            mDragDirection = DragAxis.Y
+                    }
                 }
 
-                if (this.dragAxis == DragAxis.Y || this.dragAxis == DragAxis.XY) {
+                if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
+                    setHorizontalTranslation(translationX + changeX)
+                } else if (dragAxis.isVertical() && mDragDirection.isVertical()) {
                     setVerticalTranslation(translationY + changeY)
-                    if (Math.abs(event.rawY - mTouchInitialPosition.y) > mSlop)
-                        mClick = false
                 }
             }
         }
