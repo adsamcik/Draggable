@@ -79,6 +79,7 @@ class DraggableImageButton : AppCompatImageButton {
     private var mTouchLastPosition = PointF()
     private var mVelocityTracker: VelocityTracker? = null
     private var mDragDirection = DragAxis.None
+    private var mDrag = false
 
     private val mSlop: Int
     private val mMaxFlingVelocity: Int
@@ -309,9 +310,6 @@ class DraggableImageButton : AppCompatImageButton {
 
     private fun calculateTargetTranslation() = Utility.calculateTargetTranslation(this, targetView!!, anchor, Utility.dpToPx(context, marginDp))
 
-    private var changeX = 0f
-    private var changeY = 0f
-
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action and MotionEvent.ACTION_MASK) {
             MotionEvent.ACTION_DOWN -> {
@@ -319,6 +317,7 @@ class DraggableImageButton : AppCompatImageButton {
                 mTouchInitialPosition.y = event.rawY
 
                 mTargetTranslation = calculateTargetTranslation()
+                mDrag = false
 
                 if (mCurrentState == State.INITIAL)
                     mDragDirection = DragAxis.None
@@ -370,25 +369,28 @@ class DraggableImageButton : AppCompatImageButton {
             MotionEvent.ACTION_MOVE -> {
                 mVelocityTracker!!.addMovement(event)
 
-                changeX = event.rawX - mTouchLastPosition.x
-                changeY = event.rawY - mTouchLastPosition.y
-
-                if (mDragDirection == DragAxis.None) {
+                if (!mDrag) {
                     val xDiff = Math.abs(event.rawX - mTouchInitialPosition.x)
                     val yDiff = Math.abs(event.rawY - mTouchInitialPosition.y)
                     if (xDiff > yDiff) {
-                        if (xDiff > mSlop)
-                            mDragDirection = DragAxis.X
+                        if (xDiff > mSlop && !mDragDirection.isVertical()) {
+                            if (!mDragDirection.isHorizontal())
+                                mDragDirection = DragAxis.X
+                            mDrag = true
+                        }
                     } else {
-                        if (yDiff > mSlop)
-                            mDragDirection = DragAxis.Y
+                        if (yDiff > mSlop && !mDragDirection.isHorizontal()) {
+                            if (!mDragDirection.isVertical())
+                                mDragDirection = DragAxis.Y
+                            mDrag = true
+                        }
                     }
                 }
 
                 if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
-                    setHorizontalTranslation(translationX + changeX)
+                    setHorizontalTranslation(translationX + event.rawX - mTouchLastPosition.x)
                 } else if (dragAxis.isVertical() && mDragDirection.isVertical()) {
-                    setVerticalTranslation(translationY + changeY)
+                    setVerticalTranslation(translationY + event.rawY - mTouchLastPosition.y)
                 }
             }
         }
