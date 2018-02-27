@@ -320,7 +320,8 @@ class DraggableImageButton : AppCompatImageButton {
 
                 mTargetTranslation = calculateTargetTranslation()
 
-                mDragDirection = DragAxis.None
+                if (mCurrentState == State.INITIAL)
+                    mDragDirection = DragAxis.None
 
                 if (mActiveAnimation != null) {
                     mActiveAnimation!!.cancel()
