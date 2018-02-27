@@ -31,12 +31,12 @@ class MainActivity : FragmentActivity() {
         leftButton.translationX = dpToPx(this, 16).toFloat()
         leftButton.setTarget(parent, DragTargetAnchor.TopRight, 8)
         leftButton.targetTranslationZ = dpToPx(this, 25).toFloat()
-        val payload = DraggablePayload(this, ViewClass::class.java, Point(dpToPx(this, 32), 0), parent, DragTargetAnchor.Right, 0)
-        payload.initialTranslationZ = -1f
-        payload.targetTranslationZ = dpToPx(this, 26).toFloat()
-        payload.destroyPayloadAfter = 500
-        leftButton.addPayload(payload)
-        payload.onInitialized = { it.view!!.setBackgroundColor(Color.BLUE) }
+        val leftPayload = DraggablePayload(this, ViewClass::class.java, Point(dpToPx(this, 32), 0), parent, DragTargetAnchor.Right, 0)
+        leftPayload.initialTranslationZ = -1f
+        leftPayload.targetTranslationZ = dpToPx(this, 26).toFloat()
+        leftPayload.destroyPayloadAfter = 500
+        leftButton.addPayload(leftPayload)
+        leftPayload.onInitialized = { it.view!!.setBackgroundColor(Color.BLUE) }
 
         rightButton.dragAxis = DragAxis.X
         rightButton.translationX = -dpToPx(this, 16).toFloat()
@@ -48,8 +48,10 @@ class MainActivity : FragmentActivity() {
         topButton.translationY = dpToPx(this, 16).toFloat()
         topButton.setTarget(parent, DragTargetAnchor.BottomRight, 8)
         topButton.targetTranslationZ = 200f
-        topButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, -displayMetrics.heightPixels), parent, DragTargetAnchor.Bottom, 0))
         topButton.increaseTouchAreaBy(dpToPx(this, 32))
+        val topPayload = DraggablePayload(this, ViewClass::class.java, Point(0, -displayMetrics.heightPixels), parent, DragTargetAnchor.Bottom, 0)
+        topPayload.onInitialized = { it.view!!.setBackgroundColor(Color.CYAN) }
+        topButton.addPayload(topPayload)
 
         bottomButton.dragAxis = DragAxis.Y
         bottomButton.translationY = -dpToPx(this, 56).toFloat()

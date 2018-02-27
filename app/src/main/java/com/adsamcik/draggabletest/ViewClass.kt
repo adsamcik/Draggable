@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import com.adsamcik.draggable.IOnDemandView
 
 class ViewClass : Fragment(), IOnDemandView {
+
     override fun onPermissionResponse(requestCode: Int, success: Boolean) {
         Log.d("ViewClass", "Permission request")
     }
