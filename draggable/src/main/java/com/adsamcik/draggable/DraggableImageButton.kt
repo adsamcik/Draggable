@@ -203,9 +203,13 @@ class DraggableImageButton : AppCompatImageButton {
     }
 
     override fun performClick(): Boolean {
+        if (mDragDirection == DragAxis.XY)
+            throw UnsupportedOperationException("You can't perform click operation on both axises")
+
         super.performClick()
 
-        if (targetView != null && this.dragAxis != DragAxis.None) {
+        if (targetView != null && dragAxis != DragAxis.None) {
+            mDragDirection = dragAxis
             moveToState(!mCurrentState)
         }
 
@@ -230,18 +234,18 @@ class DraggableImageButton : AppCompatImageButton {
     }
 
     private fun moveToState(mState: State) {
-        var target: Float
-        var animator: ValueAnimator? = null
-        if (dragAxis.isHorizontal()) {
+        val target: Float
+        val animator: ValueAnimator
+        if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
             target = if (mState == State.INITIAL) mInitialTranslation.x else mTargetTranslation.x
             animator = animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
-        } else if (dragAxis.isVertical()) {
+        } else if (dragAxis.isVertical() && mDragDirection.isVertical()) {
             target = if (mState == State.INITIAL) mInitialTranslation.y else mTargetTranslation.y
             animator = animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
-        }
+        } else
+            throw IllegalStateException("Not sure to which state should I move.")
 
-        if (animator != null)
-            handleAnimatorListeners(animator, mState)
+        handleAnimatorListeners(animator, mState)
 
         mCurrentState = mState
     }

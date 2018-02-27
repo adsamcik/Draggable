@@ -44,7 +44,7 @@ class MainActivity : FragmentActivity() {
         rightButton.targetTranslationZ = 200f
         rightButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(displayMetrics.widthPixels, 0), parent, DragTargetAnchor.Left, 0))
 
-        topButton.dragAxis = DragAxis.Y
+        topButton.dragAxis = DragAxis.XY
         topButton.translationY = dpToPx(this, 16).toFloat()
         topButton.setTarget(parent, DragTargetAnchor.BottomRight, 8)
         topButton.targetTranslationZ = 200f
