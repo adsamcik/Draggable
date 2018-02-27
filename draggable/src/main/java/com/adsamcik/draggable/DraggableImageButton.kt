@@ -345,6 +345,10 @@ class DraggableImageButton : AppCompatImageButton {
 
                     velocityTracker.computeCurrentVelocity(1000)
 
+                    //Calculate whether we moved enough to move to different state
+                    //First it if velocity is not within fling bounds
+                    //Second it calculates how far we moved and uses xor with boolean that represents if current state is initial
+                    //Xor simplifies the actual condition so it can be the same for both states
                     if (dragAxis.isVertical() && mDragDirection.isVertical()) {
                         val velocity = Math.abs(velocityTracker.yVelocity)
                         move = (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
@@ -370,6 +374,7 @@ class DraggableImageButton : AppCompatImageButton {
                 mVelocityTracker!!.addMovement(event)
 
                 if (!mDrag) {
+                    //Checks whether we dragged far enough to consider this a drag gesture
                     val xDiff = Math.abs(event.rawX - mTouchInitialPosition.x)
                     val yDiff = Math.abs(event.rawY - mTouchInitialPosition.y)
                     if (xDiff > yDiff) {
@@ -387,10 +392,12 @@ class DraggableImageButton : AppCompatImageButton {
                     }
                 }
 
-                if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
-                    setHorizontalTranslation(translationX + event.rawX - mTouchLastPosition.x)
-                } else if (dragAxis.isVertical() && mDragDirection.isVertical()) {
-                    setVerticalTranslation(translationY + event.rawY - mTouchLastPosition.y)
+                if (mDrag) {
+                    if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
+                        setHorizontalTranslation(translationX + event.rawX - mTouchLastPosition.x)
+                    } else if (dragAxis.isVertical() && mDragDirection.isVertical()) {
+                        setVerticalTranslation(translationY + event.rawY - mTouchLastPosition.y)
+                    }
                 }
             }
         }
