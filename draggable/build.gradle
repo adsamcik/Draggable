@@ -9,7 +9,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka'
 
-ext.version = '0.5.3'
+ext.version = '0.6.0'
 
 android {
     compileSdkVersion 27

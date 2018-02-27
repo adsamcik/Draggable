@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0] - 26-2-2018
+
+- Reworked how XY axis works. Axis movement is always restricted to single axis, but user can move it on either X or Y
+- OnEnterListeners now also provide axis along which the button moved
+- Improved drag axis detection. It should be now more consistent with
+- Add option to disabled drag with DragAxis.None
+
 ## [0.5.3] - 26-2-2018
 
 - Reverted previous cleanup add. Sorry for that :(

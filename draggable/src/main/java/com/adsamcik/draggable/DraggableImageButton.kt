@@ -313,7 +313,7 @@ class DraggableImageButton : AppCompatImageButton {
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (dragAxis == DragAxis.None)
             return false
-        
+
         when (event.action and MotionEvent.ACTION_MASK) {
             MotionEvent.ACTION_DOWN -> {
                 mTouchInitialPosition.x = event.rawX
