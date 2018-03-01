@@ -54,7 +54,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         }
 
     /**
-     * Determines time after which payloads are destroyed in initial state in miliseconds
+     * Determines time after which payloads are destroyed in initial state in milliseconds
      *
      * Negative numbers serve as infinite
      */

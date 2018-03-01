@@ -1,7 +1,6 @@
 package com.adsamcik.draggable.delegates
 
 import android.graphics.Rect
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 

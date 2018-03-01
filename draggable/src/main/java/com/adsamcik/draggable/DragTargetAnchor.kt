@@ -3,7 +3,7 @@ package com.adsamcik.draggable
 import android.graphics.Point
 import android.view.View
 
-enum class DragTargetAnchor() {
+enum class DragTargetAnchor {
     LeftMiddle,
     MiddleTop,
     RightMiddle,
