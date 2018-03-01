@@ -10,7 +10,7 @@
         </attr>
 
         <!-- TARGET -->
-        <attr name="targetTranslationZ" format="float"/>
+        <attr name="targetTranslationZ" format="dimension"/>
         <attr name="targetView" format="reference"/>
         <attr name="targetMargin" format="dimension"/>
         <attr name="targetAnchor">

@@ -123,7 +123,7 @@ class DraggableImageButton : AppCompatImageButton {
             dragAxis = DragAxis.values()[axisRaw]
 
         //target
-        targetTranslationZ = typedArray.getFloat(R.styleable.DraggableImageButton_targetTranslationZ, targetTranslationZ)
+        targetTranslationZ = typedArray.getDimension(R.styleable.DraggableImageButton_targetTranslationZ, targetTranslationZ)
         targetView = findViewById(typedArray.getResourceId(R.styleable.DraggableImageButton_targetView, 0))
         targetMargin = typedArray.getDimension(R.styleable.DraggableImageButton_targetMargin, targetMargin.toFloat()).roundToInt()
         val anchor = typedArray.getInt(R.styleable.DraggableImageButton_targetAnchor, -1)
