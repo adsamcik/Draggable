@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.TimeInterpolator
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.res.TypedArray
 import android.graphics.PointF
 import android.graphics.Rect
 import android.support.v7.widget.AppCompatImageButton
@@ -13,9 +14,10 @@ import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
 import android.view.ViewConfiguration
-import android.view.animation.LinearInterpolator
+import android.view.animation.*
 import com.adsamcik.draggable.delegates.DraggableTouchDelegate
 import com.adsamcik.draggable.delegates.TouchDelegateComposite
+import kotlin.math.roundToInt
 
 
 class DraggableImageButton : AppCompatImageButton {
@@ -44,12 +46,12 @@ class DraggableImageButton : AppCompatImageButton {
      * Anchor sets to which side of the [targetView] should the button
      * attach in target position
      */
-    var anchor = DragTargetAnchor.TopLeft
+    var targetAnchor = DragTargetAnchor.LeftTop
 
     /**
-     * Margin in density independent pixels
+     * Margin in pixels
      */
-    var marginDp = 0
+    var targetMargin = 0
 
     //Listeners
     var onEnterStateListener: EnterStateListener? = null
@@ -87,15 +89,70 @@ class DraggableImageButton : AppCompatImageButton {
 
     private var mTouchDelegate: DraggableTouchDelegate? = null
 
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        init(context, attrs)
+    }
+
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        init(context, attrs, defStyleAttr)
+    }
 
     init {
         val vc = ViewConfiguration.get(context)
         mSlop = vc.scaledTouchSlop
         mMinFlingVelocity = vc.scaledMinimumFlingVelocity
         mMaxFlingVelocity = vc.scaledMaximumFlingVelocity
+    }
+
+    private fun init(context: Context, attrs: AttributeSet, defStyleAttr: Int) {
+        val a = context.obtainStyledAttributes(attrs, R.styleable.DraggableImageButton, defStyleAttr, 0)
+        init(a)
+        a.recycle()
+    }
+
+    private fun init(context: Context, attrs: AttributeSet) {
+        val a = context.obtainStyledAttributes(attrs, R.styleable.DraggableImageButton)
+        init(a)
+        a.recycle()
+    }
+
+    private fun init(typedArray: TypedArray) {
+        val axisRaw = typedArray.getString(R.styleable.DraggableImageButton_axis)
+        if (axisRaw != null)
+            dragAxis = DragAxis.valueOf(axisRaw)
+
+        //target
+        targetTranslationZ = typedArray.getFloat(R.styleable.DraggableImageButton_targetTranslationZ, targetTranslationZ)
+        targetView = findViewById(typedArray.getResourceId(R.styleable.DraggableImageButton_targetView, 0))
+        targetMargin = typedArray.getDimension(R.styleable.DraggableImageButton_targetMargin, targetMargin.toFloat()).roundToInt()
+        val anchor = typedArray.getInt(R.styleable.DraggableImageButton_targetAnchor, -1)
+        if (anchor >= 0)
+            targetAnchor = DragTargetAnchor.fromInt(anchor)
+
+        //touchArea
+        val leftTA = typedArray.getInteger(R.styleable.DraggableImageButton_extendLeftTouchArea, 0)
+        val topTA = typedArray.getInteger(R.styleable.DraggableImageButton_extendTopTouchArea, 0)
+        val rightTA = typedArray.getInteger(R.styleable.DraggableImageButton_extendRightTouchArea, 0)
+        val bottomTA = typedArray.getInteger(R.styleable.DraggableImageButton_extendBottomTouchArea, 0)
+        if (leftTA != 0 || topTA != 0 || rightTA != 0 || bottomTA != 0)
+            increaseTouchAreaBy(leftTA, topTA, rightTA, bottomTA)
+
+        //animation
+        fullAnimationLength = typedArray.getInt(R.styleable.DraggableImageButton_animationLength, fullAnimationLength.toInt()).toLong()
+        val interpolatorId = typedArray.getInt(R.styleable.DraggableImageButton_interpolator, -1)
+        if (interpolatorId >= 0) {
+            animationInterpolator = when (interpolatorId) {
+                0 -> LinearInterpolator()
+                1 -> OvershootInterpolator()
+                2 -> BounceInterpolator()
+                3 -> AccelerateInterpolator()
+                4 -> DecelerateInterpolator()
+                5 -> AccelerateDecelerateInterpolator()
+                else -> throw IllegalArgumentException("Invalid interpolator value")
+            }
+        }
+
     }
 
     /**
@@ -109,8 +166,8 @@ class DraggableImageButton : AppCompatImageButton {
      */
     fun setTarget(target: View, anchor: DragTargetAnchor, marginDp: Int) {
         this.targetView = target
-        this.anchor = anchor
-        this.marginDp = marginDp
+        this.targetAnchor = anchor
+        this.targetMargin = marginDp
 
         mInitialTranslation.x = translationX
         mInitialTranslation.y = translationY
@@ -201,6 +258,10 @@ class DraggableImageButton : AppCompatImageButton {
                     parent.touchDelegate = null
             }
         }
+    }
+
+    fun setTargetMarginDp(dp: Int) {
+        targetMargin = Utility.dpToPx(context, dp)
     }
 
     override fun performClick(): Boolean {
@@ -308,7 +369,7 @@ class DraggableImageButton : AppCompatImageButton {
         }
     }
 
-    private fun calculateTargetTranslation() = Utility.calculateTargetTranslation(this, targetView!!, anchor, Utility.dpToPx(context, marginDp))
+    private fun calculateTargetTranslation() = Utility.calculateTargetTranslation(this, targetView!!, targetAnchor, Utility.dpToPx(context, targetMargin))
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (dragAxis == DragAxis.None)

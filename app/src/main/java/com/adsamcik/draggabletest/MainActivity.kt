@@ -29,9 +29,9 @@ class MainActivity : FragmentActivity() {
 
         leftButton.dragAxis = DragAxis.X
         leftButton.translationX = dpToPx(this, 16).toFloat()
-        leftButton.setTarget(parent, DragTargetAnchor.TopRight, 8)
+        leftButton.setTarget(parent, DragTargetAnchor.RightTop, 8)
         leftButton.targetTranslationZ = dpToPx(this, 25).toFloat()
-        val leftPayload = DraggablePayload(this, ViewClass::class.java, Point(dpToPx(this, 32), 0), parent, DragTargetAnchor.Right, 0)
+        val leftPayload = DraggablePayload(this, ViewClass::class.java, Point(dpToPx(this, 32), 0), parent, DragTargetAnchor.RightMiddle, 0)
         leftPayload.initialTranslationZ = -1f
         leftPayload.targetTranslationZ = dpToPx(this, 24).toFloat()
         leftPayload.destroyPayloadAfter = 500
@@ -40,16 +40,16 @@ class MainActivity : FragmentActivity() {
 
         rightButton.dragAxis = DragAxis.None
         rightButton.translationX = -dpToPx(this, 16).toFloat()
-        rightButton.setTarget(parent, DragTargetAnchor.TopLeft, 8)
+        rightButton.setTarget(parent, DragTargetAnchor.LeftTop, 8)
         rightButton.targetTranslationZ = 200f
-        rightButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(displayMetrics.widthPixels, 0), parent, DragTargetAnchor.Left, 0))
+        rightButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(displayMetrics.widthPixels, 0), parent, DragTargetAnchor.LeftMiddle, 0))
 
         topButton.dragAxis = DragAxis.XY
         topButton.translationY = dpToPx(this, 16).toFloat()
-        topButton.setTarget(parent, DragTargetAnchor.BottomRight, 8)
+        topButton.setTarget(parent, DragTargetAnchor.RightBottom, 8)
         topButton.targetTranslationZ = 200f
         topButton.increaseTouchAreaBy(dpToPx(this, 32))
-        val topPayload = DraggablePayload(this, ViewClass::class.java, Point(0, -displayMetrics.heightPixels), parent, DragTargetAnchor.Bottom, 0)
+        val topPayload = DraggablePayload(this, ViewClass::class.java, Point(0, -displayMetrics.heightPixels), parent, DragTargetAnchor.MiddleBottom, 0)
         topPayload.onInitialized = { it.view!!.setBackgroundColor(Color.CYAN) }
         topButton.addPayload(topPayload)
 
@@ -69,9 +69,9 @@ class MainActivity : FragmentActivity() {
 
         bottomButton.dragAxis = DragAxis.Y
         bottomButton.translationY = -dpToPx(this, 56).toFloat()
-        bottomButton.setTarget(parent, DragTargetAnchor.TopRight, 8)
+        bottomButton.setTarget(parent, DragTargetAnchor.RightTop, 8)
         bottomButton.targetTranslationZ = 200f
-        bottomButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, displayMetrics.heightPixels / 2), parent, DragTargetAnchor.Top, 0))
+        bottomButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, displayMetrics.heightPixels / 2), parent, DragTargetAnchor.MiddleTop, 0))
         bottomButton.onEnterStateListener = { button, state, _ ->
             when (state) {
                 DraggableImageButton.State.INITIAL -> {
@@ -88,14 +88,14 @@ class MainActivity : FragmentActivity() {
 
 
         //button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent, DragTargetAnchor.Middle, 0, WRAP_CONTENT, WRAP_CONTENT))
-        /*button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.TopLeft, 0))
+        /*button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.LeftTop, 0))
         button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Middle, 0))
-        button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Left, 0))
-        button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Right, 0))
-        button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.Bottom, 0))
-        button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.BottomLeft, 0))
-        button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.BottomRight, 0))*/
-        //button.attachView(ViewClass::class.java, DragTargetAnchor.Right, 0)
+        button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.LeftMiddle, 0))
+        button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.RightMiddle, 0))
+        button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.MiddleBottom, 0))
+        button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.LeftBottom, 0))
+        button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.RightBottom, 0))*/
+        //button.attachView(ViewClass::class.java, DragTargetAnchor.RightMiddle, 0)
 
     }
 }

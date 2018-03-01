@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DraggableImageButton">
+        <!-- BASE -->
+        <attr name="axis" format="enum">
+            <enum name="None" value="None"/>
+            <enum name="X" value="X"/>
+            <enum name="Y" value="Y"/>
+            <enum name="XY" value="XY"/>
+        </attr>
+
+        <!-- TARGET -->
+        <attr name="targetTranslationZ" format="float"/>
+        <attr name="targetView" format="reference"/>
+        <attr name="targetMargin" format="dimension"/>
+        <attr name="targetAnchor">
+            <flag name="top" value="1"/>
+            <flag name="right" value="2"/>
+            <flag name="bottom" value="4"/>
+            <flag name="left" value="8"/>
+            <flag name="all" value="15"/>
+        </attr>
+
+        <!-- TOUCH AREA -->
+        <attr name="extendLeftTouchArea" format="dimension"/>
+        <attr name="extendRightTouchArea" format="dimension"/>
+        <attr name="extendTopTouchArea" format="dimension"/>
+        <attr name="extendBottomTouchArea" format="dimension"/>
+
+        <!-- ANIMATION -->
+        <attr name="animationLength" format="integer"/>
+        <attr name="interpolator" format="enum">
+            <enum name="Linear" value="0"/>
+            <enum name="Overshoot" value="1"/>
+            <enum name="Bounce" value="2"/>
+            <enum name="Accelerate" value="3"/>
+            <enum name="Decelerate" value="4"/>
+            <enum name="AccelerateDecelerate" value="5"/>
+        </attr>
+    </declare-styleable>
+</resources>
