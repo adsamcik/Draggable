@@ -31,8 +31,8 @@ class MainActivity : FragmentActivity() {
         leftPayload.initialTranslationZ = -1f
         leftPayload.targetTranslationZ = dpToPx(this, 24).toFloat()
         leftPayload.destroyPayloadAfter = 500
-        leftButton.addPayload(leftPayload)
         leftPayload.onInitialized = { it.view!!.setBackgroundColor(Color.BLUE) }
+        leftButton.addPayload(leftPayload)
 
         topButton.dragAxis = DragAxis.XY
         topButton.translationY = dpToPx(this, 16).toFloat()
