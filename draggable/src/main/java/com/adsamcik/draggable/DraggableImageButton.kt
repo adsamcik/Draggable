@@ -118,9 +118,9 @@ class DraggableImageButton : AppCompatImageButton {
     }
 
     private fun init(typedArray: TypedArray) {
-        val axisRaw = typedArray.getString(R.styleable.DraggableImageButton_axis)
-        if (axisRaw != null)
-            dragAxis = DragAxis.valueOf(axisRaw)
+        val axisRaw = typedArray.getInt(R.styleable.DraggableImageButton_axis, -1)
+        if (axisRaw >= 0)
+            dragAxis = DragAxis.values()[axisRaw]
 
         //target
         targetTranslationZ = typedArray.getFloat(R.styleable.DraggableImageButton_targetTranslationZ, targetTranslationZ)

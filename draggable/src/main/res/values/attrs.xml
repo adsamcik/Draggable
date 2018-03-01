@@ -3,10 +3,10 @@
     <declare-styleable name="DraggableImageButton">
         <!-- BASE -->
         <attr name="axis" format="enum">
-            <enum name="None" value="None"/>
-            <enum name="X" value="X"/>
-            <enum name="Y" value="Y"/>
-            <enum name="XY" value="XY"/>
+            <enum name="None" value="0"/>
+            <enum name="X" value="1"/>
+            <enum name="Y" value="2"/>
+            <enum name="XY" value="3"/>
         </attr>
 
         <!-- TARGET -->
