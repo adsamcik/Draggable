@@ -27,22 +27,12 @@ class MainActivity : FragmentActivity() {
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
 
-        leftButton.dragAxis = DragAxis.X
-        leftButton.translationX = dpToPx(this, 16).toFloat()
-        leftButton.setTarget(parent, DragTargetAnchor.RightTop, 8)
-        leftButton.targetTranslationZ = dpToPx(this, 25).toFloat()
         val leftPayload = DraggablePayload(this, ViewClass::class.java, Point(dpToPx(this, 32), 0), parent, DragTargetAnchor.RightMiddle, 0)
         leftPayload.initialTranslationZ = -1f
         leftPayload.targetTranslationZ = dpToPx(this, 24).toFloat()
         leftPayload.destroyPayloadAfter = 500
         leftButton.addPayload(leftPayload)
         leftPayload.onInitialized = { it.view!!.setBackgroundColor(Color.BLUE) }
-
-        rightButton.dragAxis = DragAxis.None
-        rightButton.translationX = -dpToPx(this, 16).toFloat()
-        rightButton.setTarget(parent, DragTargetAnchor.LeftTop, 8)
-        rightButton.targetTranslationZ = 200f
-        rightButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(displayMetrics.widthPixels, 0), parent, DragTargetAnchor.LeftMiddle, 0))
 
         topButton.dragAxis = DragAxis.XY
         topButton.translationY = dpToPx(this, 16).toFloat()
