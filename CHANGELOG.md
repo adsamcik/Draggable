@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.7.0] - 1-3-2018
+
+- Add xml attributes
+- Fixed crash when targetView is null
+
 ## [0.6.0] - 26-2-2018
 
 - Reworked how XY axis works. Axis movement is always restricted to single axis, but user can move it on either X or Y
