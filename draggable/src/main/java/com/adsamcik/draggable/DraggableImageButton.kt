@@ -42,7 +42,7 @@ class DraggableImageButton : AppCompatImageButton {
      */
     var targetView: View? = null
 
-    private var targetViewId: Int = 0
+    private var targetViewId: Int = View.NO_ID
 
     /**
      * Anchor sets to which side of the [targetView] should the button
@@ -126,7 +126,7 @@ class DraggableImageButton : AppCompatImageButton {
 
         //target
         targetTranslationZ = typedArray.getDimension(R.styleable.DraggableImageButton_targetTranslationZ, targetTranslationZ)
-        targetViewId = typedArray.getResourceId(R.styleable.DraggableImageButton_targetView, 0)
+        targetViewId = typedArray.getResourceId(R.styleable.DraggableImageButton_targetView, View.NO_ID)
         targetMargin = typedArray.getDimension(R.styleable.DraggableImageButton_targetMargin, targetMargin.toFloat()).roundToInt()
         val anchor = typedArray.getInt(R.styleable.DraggableImageButton_targetAnchor, -1)
         if (anchor >= 0)
@@ -159,7 +159,8 @@ class DraggableImageButton : AppCompatImageButton {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        targetView = rootView.findViewById(targetViewId)
+        if (targetViewId != View.NO_ID && targetView == null)
+            targetView = rootView.findViewById(targetViewId)
     }
 
     /**
