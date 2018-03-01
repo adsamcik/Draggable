@@ -372,7 +372,7 @@ class DraggableImageButton : AppCompatImageButton {
     private fun calculateTargetTranslation() = Utility.calculateTargetTranslation(this, targetView!!, targetAnchor, Utility.dpToPx(context, targetMargin))
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (dragAxis == DragAxis.None)
+        if (dragAxis == DragAxis.None || targetView == null)
             return false
 
         when (event.action and MotionEvent.ACTION_MASK) {
