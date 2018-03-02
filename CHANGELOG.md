@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.7.0] - 1-3-2018
+## [0.7.1] - 2-3-2018
 
 * Fixed incorrect targetAnchor values in xml
 * Renamed middle anchor to center anchor to better represent it's centering on both axes
