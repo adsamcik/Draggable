@@ -6,7 +6,6 @@ import android.view.View
 
 internal class DraggableTouchDelegate(private val mOffsetRect: Rect, override val view: View) : AbstractTouchDelegate() {
     private val mHitRect = Rect()
-
     private var mDelegateTargeted = false
 
     private fun updateHitRect() {
@@ -19,6 +18,9 @@ internal class DraggableTouchDelegate(private val mOffsetRect: Rect, override va
         mHitRect.bottom = tY + view.height + mOffsetRect.bottom
     }
 
+    /**
+     * Updates offsets of the delegate
+     */
     fun updateOffsets(left: Int, top: Int, right: Int, bottom: Int) {
         mOffsetRect.left = left
         mOffsetRect.top = top
@@ -26,6 +28,9 @@ internal class DraggableTouchDelegate(private val mOffsetRect: Rect, override va
         mOffsetRect.bottom = bottom
     }
 
+    /**
+     * Called when touch event occurs
+     */
     override fun onTouchEvent(event: MotionEvent): Boolean {
         updateHitRect()
         var sendToDelegate = false

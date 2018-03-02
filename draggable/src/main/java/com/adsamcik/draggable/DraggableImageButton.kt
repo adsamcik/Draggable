@@ -84,7 +84,7 @@ class DraggableImageButton : AppCompatImageButton {
     private var mVelocityTracker: VelocityTracker? = null
     private var mDragDirection = DragAxis.None
     private var mDrag = false
-
+    
     private val mSlop: Int
     private val mMaxFlingVelocity: Int
     private val mMinFlingVelocity: Int
@@ -95,7 +95,6 @@ class DraggableImageButton : AppCompatImageButton {
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init(context, attrs)
     }
-
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         init(context, attrs, defStyleAttr)
     }
@@ -107,18 +106,27 @@ class DraggableImageButton : AppCompatImageButton {
         mMaxFlingVelocity = vc.scaledMaximumFlingVelocity
     }
 
+    /**
+     * Attribute initialization
+     */
     private fun init(context: Context, attrs: AttributeSet, defStyleAttr: Int) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.DraggableImageButton, defStyleAttr, 0)
         init(a)
         a.recycle()
     }
 
+    /**
+     * Attribute initialization
+     */
     private fun init(context: Context, attrs: AttributeSet) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.DraggableImageButton)
         init(a)
         a.recycle()
     }
 
+    /**
+     * Attribute initialization
+     */
     private fun init(typedArray: TypedArray) {
         val axisRaw = typedArray.getInt(R.styleable.DraggableImageButton_axis, -1)
         if (axisRaw >= 0)
