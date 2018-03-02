@@ -24,7 +24,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:targetAnchor="top | right"
+        app:targetAnchor="right"
         app:targetMargin="16dp"
         app:targetTranslationZ="25dp"
         app:targetView="@id/root">
