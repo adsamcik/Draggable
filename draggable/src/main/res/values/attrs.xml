@@ -18,7 +18,7 @@
             <flag name="top" value="2"/>
             <flag name="right" value="4"/>
             <flag name="bottom" value="8"/>
-            <flag name="middle" value="15"/>
+            <flag name="center" value="15"/>
         </attr>
 
         <!-- TOUCH AREA -->
