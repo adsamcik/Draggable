@@ -75,17 +75,26 @@ enum class DragTargetAnchor {
     }
 
     companion object {
+        /**
+         * Converts integer values from 1 to 15 into [DragTargetAnchor]
+         * Integer is converted based on bit representation in following order left, top, right left
+         * If left-right or top-bottom have the same values they are converted to middle on given axis
+         *
+         * eg. 0b0010 represents right anchor, 0b1011 represents middle bottom anchor
+         *
+         * @throws IllegalArgumentException Throws illegal argument if values are not withing range
+         */
         fun fromInt(anchorInt: Int): DragTargetAnchor =
                 when (anchorInt) {
-                    0b1101 -> LeftMiddle
-                    0b1110 -> MiddleTop
-                    0b0111 -> RightMiddle
-                    0b1011 -> MiddleBottom
+                    0b1101, 0b1000 -> LeftMiddle
+                    0b1110, 0b0100 -> MiddleTop
+                    0b0111, 0b0010 -> RightMiddle
+                    0b1011, 0b0001 -> MiddleBottom
                     0b0110 -> RightTop
                     0b0011 -> RightBottom
                     0b1001 -> LeftBottom
                     0b1100 -> LeftTop
-                    0b1111 -> Middle
+                    0b1111, 0b0101, 0b1010 -> Middle
                     else -> throw IllegalArgumentException("$anchorInt does not correspond to an anchor")
                 }
     }
