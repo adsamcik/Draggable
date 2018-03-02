@@ -15,6 +15,8 @@ Every major change will increment first number
 Every breaking change will increment second number
 Every minor change will increment third number
 
+Version before 1.0.0 can have exceptions to this rule because they are considered pre-release and won't increment first number until the library is considered ready.
+
 Eg. 
 
     0.1.0 -> 0.1.1 was most likely a bugfix
