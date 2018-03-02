@@ -27,11 +27,13 @@ class MainActivity : FragmentActivity() {
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
 
-        val leftPayload = DraggablePayload(this, ViewClass::class.java, Point(dpToPx(this, 32), 0), parent, DragTargetAnchor.RightMiddle, 0)
+        val leftPayload = DraggablePayload(this, ViewClass::class.java, parent, leftButton)
+        leftPayload.anchor = DragTargetAnchor.LeftBottom
         leftPayload.initialTranslationZ = -1f
         leftPayload.targetTranslationZ = dpToPx(this, 24).toFloat()
         leftPayload.destroyPayloadAfter = 500
         leftPayload.onInitialized = { it.view!!.setBackgroundColor(Color.BLUE) }
+        leftPayload.stickToTarget = true
         leftButton.addPayload(leftPayload)
 
         topButton.dragAxis = DragAxis.XY
@@ -39,7 +41,9 @@ class MainActivity : FragmentActivity() {
         topButton.setTarget(parent, DragTargetAnchor.RightBottom, 8)
         topButton.targetTranslationZ = 200f
         topButton.increaseTouchAreaBy(dpToPx(this, 32))
-        val topPayload = DraggablePayload(this, ViewClass::class.java, Point(0, -displayMetrics.heightPixels), parent, DragTargetAnchor.MiddleBottom, 0)
+        val topPayload = DraggablePayload(this, ViewClass::class.java, parent, parent)
+        topPayload.initialTranslation = Point(0, -displayMetrics.heightPixels)
+        topPayload.anchor = DragTargetAnchor.MiddleBottom
         topPayload.onInitialized = { it.view!!.setBackgroundColor(Color.CYAN) }
         topButton.addPayload(topPayload)
 
@@ -58,10 +62,13 @@ class MainActivity : FragmentActivity() {
         }
 
         bottomButton.dragAxis = DragAxis.Y
-        bottomButton.translationY = -dpToPx(this, 56).toFloat()
-        bottomButton.setTarget(parent, DragTargetAnchor.RightTop, 8)
+        //bottomButton.translationY = -dpToPx(this, 56).toFloat()
+        bottomButton.setTarget(parent, DragTargetAnchor.LeftTop, 8)
         bottomButton.targetTranslationZ = 200f
-        bottomButton.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, displayMetrics.heightPixels / 2), parent, DragTargetAnchor.MiddleTop, 0))
+        val payload = DraggablePayload(this, ViewClass::class.java, parent, parent)
+        payload.initialTranslation = Point(0, displayMetrics.heightPixels / 2)
+        payload.anchor = DragTargetAnchor.RightTop
+        bottomButton.addPayload(payload)
         bottomButton.onEnterStateListener = { button, state, _ ->
             when (state) {
                 DraggableImageButton.State.INITIAL -> {

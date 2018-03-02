@@ -17,7 +17,7 @@ internal object Utility {
     internal fun calculateTargetTranslation(sourceView: View, toView: View, anchor: DragTargetAnchor, marginPx: Int): PointF {
         val thisOnScreen = getLocationOnScreen(sourceView)
         val targetOnScreen = getLocationOnScreen(toView)
-        val targetRelPos = anchor.calculateEdgeOffset(toView, sourceView)
+        val targetRelPos = anchor.calculateEdgeOffset(sourceView, toView)
         val targetX = (targetOnScreen[0] - thisOnScreen[0]) + targetRelPos.x + sourceView.translationX
         val targetY = (targetOnScreen[1] - thisOnScreen[1]) + targetRelPos.y + sourceView.translationY
         return PointF(targetX - targetX.sign * marginPx, targetY - targetY.sign * marginPx)

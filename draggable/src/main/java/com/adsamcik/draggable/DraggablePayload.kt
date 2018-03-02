@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import android.support.v4.app.FragmentTransaction.TRANSIT_NONE
+import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
@@ -17,15 +19,45 @@ import kotlin.concurrent.schedule
 
 class DraggablePayload<T>(private val mActivity: FragmentActivity,
                           private val mClass: Class<T>,
-                          private val mInitialTranslation: Point,
                           private val mParent: ViewGroup,
-                          private val mAnchor: DragTargetAnchor,
-                          mMarginDp: Int,
-                          private val mWidth: Int = MATCH_PARENT,
-                          private val mHeight: Int = MATCH_PARENT) where T : Fragment, T : IOnDemandView {
-    private var mFragment: T? = null
-    private var mMargin = Utility.dpToPx(mActivity, mMarginDp)
-    private var timerTask: TimerTask? = null
+                          private val mTargetView: View
+) where T : Fragment, T : IOnDemandView {
+    /**
+     * Margin in density independent pixels
+     */
+    var marginDp = 16
+        set(value) {
+            field = value
+            mMargin = Utility.dpToPx(mActivity, value)
+        }
+
+    /**
+     * Anchor to the target view
+     */
+    var anchor: DragTargetAnchor = DragTargetAnchor.LeftTop
+
+    /**
+     * If true, payload behaves as if it was in target position all the time
+     * TranslationZ remains unaffected by this option
+     */
+    var stickToTarget = false
+
+    /**
+     * Width of the view
+     * does not update the views width after its creation
+     */
+    var width: Int = MATCH_PARENT
+
+    /**
+     * Height of the view
+     * does not update the views height after its creation
+     */
+    var height: Int = MATCH_PARENT
+
+    /**
+     * Initial translation of the view
+     */
+    var initialTranslation = Point(0, 0)
 
     /**
      * Called after fragment is initialized
@@ -75,6 +107,21 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     var targetTranslationZ: Float = 0f
 
     /**
+     * Created fragment
+     */
+    private var mFragment: T? = null
+
+    /**
+     * Margin converted to pixels
+     */
+    private var mMargin = Utility.dpToPx(mActivity, marginDp)
+
+    /**
+     * Timer task that is used to trigger destroy after timeout
+     */
+    private var destroyTimerTask: TimerTask? = null
+
+    /**
      * Sets translation z (elevation)
      * This sets both initial and target translations to given value
      * Updates current translation z
@@ -97,13 +144,18 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         if (wrapper == null) {
             val cView = FrameLayout(mActivity)
             cView.id = Random().nextInt(Int.MAX_VALUE - 2) + 1
-            cView.layoutParams = ViewGroup.LayoutParams(mWidth, mHeight)
+            cView.layoutParams = ViewGroup.LayoutParams(width, height)
             cView.setBackgroundColor(backgroundColor)
             cView.translationZ = initialTranslationZ
-            cView.translationX = mInitialTranslation.x.toFloat()
-            cView.translationY = mInitialTranslation.y.toFloat()
             mParent.addView(cView)
             wrapper = cView
+
+            if (stickToTarget) {
+                onDrag(0f)
+            } else {
+                cView.translationX = initialTranslation.x.toFloat()
+                cView.translationY = initialTranslation.y.toFloat()
+            }
 
             val newInst = mClass.newInstance()
             val ft = mActivity.supportFragmentManager.beginTransaction()
@@ -114,8 +166,8 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
             ft.commit()
 
             mFragment = newInst
-        } else if (timerTask != null) {
-            timerTask!!.cancel()
+        } else if (destroyTimerTask != null) {
+            destroyTimerTask!!.cancel()
         }
     }
 
@@ -126,19 +178,22 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         removeTimer()
 
         val wrapper = wrapper!!
+        val progress = if (stickToTarget) 1f else percentage
 
-        val targetTranslation = Utility.calculateTargetTranslation(wrapper, mParent, mAnchor, mMargin)
-        wrapper.translationX = mInitialTranslation.x.toFloat() + (targetTranslation.x - mInitialTranslation.x) * percentage
-        wrapper.translationY = mInitialTranslation.y.toFloat() + (targetTranslation.y - mInitialTranslation.y) * percentage
+        val targetTranslation = Utility.calculateTargetTranslation(wrapper, mParent, anchor, mMargin)
+        wrapper.translationX = initialTranslation.x.toFloat() + (targetTranslation.x - initialTranslation.x) * percentage
+        wrapper.translationY = initialTranslation.y.toFloat() + (targetTranslation.y - initialTranslation.y) * percentage
+
+        val targetOnScreen = Utility.getLocationOnScreen(mTargetView)
+        Log.d("Draggable", "Progress $progress translation y ${wrapper.translationY} target translation ${targetTranslation.y} target view ${mTargetView.translationY} target on screen ${targetOnScreen[1]}")
 
         if (initialTranslationZ != targetTranslationZ)
             wrapper.translationZ = initialTranslationZ + (targetTranslationZ - initialTranslationZ) * percentage
-
     }
 
     internal fun onInitialPosition() {
         if (destroyPayloadAfter > IMMEDIATELY) {
-            timerTask = Timer("Destroy", true).schedule(destroyPayloadAfter) { destroyFragment() }
+            destroyTimerTask = Timer("Destroy", true).schedule(destroyPayloadAfter) { destroyFragment() }
         } else if (destroyPayloadAfter == IMMEDIATELY) {
             destroyFragment()
         }
@@ -166,8 +221,8 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     }
 
     private fun removeTimer() {
-        timerTask?.cancel()
-        timerTask = null
+        destroyTimerTask?.cancel()
+        destroyTimerTask = null
     }
 
     /**

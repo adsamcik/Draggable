@@ -21,7 +21,7 @@ enum class DragTargetAnchor {
      * @param thisView View for which position is calculated
      * @return Point that represents upper left position for the view
      */
-    fun calculateEdgeOffset(parentView: View, thisView: View): Point {
+    fun calculateEdgeOffset(thisView: View, parentView: View): Point {
         return addPaddingOffset(parentView, when (this) {
             DragTargetAnchor.LeftMiddle -> Point(0, parentView.height / 2 - thisView.height / 2)
             DragTargetAnchor.Middle -> Point(parentView.width / 2 - thisView.height / 2, parentView.height / 2 - thisView.height / 2)
