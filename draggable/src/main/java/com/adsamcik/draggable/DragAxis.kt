@@ -18,6 +18,15 @@ enum class DragAxis {
         override fun isVertical(): Boolean = true
     };
 
+    /**
+     * Returns whether the axis is vertical
+     * @return true if axis is vertical
+     */
     abstract fun isVertical(): Boolean
+
+    /**
+     * Returns whether the axis is horizontal
+     * @return true if axis is horizontal
+     */
     abstract fun isHorizontal(): Boolean
 }
