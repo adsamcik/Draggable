@@ -84,7 +84,7 @@ enum class DragTargetAnchor {
     companion object {
         /**
          * Converts integer values from 1 to 15 into [DragTargetAnchor]
-         * Integer is converted based on bit representation in following order left, top, right left
+         * Integer is converted based on bit representation in following order left, top, right, bottom
          * If left-right or top-bottom have the same values they are converted to middle on given axis
          *
          * eg. 0b0010 represents right anchor, 0b1011 represents middle bottom anchor
