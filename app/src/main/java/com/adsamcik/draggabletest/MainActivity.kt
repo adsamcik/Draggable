@@ -34,12 +34,11 @@ class MainActivity : FragmentActivity() {
         leftButton.addPayload(leftPayload)
 
         topButton.increaseTouchAreaBy(dpToPx(this, 32))
-        val topPayload = DraggablePayload(this, ViewClass::class.java, parent, parent)
-        topPayload.initialTranslation = Point(0, -displayMetrics.heightPixels)
-        topPayload.anchor = DragTargetAnchor.MiddleBottom
+        val topPayload = DraggablePayload(this, ViewClass::class.java, parent, leftButton)
+        topPayload.initialTranslation = Point(0, -400)
+        topPayload.anchor = DragTargetAnchor.LeftBottom
         topPayload.onInitialized = { it.view!!.setBackgroundColor(Color.CYAN) }
         topButton.addPayload(topPayload)
-
         topButton.onEnterStateListener = { button, state, axis ->
             if (axis == DragAxis.Y) {
                 if (state == DraggableImageButton.State.INITIAL)
