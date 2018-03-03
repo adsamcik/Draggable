@@ -28,7 +28,7 @@ class MainActivity : FragmentActivity() {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
 
         val leftPayload = DraggablePayload(this, ViewClass::class.java, parent, leftButton)
-        leftPayload.anchor = DragTargetAnchor.LeftBottom
+        leftPayload.anchor = DragTargetAnchor.RightBottom
         leftPayload.initialTranslationZ = -1f
         leftPayload.targetTranslationZ = dpToPx(this, 24).toFloat()
         leftPayload.destroyPayloadAfter = 500
@@ -39,7 +39,7 @@ class MainActivity : FragmentActivity() {
         topButton.dragAxis = DragAxis.XY
         topButton.translationY = dpToPx(this, 16).toFloat()
         topButton.setTarget(parent, DragTargetAnchor.RightBottom, 8)
-        topButton.targetTranslationZ = 200f
+        topButton.targetTranslationZ = dpToPx(this, 24).toFloat()
         topButton.increaseTouchAreaBy(dpToPx(this, 32))
         val topPayload = DraggablePayload(this, ViewClass::class.java, parent, parent)
         topPayload.initialTranslation = Point(0, -displayMetrics.heightPixels)
@@ -64,10 +64,11 @@ class MainActivity : FragmentActivity() {
         bottomButton.dragAxis = DragAxis.Y
         //bottomButton.translationY = -dpToPx(this, 56).toFloat()
         bottomButton.setTarget(parent, DragTargetAnchor.LeftTop, 8)
-        bottomButton.targetTranslationZ = 200f
+        bottomButton.targetTranslationZ = dpToPx(this, 24).toFloat()
         val payload = DraggablePayload(this, ViewClass::class.java, parent, parent)
         payload.initialTranslation = Point(0, displayMetrics.heightPixels / 2)
-        payload.anchor = DragTargetAnchor.RightTop
+        payload.marginDp = 0
+        payload.anchor = DragTargetAnchor.LeftTop
         bottomButton.addPayload(payload)
         bottomButton.onEnterStateListener = { button, state, _ ->
             when (state) {

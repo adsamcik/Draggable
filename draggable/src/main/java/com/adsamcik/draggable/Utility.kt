@@ -1,7 +1,9 @@
 package com.adsamcik.draggable
 
 import android.content.Context
+import android.graphics.Point
 import android.graphics.PointF
+import android.util.Log
 import android.view.View
 import kotlin.math.sign
 
@@ -20,7 +22,8 @@ internal object Utility {
         val targetRelPos = anchor.calculateEdgeOffset(sourceView, toView)
         val targetX = (targetOnScreen[0] - thisOnScreen[0]) + targetRelPos.x + sourceView.translationX
         val targetY = (targetOnScreen[1] - thisOnScreen[1]) + targetRelPos.y + sourceView.translationY
-        return PointF(targetX - targetX.sign * marginPx, targetY - targetY.sign * marginPx)
+        Log.d("Draggable", "(${targetOnScreen[1]} - ${thisOnScreen[1]}) + ${targetRelPos.y} + ${sourceView.translationY} = $targetY")
+        return PointF(targetX - targetX.sign * marginPx.toFloat(), targetY - targetY.sign * marginPx.toFloat())
     }
 
     internal fun between(firstConstraint: Int, secondConstraint: Int, number: Float): Boolean {

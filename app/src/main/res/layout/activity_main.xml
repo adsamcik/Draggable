@@ -6,10 +6,11 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="24dp"
     android:background="#005500"
+    android:backgroundTint="@color/colorAccent"
     android:clipChildren="false"
     android:clipToPadding="false"
-    android:padding="24dp"
     tools:context=".MainActivity">
 
 
