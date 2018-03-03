@@ -25,13 +25,9 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
                           private val mTargetView: View
 ) where T : Fragment, T : IOnDemandView {
     /**
-     * Margin in density independent pixels
+     * Margin converted to pixels
      */
-    var marginDp = 0
-        set(value) {
-            field = value
-            mMargin = Utility.dpToPx(mActivity, value)
-        }
+    var margin = Margins(0)
 
     /**
      * Anchor to the target view
@@ -114,11 +110,6 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     private var mFragment: T? = null
 
     /**
-     * Margin converted to pixels
-     */
-    private var mMargin = 0
-
-    /**
      * Timer task that is used to trigger destroy after timeout
      */
     private var destroyTimerTask: TimerTask? = null
@@ -134,6 +125,13 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         initialTranslationZ = translationZ
         targetTranslationZ = translationZ
         wrapper?.translationZ = translationZ
+    }
+
+    /**
+     * Sets margins from dp to px
+     */
+    fun setMarginsDp(margins: Margins) {
+        margin.setFromDpToPx(mActivity, margins)
     }
 
     private var initialOnScreen: Point = Point(0, 0)
@@ -196,7 +194,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 
     internal fun onDrag(percentage: Float) {
         if (wrapper == null)
-            throw IllegalStateException("mWrapper was not initialized")
+            initializeView()
 
         removeTimer()
 
@@ -210,13 +208,13 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
             wrapper.translationX = (targetOnScreen[0] - parentOnScreen[0] + targetOffset.x).toFloat()
             wrapper.translationY = (targetOnScreen[1] - parentOnScreen[1] + targetOffset.y).toFloat()
         } else {
-            val targetTranslation = calculateTargetTranslation(initialOnScreen, mTargetView, targetOffset, mMargin)
+            val targetTranslation = calculateTargetTranslation(initialOnScreen, mTargetView, targetOffset, margin)
             wrapper.translationX = initialTranslation.x.toFloat() + targetTranslation.x * percentage
             wrapper.translationY = initialTranslation.y.toFloat() + targetTranslation.y * percentage
         }
 
-        val targetOnScreen = Utility.getLocationOnScreen(mTargetView)
-        Log.d("Draggable", "Progress $percentage translation y ${wrapper.translationY} target view ${mTargetView.translationY} target on screen ${targetOnScreen[1]}")
+        //val targetOnScreen = Utility.getLocationOnScreen(mTargetView)
+        //Log.d("Draggable", "Progress $percentage translation y ${wrapper.translationY} target view ${mTargetView.translationY} target on screen ${targetOnScreen[1]}")
 
         if (initialTranslationZ != targetTranslationZ)
             wrapper.translationZ = initialTranslationZ + (targetTranslationZ - initialTranslationZ) * percentage
