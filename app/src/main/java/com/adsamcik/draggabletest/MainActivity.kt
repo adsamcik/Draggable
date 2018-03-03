@@ -26,7 +26,6 @@ class MainActivity : FragmentActivity() {
 
         val leftPayload = DraggablePayload(this, ViewClass::class.java, parent, leftButton)
         leftPayload.anchor = DragTargetAnchor.Middle
-        leftPayload.setOffsetsDp(Offset(24))
         leftPayload.initialTranslationZ = -1f
         leftPayload.targetTranslationZ = dpToPx(this, 24).toFloat()
         leftPayload.destroyPayloadAfter = 500

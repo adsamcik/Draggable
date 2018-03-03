@@ -29,7 +29,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:targetAnchor="right"
-        app:targetOffsetHorizontal="16dp"
+        app:targetOffsetHorizontal="-16dp"
         app:targetTranslationZ="25dp"
         app:targetView="@id/root"/>
 

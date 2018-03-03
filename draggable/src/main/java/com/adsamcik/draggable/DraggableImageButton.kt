@@ -361,28 +361,20 @@ class DraggableImageButton : AppCompatImageButton {
         return valueAnimator
     }
 
-    private fun setHorizontalTranslation(desire: Float) {
-        if (targetView != null) {
-            if (Utility.between(mInitialTranslation.x, mTargetTranslation.x, desire)) {
-                translationX = desire
-                val percentage = Utility.betweenInPercent(mInitialTranslation.x, mTargetTranslation.x, desire)
-                mPayloads.forEach { payload -> payload.onDrag(percentage) }
-                updateTranslationZ(percentage)
-            }
-        } else
-            translationX = desire
-    }
+    private fun setHorizontalTranslation(desire: Float) = setTranslation(desire, mInitialTranslation.x, mTargetTranslation.x, this::setTranslationX)
 
-    private fun setVerticalTranslation(desire: Float) {
+    private fun setVerticalTranslation(desire: Float) = setTranslation(desire, mInitialTranslation.y, mTargetTranslation.y, this::setTranslationY)
+
+    private fun setTranslation(desire: Float, initialTranslation: Float, targetTranslation: Float, translationSetter: (Float) -> Unit) {
         if (targetView != null) {
-            if (Utility.between(mInitialTranslation.y, mTargetTranslation.y, desire)) {
-                translationY = desire
-                val percentage = Utility.betweenInPercent(mInitialTranslation.y, mTargetTranslation.y, desire)
+            if (Utility.between(initialTranslation, targetTranslation, desire)) {
+                translationSetter.invoke(desire)
+                val percentage = Utility.betweenInPercent(initialTranslation, targetTranslation, desire)
                 mPayloads.forEach { payload -> payload.onDrag(percentage) }
                 updateTranslationZ(percentage)
             }
         } else
-            translationY = desire
+            translationSetter.invoke(desire)
     }
 
     private fun updateTranslationZ(percentage: Float) {

@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import android.support.v4.app.FragmentTransaction.TRANSIT_NONE
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -186,7 +185,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         val targetOnScreen = Utility.getLocationOnScreen(toView)
         val targetX = (targetOnScreen[0] - initialPosition.x) + offset.x
         val targetY = (targetOnScreen[1] - initialPosition.y) + offset.y
-        Log.d("Draggable", "(${targetOnScreen[1]} - ${initialPosition.y}) + ${offset.y} = $targetY")
+        //Log.d("Draggable", "(${targetOnScreen[1]} - ${initialPosition.y}) + ${offset.y} = $targetY")
         return Point(targetX + offsets.horizontal, targetY + offsets.vertical)
     }
 
@@ -197,15 +196,17 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         removeTimer()
 
         val wrapper = wrapper!!
-        targetOffset = anchor.calculateEdgeOffset(wrapper, mTargetView)
+
 
         if (stickToTarget) {
             val targetOnScreen = Utility.getLocationOnScreen(mTargetView)
             val parentOnScreen = Utility.getLocationOnScreen(mParent)
+            targetOffset = anchor.calculateEdgeOffset(wrapper, mTargetView)
 
-            wrapper.translationX = (targetOnScreen[0] - parentOnScreen[0] + targetOffset.x).toFloat()
-            wrapper.translationY = (targetOnScreen[1] - parentOnScreen[1] + targetOffset.y).toFloat()
+            wrapper.translationX = (targetOnScreen[0] - parentOnScreen[0] + targetOffset.x + offsets.horizontal).toFloat()
+            wrapper.translationY = (targetOnScreen[1] - parentOnScreen[1] + targetOffset.y + offsets.vertical).toFloat()
         } else {
+            targetOffset = anchor.calculateEdgeOffsetWithPadding(wrapper, mTargetView)
             val targetTranslation = calculateTargetTranslation(initialOnScreen, mTargetView, targetOffset, offsets)
             wrapper.translationX = initialTranslation.x.toFloat() + targetTranslation.x * percentage
             wrapper.translationY = initialTranslation.y.toFloat() + targetTranslation.y * percentage

@@ -21,20 +21,40 @@ enum class DragTargetAnchor {
      * @param thisView View for which position is calculated
      * @return Point that represents upper left position for the view
      */
-    fun calculateEdgeOffset(thisView: View, parentView: View): Point {
-        return addPaddingOffset(parentView, when (this) {
-            DragTargetAnchor.LeftMiddle -> Point(0, parentView.height / 2 - thisView.height / 2)
-            DragTargetAnchor.Middle -> Point(parentView.width / 2 - thisView.height / 2, parentView.height / 2 - thisView.height / 2)
-            DragTargetAnchor.RightMiddle -> Point(parentView.width - thisView.width, parentView.height / 2 - thisView.height / 2)
+    fun calculateEdgeOffsetWithPadding(thisView: View, parentView: View): Point =
+            addPaddingOffset(parentView, when (this) {
+                DragTargetAnchor.LeftMiddle -> Point(0, parentView.height / 2 - thisView.height / 2)
+                DragTargetAnchor.Middle -> Point(parentView.width / 2 - thisView.height / 2, parentView.height / 2 - thisView.height / 2)
+                DragTargetAnchor.RightMiddle -> Point(parentView.width - thisView.width, parentView.height / 2 - thisView.height / 2)
 
-            DragTargetAnchor.LeftTop -> Point(0, 0)
-            DragTargetAnchor.MiddleTop -> Point(parentView.width / 2 - thisView.width / 2, 0)
-            DragTargetAnchor.RightTop -> Point(parentView.width - thisView.width, 0)
+                DragTargetAnchor.LeftTop -> Point(0, 0)
+                DragTargetAnchor.MiddleTop -> Point(parentView.width / 2 - thisView.width / 2, 0)
+                DragTargetAnchor.RightTop -> Point(parentView.width - thisView.width, 0)
 
-            DragTargetAnchor.RightBottom -> Point(parentView.width - thisView.width, parentView.height - thisView.height)
-            DragTargetAnchor.MiddleBottom -> Point(parentView.width / 2 - thisView.height / 2, parentView.height - thisView.height)
-            DragTargetAnchor.LeftBottom -> Point(0, parentView.height - thisView.height)
-        })
+                DragTargetAnchor.RightBottom -> Point(parentView.width - thisView.width, parentView.height - thisView.height)
+                DragTargetAnchor.MiddleBottom -> Point(parentView.width / 2 - thisView.height / 2, parentView.height - thisView.height)
+                DragTargetAnchor.LeftBottom -> Point(0, parentView.height - thisView.height)
+            })
+
+    /**
+     * Calculates position when view is anchored. Takes parents padding into account.
+     *
+     * @param parentView Parent view for the anchored view
+     * @param thisView View for which position is calculated
+     * @return Point that represents upper left position for the view
+     */
+    fun calculateEdgeOffset(thisView: View, parentView: View): Point = when (this) {
+        DragTargetAnchor.LeftMiddle -> Point(0, parentView.height / 2 - thisView.height / 2)
+        DragTargetAnchor.Middle -> Point(parentView.width / 2 - thisView.height / 2, parentView.height / 2 - thisView.height / 2)
+        DragTargetAnchor.RightMiddle -> Point(parentView.width - thisView.width, parentView.height / 2 - thisView.height / 2)
+
+        DragTargetAnchor.LeftTop -> Point(0, 0)
+        DragTargetAnchor.MiddleTop -> Point(parentView.width / 2 - thisView.width / 2, 0)
+        DragTargetAnchor.RightTop -> Point(parentView.width - thisView.width, 0)
+
+        DragTargetAnchor.RightBottom -> Point(parentView.width - thisView.width, parentView.height - thisView.height)
+        DragTargetAnchor.MiddleBottom -> Point(parentView.width / 2 - thisView.height / 2, parentView.height - thisView.height)
+        DragTargetAnchor.LeftBottom -> Point(0, parentView.height - thisView.height)
     }
 
     private fun addPaddingOffset(parentView: View, point: Point): Point {
