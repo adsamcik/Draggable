@@ -21,7 +21,7 @@ internal object Utility {
         val targetRelPos = anchor.calculateEdgeOffsetWithPadding(sourceView, toView)
         val targetX = (targetOnScreen[0] - thisOnScreen[0]) + targetRelPos.x + sourceView.translationX
         val targetY = (targetOnScreen[1] - thisOnScreen[1]) + targetRelPos.y + sourceView.translationY
-        Log.d("Draggable", "(${targetOnScreen[1]} - ${thisOnScreen[1]}) + ${targetRelPos.y} + ${sourceView.translationY} = $targetY")
+        //Log.d("Draggable", "(${targetOnScreen[1]} - ${thisOnScreen[1]}) + ${targetRelPos.y} + ${sourceView.translationY} = $targetY")
         return PointF(targetX + offset.horizontal, targetY + offset.vertical)
     }
 
