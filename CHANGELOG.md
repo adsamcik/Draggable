@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.0] - 3-3-2018
+
+* Reworked payloads which should now have more stable movement
+* Replaced margin with offset on X and Y axes
+* Add option to properly disable clicking
+* Fixed clicking on button
+* Fix no idea where to move issue
+
 ## [0.7.1] - 2-3-2018
 
 * Fixed incorrect targetAnchor values in xml
