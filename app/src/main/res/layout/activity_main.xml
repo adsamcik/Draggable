@@ -47,9 +47,9 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:targetAnchor="right |bottom"
-        app:targetOffsetHorizontal="16dp"
-        app:targetTranslationZ="24dp"
+        app:targetOffsetHorizontal="-16dp"
         app:targetOffsetVertical="-16dp"
+        app:targetTranslationZ="24dp"
         app:targetView="@id/root"/>
 
     <com.adsamcik.draggable.DraggableImageButton
