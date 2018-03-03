@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.8.1] - 3-3-2018
+
+* Hotfixed getInteger on xml extend touch area
+
 ## [0.8.0] - 3-3-2018
 
 * Reworked payloads which should now have more stable movement
