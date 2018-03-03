@@ -22,7 +22,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
                           private val mTargetView: View
 ) where T : Fragment, T : IOnDemandView {
     /**
-     * Margin converted to pixels
+     * Offset in pixels
      */
     var offsets = Offset(0)
 

@@ -51,7 +51,7 @@ class DraggableImageButton : AppCompatImageButton {
     var targetAnchor = DragTargetAnchor.LeftTop
 
     /**
-     * Margin in pixels
+     * Offset in pixels
      */
     var targetOffset = Offset(0)
 
@@ -181,7 +181,7 @@ class DraggableImageButton : AppCompatImageButton {
     val payloads: Array<out DraggablePayload<*>> get() = mPayloads.toTypedArray()
 
     /**
-     * Sets target position view, anchor on that view and margin
+     * Sets target position view, anchor on that view
      * This is used to determine the second position of the button
      */
     fun setTarget(target: View, anchor: DragTargetAnchor) {
@@ -281,10 +281,6 @@ class DraggableImageButton : AppCompatImageButton {
                     parent.touchDelegate = null
             }
         }
-    }
-
-    fun setTargetMarginsDp(margins: Offset) {
-        targetOffset
     }
 
     override fun performClick(): Boolean {
