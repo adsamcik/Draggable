@@ -33,11 +33,6 @@ class MainActivity : FragmentActivity() {
         leftPayload.stickToTarget = true
         leftButton.addPayload(leftPayload)
 
-        topButton.dragAxis = DragAxis.XY
-        topButton.translationY = dpToPx(this, 16).toFloat()
-        topButton.setTarget(parent, DragTargetAnchor.RightBottom)
-        topButton.setTargetOffsetDp(Offset(8, -8))
-        topButton.targetTranslationZ = dpToPx(this, 24).toFloat()
         topButton.increaseTouchAreaBy(dpToPx(this, 32))
         val topPayload = DraggablePayload(this, ViewClass::class.java, parent, parent)
         topPayload.initialTranslation = Point(0, -displayMetrics.heightPixels)
@@ -62,7 +57,7 @@ class MainActivity : FragmentActivity() {
         bottomButton.dragAxis = DragAxis.Y
         //bottomButton.translationY = -dpToPx(this, 56).toFloat()
         bottomButton.setTarget(parent, DragTargetAnchor.LeftTop)
-        bottomButton.setTargetOffsetDp(Offset(-8))
+        bottomButton.setTargetOffsetDp(Offset(8))
         bottomButton.targetTranslationZ = dpToPx(this, 24).toFloat()
         val payload = DraggablePayload(this, ViewClass::class.java, parent, parent)
         payload.initialTranslation = Point(0, displayMetrics.heightPixels / 2)
