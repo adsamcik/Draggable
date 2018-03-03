@@ -145,10 +145,10 @@ class DraggableImageButton : AppCompatImageButton {
             targetAnchor = DragTargetAnchor.fromInt(anchor)
 
         //touchArea
-        val leftTA = typedArray.getInteger(R.styleable.DraggableImageButton_extendLeftTouchArea, 0)
-        val topTA = typedArray.getInteger(R.styleable.DraggableImageButton_extendTopTouchArea, 0)
-        val rightTA = typedArray.getInteger(R.styleable.DraggableImageButton_extendRightTouchArea, 0)
-        val bottomTA = typedArray.getInteger(R.styleable.DraggableImageButton_extendBottomTouchArea, 0)
+        val leftTA = typedArray.getDimension(R.styleable.DraggableImageButton_extendLeftTouchArea, 0f).roundToInt()
+        val topTA = typedArray.getDimension(R.styleable.DraggableImageButton_extendTopTouchArea, 0f).roundToInt()
+        val rightTA = typedArray.getDimension(R.styleable.DraggableImageButton_extendRightTouchArea, 0f).roundToInt()
+        val bottomTA = typedArray.getDimension(R.styleable.DraggableImageButton_extendBottomTouchArea, 0f).roundToInt()
         if (leftTA != 0 || topTA != 0 || rightTA != 0 || bottomTA != 0)
             increaseTouchAreaBy(leftTA, topTA, rightTA, bottomTA)
 
