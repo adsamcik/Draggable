@@ -166,7 +166,6 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
                     val thisOnScreen = Utility.getLocationOnScreen(wrapper!!)
                     initialOnScreen.x = thisOnScreen[0]
                     initialOnScreen.y = thisOnScreen[1]
-
                     onInitialized?.invoke(newInst)
                 }
             ft.commit()
@@ -198,19 +197,10 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         val wrapper = wrapper!!
 
 
-        if (stickToTarget) {
-            val targetOnScreen = Utility.getLocationOnScreen(mTargetView)
-            val parentOnScreen = Utility.getLocationOnScreen(mParent)
-            targetOffset = anchor.calculateEdgeOffset(wrapper, mTargetView)
-
-            wrapper.translationX = (targetOnScreen[0] - parentOnScreen[0] + targetOffset.x + offsets.horizontal).toFloat()
-            wrapper.translationY = (targetOnScreen[1] - parentOnScreen[1] + targetOffset.y + offsets.vertical).toFloat()
-        } else {
-            targetOffset = anchor.calculateEdgeOffsetWithPadding(wrapper, mTargetView)
-            val targetTranslation = calculateTargetTranslation(initialOnScreen, mTargetView, targetOffset, offsets)
-            wrapper.translationX = initialTranslation.x.toFloat() + targetTranslation.x * percentage
-            wrapper.translationY = initialTranslation.y.toFloat() + targetTranslation.y * percentage
-        }
+        if (stickToTarget)
+            moveWithTarget()
+        else
+            moveWithPercentage(percentage)
 
         //val targetOnScreen = Utility.getLocationOnScreen(mTargetView)
         //Log.d("Draggable", "Progress $percentage translation y ${wrapper.translationY} target view ${mTargetView.translationY} target on screen ${targetOnScreen[1]}")
@@ -219,6 +209,24 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
             wrapper.translationZ = initialTranslationZ + (targetTranslationZ - initialTranslationZ) * percentage
 
         wrapper.invalidate()
+    }
+
+    private fun moveWithTarget() {
+        val wrapper = wrapper!!
+        val targetOnScreen = Utility.getLocationOnScreen(mTargetView)
+        val parentOnScreen = Utility.getLocationOnScreen(mParent)
+        targetOffset = anchor.calculateEdgeOffset(wrapper, mTargetView)
+
+        wrapper.translationX = (targetOnScreen[0] - parentOnScreen[0] + targetOffset.x + offsets.horizontal).toFloat()
+        wrapper.translationY = (targetOnScreen[1] - parentOnScreen[1] + targetOffset.y + offsets.vertical).toFloat()
+    }
+
+    private fun moveWithPercentage(percentage: Float) {
+        val wrapper = wrapper!!
+        targetOffset = anchor.calculateEdgeOffsetWithPadding(wrapper, mTargetView)
+        val targetTranslation = calculateTargetTranslation(initialOnScreen, mTargetView, targetOffset, offsets)
+        wrapper.translationX = initialTranslation.x.toFloat() + targetTranslation.x * percentage
+        wrapper.translationY = initialTranslation.y.toFloat() + targetTranslation.y * percentage
     }
 
     internal fun onInitialPosition() {
