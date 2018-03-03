@@ -288,6 +288,9 @@ class DraggableImageButton : AppCompatImageButton {
     }
 
     override fun performClick(): Boolean {
+        if (!isClickable)
+            return false
+
         if (mDragDirection == DragAxis.XY)
             throw UnsupportedOperationException("You can't perform click operation on both axes")
 
