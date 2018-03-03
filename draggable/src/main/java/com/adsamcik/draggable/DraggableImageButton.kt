@@ -415,11 +415,9 @@ class DraggableImageButton : AppCompatImageButton {
             }
             MotionEvent.ACTION_UP -> {
                 val velocityTracker = mVelocityTracker!!
-                if (mDragDirection == DragAxis.None)
+                if (!mDrag)
                     performClick()
                 else if (targetView != null) {
-                    var move = false
-
                     mTargetTranslation = calculateTargetTranslation()
 
                     velocityTracker.computeCurrentVelocity(1000)
@@ -428,18 +426,19 @@ class DraggableImageButton : AppCompatImageButton {
                     //First it if velocity is not within fling bounds
                     //Second it calculates how far we moved and uses xor with boolean that represents if current state is initial
                     //Xor simplifies the actual condition so it can be the same for both states
-                    if (dragAxis.isVertical() && mDragDirection.isVertical()) {
+                    val move = if (dragAxis.isVertical() && mDragDirection.isVertical()) {
                         val velocity = Math.abs(velocityTracker.yVelocity)
-                        move = (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
+                        (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
                                 (Math.abs(translationY - mInitialTranslation.y) < Math.abs(translationY - mTargetTranslation.y)) xor
                                 (mCurrentState == State.INITIAL)
                     } else if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
                         val velocity = Math.abs(velocityTracker.xVelocity)
                         val translationX = translationX
-                        move = (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
+                        (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
                                 (Math.abs(translationX - mInitialTranslation.x) < Math.abs(translationX - mTargetTranslation.x)) xor
                                 (mCurrentState == State.INITIAL)
-                    }
+                    } else
+                        return true
 
                     if (move)
                         moveToState(!mCurrentState)
