@@ -7,10 +7,7 @@ import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.util.DisplayMetrics
 import android.view.ViewGroup
-import com.adsamcik.draggable.DragAxis
-import com.adsamcik.draggable.DragTargetAnchor
-import com.adsamcik.draggable.DraggableImageButton
-import com.adsamcik.draggable.DraggablePayload
+import com.adsamcik.draggable.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -28,7 +25,8 @@ class MainActivity : FragmentActivity() {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
 
         val leftPayload = DraggablePayload(this, ViewClass::class.java, parent, leftButton)
-        leftPayload.anchor = DragTargetAnchor.RightBottom
+        leftPayload.anchor = DragTargetAnchor.Middle
+        leftPayload.setOffsetsDp(Offset(24))
         leftPayload.initialTranslationZ = -1f
         leftPayload.targetTranslationZ = dpToPx(this, 24).toFloat()
         leftPayload.destroyPayloadAfter = 500
@@ -38,7 +36,8 @@ class MainActivity : FragmentActivity() {
 
         topButton.dragAxis = DragAxis.XY
         topButton.translationY = dpToPx(this, 16).toFloat()
-        topButton.setTarget(parent, DragTargetAnchor.RightBottom, 8)
+        topButton.setTarget(parent, DragTargetAnchor.RightBottom)
+        topButton.setTargetOffsetDp(Offset(8, -8))
         topButton.targetTranslationZ = dpToPx(this, 24).toFloat()
         topButton.increaseTouchAreaBy(dpToPx(this, 32))
         val topPayload = DraggablePayload(this, ViewClass::class.java, parent, parent)
@@ -63,12 +62,13 @@ class MainActivity : FragmentActivity() {
 
         bottomButton.dragAxis = DragAxis.Y
         //bottomButton.translationY = -dpToPx(this, 56).toFloat()
-        bottomButton.setTarget(parent, DragTargetAnchor.LeftTop, 8)
+        bottomButton.setTarget(parent, DragTargetAnchor.LeftTop)
+        bottomButton.setTargetOffsetDp(Offset(-8))
         bottomButton.targetTranslationZ = dpToPx(this, 24).toFloat()
         val payload = DraggablePayload(this, ViewClass::class.java, parent, parent)
         payload.initialTranslation = Point(0, displayMetrics.heightPixels / 2)
-        payload.marginDp = 0
         payload.anchor = DragTargetAnchor.LeftTop
+        payload.setOffsetsDp(Offset(16))
         bottomButton.addPayload(payload)
         bottomButton.onEnterStateListener = { button, state, _ ->
             when (state) {

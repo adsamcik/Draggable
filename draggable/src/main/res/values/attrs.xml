@@ -12,7 +12,6 @@
         <!-- TARGET -->
         <attr name="targetTranslationZ" format="dimension"/>
         <attr name="targetView" format="reference"/>
-        <attr name="targetMargin" format="dimension"/>
         <attr name="targetAnchor">
             <flag name="left" value="8"/>
             <flag name="top" value="4"/>
@@ -20,6 +19,8 @@
             <flag name="bottom" value="1"/>
             <flag name="center" value="15"/>
         </attr>
+        <attr name="targetOffsetVertical" format="dimension"/>
+        <attr name="targetOffsetHorizontal" format="dimension"/>
 
         <!-- TOUCH AREA -->
         <attr name="extendLeftTouchArea" format="dimension"/>

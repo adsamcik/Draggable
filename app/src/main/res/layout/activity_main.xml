@@ -29,10 +29,9 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:targetAnchor="right"
-        app:targetMargin="16dp"
+        app:targetOffsetHorizontal="16dp"
         app:targetTranslationZ="25dp"
-        app:targetView="@id/root">
-    </com.adsamcik.draggable.DraggableImageButton>
+        app:targetView="@id/root"/>
 
     <com.adsamcik.draggable.DraggableImageButton
         android:id="@+id/topButton"
@@ -45,8 +44,7 @@
         android:src="@drawable/ic_android_white_24dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-    </com.adsamcik.draggable.DraggableImageButton>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <com.adsamcik.draggable.DraggableImageButton
         android:id="@+id/rightButton"
@@ -60,8 +58,7 @@
         app:axis="None"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-    </com.adsamcik.draggable.DraggableImageButton>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <com.adsamcik.draggable.DraggableImageButton
         android:id="@+id/bottomButton"
@@ -74,7 +71,6 @@
         android:src="@drawable/ic_android_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
-    </com.adsamcik.draggable.DraggableImageButton>
+        app:layout_constraintRight_toRightOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -53,7 +53,7 @@ class DraggableImageButton : AppCompatImageButton {
     /**
      * Margin in pixels
      */
-    var targetMargin = 0
+    var targetOffset = Offset(0)
 
     //Listeners
     var onEnterStateListener: EnterStateListener? = null
@@ -84,7 +84,7 @@ class DraggableImageButton : AppCompatImageButton {
     private var mVelocityTracker: VelocityTracker? = null
     private var mDragDirection = DragAxis.None
     private var mDrag = false
-    
+
     private val mSlop: Int
     private val mMaxFlingVelocity: Int
     private val mMinFlingVelocity: Int
@@ -95,6 +95,7 @@ class DraggableImageButton : AppCompatImageButton {
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init(context, attrs)
     }
+
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         init(context, attrs, defStyleAttr)
     }
@@ -135,7 +136,10 @@ class DraggableImageButton : AppCompatImageButton {
         //target
         targetTranslationZ = typedArray.getDimension(R.styleable.DraggableImageButton_targetTranslationZ, targetTranslationZ)
         targetViewId = typedArray.getResourceId(R.styleable.DraggableImageButton_targetView, View.NO_ID)
-        targetMargin = typedArray.getDimension(R.styleable.DraggableImageButton_targetMargin, targetMargin.toFloat()).roundToInt()
+
+        targetOffset.vertical = typedArray.getDimension(R.styleable.DraggableImageButton_targetOffsetHorizontal, targetOffset.vertical.toFloat()).roundToInt()
+        targetOffset.horizontal = typedArray.getDimension(R.styleable.DraggableImageButton_targetOffsetVertical, targetOffset.horizontal.toFloat()).roundToInt()
+
         val anchor = typedArray.getInt(R.styleable.DraggableImageButton_targetAnchor, -1)
         if (anchor >= 0)
             targetAnchor = DragTargetAnchor.fromInt(anchor)
@@ -180,13 +184,16 @@ class DraggableImageButton : AppCompatImageButton {
      * Sets target position view, anchor on that view and margin
      * This is used to determine the second position of the button
      */
-    fun setTarget(target: View, anchor: DragTargetAnchor, marginDp: Int) {
+    fun setTarget(target: View, anchor: DragTargetAnchor) {
         this.targetView = target
         this.targetAnchor = anchor
-        this.targetMargin = marginDp
 
         mInitialTranslation.x = translationX
         mInitialTranslation.y = translationY
+    }
+
+    fun setTargetOffsetDp(offset: Offset) {
+        this.targetOffset.setWithDpAsPx(offset)
     }
 
     /**
@@ -276,8 +283,8 @@ class DraggableImageButton : AppCompatImageButton {
         }
     }
 
-    fun setTargetMarginDp(dp: Int) {
-        targetMargin = Utility.dpToPx(context, dp)
+    fun setTargetMarginsDp(margins: Offset) {
+        targetOffset
     }
 
     override fun performClick(): Boolean {
@@ -385,7 +392,7 @@ class DraggableImageButton : AppCompatImageButton {
         }
     }
 
-    private fun calculateTargetTranslation() = Utility.calculateTargetTranslation(this, targetView!!, targetAnchor, Utility.dpToPx(context, targetMargin))
+    private fun calculateTargetTranslation() = Utility.calculateTargetTranslation(this, targetView!!, targetAnchor, targetOffset)
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (dragAxis == DragAxis.None || targetView == null)
