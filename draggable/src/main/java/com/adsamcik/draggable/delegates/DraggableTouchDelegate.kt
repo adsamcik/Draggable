@@ -29,6 +29,16 @@ internal class DraggableTouchDelegate(private val mOffsetRect: Rect, override va
     }
 
     /**
+     * Updates offsets of the delegate
+     */
+    fun updateOffsets(rect: Rect) {
+        mOffsetRect.left = rect.left
+        mOffsetRect.top = rect.top
+        mOffsetRect.right = rect.right
+        mOffsetRect.bottom = rect.bottom
+    }
+
+    /**
      * Called when touch event occurs
      */
     override fun onTouchEvent(event: MotionEvent): Boolean {

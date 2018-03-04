@@ -33,7 +33,7 @@ class MainActivity : FragmentActivity() {
         leftPayload.stickToTarget = true
         leftButton.addPayload(leftPayload)
 
-        topButton.increaseTouchAreaBy(dpToPx(this, 32))
+        topButton.extendTouchAreaBy(dpToPx(this, 32))
         val topPayload = DraggablePayload(this, ViewClass::class.java, parent, leftButton)
         topPayload.initialTranslation = Point(0, -400)
         topPayload.anchor = DragTargetAnchor.LeftBottom
@@ -75,7 +75,7 @@ class MainActivity : FragmentActivity() {
                 }
             }
         }
-        bottomButton.increaseTouchAreaBy(dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64))
+        //bottomButton.extendTouchAreaBy(dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64))
 
 
         //button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent, DragTargetAnchor.Middle, 0, WRAP_CONTENT, WRAP_CONTENT))

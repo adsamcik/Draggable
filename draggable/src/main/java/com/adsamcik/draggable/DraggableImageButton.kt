@@ -42,8 +42,6 @@ class DraggableImageButton : AppCompatImageButton {
      */
     var targetView: View? = null
 
-    private var targetViewId: Int = View.NO_ID
-
     /**
      * Anchor sets to which side of the [targetView] should the button
      * attach in target position
@@ -90,6 +88,10 @@ class DraggableImageButton : AppCompatImageButton {
     private val mMinFlingVelocity: Int
 
     private var mTouchDelegate: DraggableTouchDelegate? = null
+
+    //Attribute temporaries
+    private var targetViewId: Int = View.NO_ID
+    private var touchRect: Rect? = null
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
@@ -150,7 +152,7 @@ class DraggableImageButton : AppCompatImageButton {
         val rightTA = typedArray.getDimension(R.styleable.DraggableImageButton_extendRightTouchArea, 0f).roundToInt()
         val bottomTA = typedArray.getDimension(R.styleable.DraggableImageButton_extendBottomTouchArea, 0f).roundToInt()
         if (leftTA != 0 || topTA != 0 || rightTA != 0 || bottomTA != 0)
-            increaseTouchAreaBy(leftTA, topTA, rightTA, bottomTA)
+            touchRect = Rect(leftTA, topTA, rightTA, bottomTA)
 
         //animation
         fullAnimationLength = typedArray.getInt(R.styleable.DraggableImageButton_animationLength, fullAnimationLength.toInt()).toLong()
@@ -167,12 +169,6 @@ class DraggableImageButton : AppCompatImageButton {
             }
         }
 
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        if (targetViewId != View.NO_ID && targetView == null)
-            targetView = rootView.findViewById(targetViewId)
     }
 
     /**
@@ -234,8 +230,8 @@ class DraggableImageButton : AppCompatImageButton {
      *
      * @param value Extend touch area uniformly on all sides by this value in pixels
      */
-    fun increaseTouchAreaBy(value: Int) {
-        increaseTouchAreaBy(value, value, value, value)
+    fun extendTouchAreaBy(value: Int) {
+        extendTouchAreaBy(value, value, value, value)
     }
 
     /**
@@ -246,21 +242,21 @@ class DraggableImageButton : AppCompatImageButton {
      * @param right Extend touch are to the right by pixels
      * @param bottom Extend touch are below by pixels
      */
-    fun increaseTouchAreaBy(left: Int, top: Int, right: Int, bottom: Int) {
+    @Synchronized
+    fun extendTouchAreaBy(left: Int, top: Int, right: Int, bottom: Int) {
         if (mTouchDelegate == null) {
             val parentView = parent as View
+
+            val hitRect = Rect()
+            hitRect.left = left
+            hitRect.top = top
+            hitRect.right = right
+            hitRect.bottom = bottom
+            val touchDelegate = DraggableTouchDelegate(hitRect, this)
+            mTouchDelegate = touchDelegate
+
             parentView.post {
-                val hitRect = Rect()
-                //getHitRect(hitRect)
-
-                hitRect.left = left
-                hitRect.top = top
-                hitRect.right = right
-                hitRect.bottom = bottom
-
-                val touchDelegate = DraggableTouchDelegate(hitRect, this)
                 TouchDelegateComposite.addTouchDelegateOn(parentView, touchDelegate)
-                mTouchDelegate = touchDelegate
             }
         } else {
             mTouchDelegate!!.updateOffsets(left, top, right, bottom)
@@ -280,6 +276,18 @@ class DraggableImageButton : AppCompatImageButton {
                 if (delegate.count == 0)
                     parent.touchDelegate = null
             }
+        }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (targetViewId != View.NO_ID && targetView == null)
+            targetView = rootView.findViewById(targetViewId)
+
+        val touchRect = touchRect
+        if (touchRect != null) {
+            extendTouchAreaBy(touchRect.left, touchRect.top, touchRect.right, touchRect.bottom)
+            this.touchRect = null
         }
     }
 

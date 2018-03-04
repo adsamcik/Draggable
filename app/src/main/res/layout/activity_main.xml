@@ -77,6 +77,10 @@
         android:background="#66000000"
         android:src="@drawable/ic_android_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:extendTopTouchArea="64dp"
+        app:extendBottomTouchArea="64dp"
+        app:extendLeftTouchArea="64dp"
+        app:extendRightTouchArea="64dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 
