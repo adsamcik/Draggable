@@ -248,7 +248,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         val ft = mActivity.supportFragmentManager.beginTransaction()
         ft.remove(mFragment)
         ft.setTransition(TRANSIT_NONE)
-        ft.commit()
+        ft.commitAllowingStateLoss();
 
         mFragment = null
         launch(UI) {
