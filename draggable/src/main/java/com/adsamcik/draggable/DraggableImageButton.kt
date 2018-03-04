@@ -234,12 +234,24 @@ class DraggableImageButton : AppCompatImageButton {
      * @param force If true, ignores user input and always animates to given state
      */
     fun moveToState(state: State, animate: Boolean, force: Boolean) {
+        if (targetView == null)
+            throw RuntimeException("You cannot move to state without target view")
+
+        mTargetTranslation = calculateTargetTranslation()
+
         if (force) {
+            if (state == State.INITIAL && translationX == mInitialTranslation.x && translationY == mInitialTranslation.y)
+                return
+            else if (state == State.TARGET && translationX == mTargetTranslation.x && translationY == mTargetTranslation.y)
+                return
+
             mDrag = false
+            if (this.state == State.INITIAL)
+                mDragDirection = dragAxis
             moveToStateInternal(state, animate)
         } else if (state != this.state) {
             mDrag = false
-            if (state != State.INITIAL)
+            if (this.state == State.INITIAL)
                 mDragDirection = dragAxis
             moveToStateInternal(state, animate)
         }
