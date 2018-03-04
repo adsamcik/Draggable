@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0] - 4-3-2018
+
+* Add moveToState function with options to force the move and/or not use animation
+* TouchDelegates now have their own library
+* onInitialize and onBeforeDestroyed now return fragments type instead of just Fragment
+* Fix crash when touch area was set from xml
+
 ## [0.8.1] - 3-3-2018
 
 * Hotfixed getInteger on xml extend touch area
