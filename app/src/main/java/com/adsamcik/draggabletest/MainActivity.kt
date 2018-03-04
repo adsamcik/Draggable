@@ -46,10 +46,13 @@ class MainActivity : FragmentActivity() {
                 else
                     button.setBackgroundColor(Color.BLUE)
             } else {
-                if (state == DraggableImageButton.State.INITIAL)
+                if (state == DraggableImageButton.State.INITIAL) {
                     button.setBackgroundColor(Color.GRAY)
-                else
+                    bottomButton.moveToState(DraggableImageButton.State.INITIAL, true, true)
+                } else {
                     button.setBackgroundColor(Color.GREEN)
+                    bottomButton.moveToState(DraggableImageButton.State.TARGET, false, true)
+                }
             }
         }
 
