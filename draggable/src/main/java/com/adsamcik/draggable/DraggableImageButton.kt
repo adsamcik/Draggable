@@ -68,7 +68,8 @@ class DraggableImageButton : AppCompatImageButton {
      */
     var animationInterpolator: TimeInterpolator = LinearInterpolator()
 
-    private var mCurrentState = State.INITIAL
+    var state = State.INITIAL
+        private set
     private val mPayloads = ArrayList<DraggablePayload<*>>()
     private var mActiveAnimation: ValueAnimator? = null
 
@@ -236,7 +237,7 @@ class DraggableImageButton : AppCompatImageButton {
         if (force) {
             mDrag = false
             moveToStateInternal(state, animate)
-        } else if (state != mCurrentState) {
+        } else if (state != this.state) {
             mDrag = false
             if (state != State.INITIAL)
                 mDragDirection = dragAxis
@@ -321,14 +322,14 @@ class DraggableImageButton : AppCompatImageButton {
 
         if (targetView != null && dragAxis != DragAxis.None) {
             mDragDirection = dragAxis
-            moveToStateInternal(!mCurrentState, true)
+            moveToStateInternal(!state, true)
         }
 
         return true
     }
 
     private fun handleAnimatorListeners(animator: ValueAnimator, state: State) {
-        val stateChange = state != mCurrentState
+        val stateChange = state != this.state
         animator.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 onEnterState(state, stateChange)
@@ -356,7 +357,7 @@ class DraggableImageButton : AppCompatImageButton {
                 animator = animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
             else {
                 move(mInitialTranslation.x, mTargetTranslation.x, target, ::setTranslationX)
-                onEnterState(mState, mState != mCurrentState)
+                onEnterState(mState, mState != state)
                 return
             }
         } else if (dragAxis.isVertical() && mDragDirection.isVertical()) {
@@ -365,14 +366,14 @@ class DraggableImageButton : AppCompatImageButton {
                 animator = animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
             else {
                 move(mInitialTranslation.y, mTargetTranslation.y, target, ::setTranslationY)
-                onEnterState(mState, mState != mCurrentState)
+                onEnterState(mState, mState != state)
                 return
             }
         } else
             throw IllegalStateException("Not sure to which state should I move.")
 
         handleAnimatorListeners(animator, mState)
-        mCurrentState = mState
+        state = mState
     }
 
     private fun animate(initialConstraintTranslation: Float,
@@ -450,7 +451,7 @@ class DraggableImageButton : AppCompatImageButton {
                 mTargetTranslation = calculateTargetTranslation()
                 mDrag = false
 
-                if (mCurrentState == State.INITIAL)
+                if (state == State.INITIAL)
                     mDragDirection = DragAxis.None
 
                 if (mActiveAnimation != null) {
@@ -463,7 +464,7 @@ class DraggableImageButton : AppCompatImageButton {
                 mVelocityTracker = VelocityTracker.obtain()
                 mVelocityTracker!!.addMovement(event)
 
-                onLeaveStateListener?.invoke(this, mCurrentState)
+                onLeaveStateListener?.invoke(this, state)
             }
             MotionEvent.ACTION_UP -> {
                 val velocityTracker = mVelocityTracker!!
@@ -482,20 +483,20 @@ class DraggableImageButton : AppCompatImageButton {
                         val velocity = Math.abs(velocityTracker.yVelocity)
                         (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
                                 (Math.abs(translationY - mInitialTranslation.y) < Math.abs(translationY - mTargetTranslation.y)) xor
-                                (mCurrentState == State.INITIAL)
+                                (state == State.INITIAL)
                     } else if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
                         val velocity = Math.abs(velocityTracker.xVelocity)
                         val translationX = translationX
                         (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
                                 (Math.abs(translationX - mInitialTranslation.x) < Math.abs(translationX - mTargetTranslation.x)) xor
-                                (mCurrentState == State.INITIAL)
+                                (state == State.INITIAL)
                     } else
                         return true
 
                     if (move)
-                        moveToStateInternal(!mCurrentState, true)
+                        moveToStateInternal(!state, true)
                     else
-                        moveToStateInternal(mCurrentState, true)
+                        moveToStateInternal(state, true)
                 }
 
                 velocityTracker.recycle()
