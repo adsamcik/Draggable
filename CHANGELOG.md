@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.9.1] - 4-3-2018
+
+* Fix moveToState crash when moving from the same state to the same state
+* Fix uninitialized target position when moveToState is called before button is touched
+
 ## [0.9.0] - 4-3-2018
 
 * Add moveToState function with options to force the move and/or not use animation
