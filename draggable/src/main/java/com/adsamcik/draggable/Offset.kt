@@ -2,6 +2,9 @@ package com.adsamcik.draggable
 
 import com.adsamcik.draggable.Utility.toPx
 
+/**
+ * Offset object containing horizontal and vertical offset
+ */
 class Offset(var horizontal: Int, var vertical: Int) {
     constructor() : this(0, 0)
     constructor(offset: Int) : this(offset, offset)
