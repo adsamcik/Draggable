@@ -136,27 +136,25 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 
     /**
      * Initializes view
-     * Does nothing if view is already created
+     * Only cancels destroy timer if it was already initialized
      * It is called automatically when drag starts
      */
     @SuppressLint("ResourceType")
     fun initializeView() {
         if (wrapper == null) {
             val cView = FrameLayout(mActivity)
-            cView.id = Random().nextInt(Int.MAX_VALUE - 2) + 1
+            cView.id = (Math.random() * (Int.MAX_VALUE - 1)).toInt()
             cView.layoutParams = ViewGroup.LayoutParams(width, height)
             cView.setBackgroundColor(backgroundColor)
             cView.translationZ = initialTranslationZ
             mParent.addView(cView)
             wrapper = cView
-
             if (stickToTarget) {
                 onDrag(0f)
             } else {
                 cView.translationX = initialTranslation.x.toFloat()
                 cView.translationY = initialTranslation.y.toFloat()
             }
-
             val newInst = mClass.newInstance()
             val ft = mActivity.supportFragmentManager.beginTransaction()
             ft.replace(cView.id, newInst as Fragment)
@@ -168,7 +166,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
                     initialOnScreen.y = thisOnScreen[1]
                     onInitialized?.invoke(newInst)
                 }
-            ft.commit()
+            ft.commitAllowingStateLoss()
 
             mFragment = newInst
 
@@ -195,7 +193,6 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         removeTimer()
 
         val wrapper = wrapper!!
-
 
         if (stickToTarget)
             moveWithTarget()
