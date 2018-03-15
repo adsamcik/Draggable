@@ -38,6 +38,7 @@ class MainActivity : FragmentActivity() {
         topPayload.initialTranslation = Point(0, -400)
         topPayload.anchor = DragTargetAnchor.LeftBottom
         topPayload.onInitialized = { it.view!!.setBackgroundColor(Color.CYAN) }
+        topPayload.targetTranslationZ = dpToPx(this, 16).toFloat()
         topButton.addPayload(topPayload)
         topButton.onEnterStateListener = { button, state, axis ->
             if (axis == DragAxis.Y) {
