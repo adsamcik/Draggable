@@ -37,7 +37,10 @@ class MainActivity : FragmentActivity() {
         val topPayload = DraggablePayload(this, ViewClass::class.java, parent, leftButton)
         topPayload.initialTranslation = Point(0, -400)
         topPayload.anchor = DragTargetAnchor.LeftBottom
-        topPayload.onInitialized = { it.view!!.setBackgroundColor(Color.CYAN) }
+        topPayload.onInitialized = {
+            it.view!!.setBackgroundColor(Color.CYAN)
+            it.view!!.setOnClickListener {  }
+        }
         topPayload.targetTranslationZ = dpToPx(this, 16).toFloat()
         topButton.addPayload(topPayload)
         topButton.onEnterStateListener = { button, state, axis ->
