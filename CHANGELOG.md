@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.3] - 15-3-2018
+
+* Extended touch area now checks if the view is visible
+
 ## [0.9.1] - 4-3-2018
 
 * Fix moveToState crash when moving from the same state to the same state
