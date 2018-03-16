@@ -480,6 +480,8 @@ class DraggableImageButton : AppCompatImageButton {
             }
             MotionEvent.ACTION_UP -> {
                 val velocityTracker = mVelocityTracker!!
+                mVelocityTracker = null
+
                 if (!mDrag)
                     performClick()
                 else if (targetView != null) {
