@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0] - 25-3-2018
+
+* Add state saving including fragments. Needs to be called from activity to work properly. Currently not too tested, but it seems to work.
+
+Known issues
+
+* Button properties are not retained on rotation (eg. background color)
+
 ## [0.9.3] - 15-3-2018
 
 * Extended touch area now checks if the view is visible
