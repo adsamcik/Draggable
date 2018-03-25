@@ -8,6 +8,8 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.PointF
 import android.graphics.Rect
+import android.os.Parcel
+import android.os.Parcelable
 import android.support.v7.widget.AppCompatImageButton
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -17,6 +19,7 @@ import android.view.ViewConfiguration
 import android.view.animation.*
 import com.adsamcik.touchdelegate.DraggableTouchDelegate
 import com.adsamcik.touchdelegate.TouchDelegateComposite
+import org.jetbrains.annotations.NotNull
 import kotlin.math.roundToInt
 
 
@@ -93,6 +96,8 @@ class DraggableImageButton : AppCompatImageButton {
     //Attribute temporaries
     private var targetViewId: Int = View.NO_ID
     private var touchRect: Rect? = null
+
+    private var mFragmentTag: String = Math.random().toString()
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
@@ -561,5 +566,78 @@ class DraggableImageButton : AppCompatImageButton {
         };
 
         abstract operator fun not(): State
+    }
+
+    override fun onSaveInstanceState(): Parcelable {
+        val superState = super.onSaveInstanceState()
+
+        val ss = SavedState(superState)
+        ss.state = state
+        ss.dragDirection = mDragDirection
+        ss.payloads = mPayloads.map { it.mFragmentTag }
+
+        return ss
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        if (state !is SavedState) {
+            super.onRestoreInstanceState(state)
+            return
+        }
+
+        if (targetViewId != View.NO_ID && targetView == null)
+            targetView = rootView.findViewById(targetViewId)
+
+        super.onRestoreInstanceState(state.superState)
+
+        mDragDirection = state.dragDirection
+
+        //Basic check to ensure payloads are likely to be restored correctly
+        if (payloads.size == state.payloads.size) {
+            for (i in 0 until payloads.size)
+                payloads[i].restoreFragment(state.payloads[i])
+        }
+
+        if (dragAxis != DragAxis.None && mDragDirection != DragAxis.None) {
+            targetView?.post {
+                mTargetTranslation = calculateTargetTranslation()
+                moveToStateInternal(state.state, false)
+            }
+        }
+    }
+
+    internal class SavedState : View.BaseSavedState {
+        lateinit var state: State
+        lateinit var dragDirection: DragAxis
+        lateinit var payloads: List<String>
+
+        private constructor(source: Parcel) : super(source) {
+            state = State.values()[source.readInt()]
+            dragDirection = DragAxis.values()[source.readInt()]
+            payloads = ArrayList()
+            source.readStringList(payloads)
+        }
+
+        constructor(superState: Parcelable) : super(superState)
+
+        override fun writeToParcel(out: Parcel, flags: Int) {
+            super.writeToParcel(out, flags)
+            out.writeInt(state.ordinal)
+            out.writeInt(dragDirection.ordinal)
+            out.writeStringList(payloads)
+        }
+
+        @JvmField
+        @NotNull
+        val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.Creator<SavedState> {
+
+            override fun createFromParcel(source: Parcel): SavedState {
+                return SavedState(source)
+            }
+
+            override fun newArray(size: Int): Array<SavedState?> {
+                return arrayOfNulls(size)
+            }
+        }
     }
 }

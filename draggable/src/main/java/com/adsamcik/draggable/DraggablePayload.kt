@@ -112,6 +112,13 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     private var destroyTimerTask: TimerTask? = null
 
     /**
+     * Fragment tag used for finding existing fragment
+     * It is nearly impossible for there to be 2 fragments with the same tag
+     * Uses mClass to make sure it is always at least the same type and never causes cast crash
+     */
+    internal var mFragmentTag = "${Math.random()}Draggable${mClass.name}"
+
+    /**
      * Sets translation z (elevation)
      * This sets both initial and target translations to given value
      * Updates current translation z
@@ -155,26 +162,41 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
                 cView.translationX = initialTranslation.x.toFloat()
                 cView.translationY = initialTranslation.y.toFloat()
             }
-            val newInst = mClass.newInstance()
-            val ft = mActivity.supportFragmentManager.beginTransaction()
-            ft.replace(cView.id, newInst as Fragment)
-            ft.setTransition(TRANSIT_FRAGMENT_FADE)
-            if (onInitialized != null)
-                ft.runOnCommit {
-                    val thisOnScreen = Utility.getLocationOnScreen(wrapper!!)
-                    initialOnScreen.x = thisOnScreen[0]
-                    initialOnScreen.y = thisOnScreen[1]
-                    onInitialized?.invoke(newInst)
-                }
-            ft.commitAllowingStateLoss()
 
-            mFragment = newInst
+            if (mFragment == null) {
+                val ft = mActivity.supportFragmentManager.beginTransaction()
+                val newInst = mClass.newInstance()
+                ft.replace(cView.id, newInst, mFragmentTag)
+                newInst.retainInstance = true
+
+                if (onInitialized != null)
+                    ft.runOnCommit {
+                        val thisOnScreen = Utility.getLocationOnScreen(wrapper!!)
+                        initialOnScreen.x = thisOnScreen[0]
+                        initialOnScreen.y = thisOnScreen[1]
+                        onInitialized?.invoke(mFragment!!)
+                    }
+                ft.commitAllowingStateLoss()
+
+                mFragment = newInst
+            }
+
 
             val thisOnScreen = Utility.getLocationOnScreen(wrapper!!)
             initialOnScreen.x = thisOnScreen[0]
             initialOnScreen.y = thisOnScreen[1]
         } else if (destroyTimerTask != null) {
             destroyTimerTask!!.cancel()
+        }
+    }
+
+    internal fun restoreFragment(tag: String) {
+        this.mFragmentTag = tag
+
+        @Suppress("UNCHECKED_CAST")
+        val fragment = mActivity.supportFragmentManager.findFragmentByTag(tag) as T?
+        if (fragment != null) {
+            mFragment = fragment
         }
     }
 
