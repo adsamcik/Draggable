@@ -596,12 +596,11 @@ class DraggableImageButton : AppCompatImageButton {
         if (state !is SavedState) {
             super.onRestoreInstanceState(state)
             return
-        }
+        } else
+            super.onRestoreInstanceState(state.superState)
 
         if (targetViewId != View.NO_ID && targetView == null)
             targetView = rootView.findViewById(targetViewId)
-
-        super.onRestoreInstanceState(state.superState)
 
         mDragDirection = state.dragDirection
 
@@ -611,6 +610,8 @@ class DraggableImageButton : AppCompatImageButton {
                 payloads[i].restoreFragment(state.payloadWrapperId[i], state.payloadFragmentTags[i])
             }
         }
+
+        this.state = state.state
 
         if (dragAxis != DragAxis.None && mDragDirection != DragAxis.None) {
             targetView?.post {
