@@ -96,4 +96,22 @@ class MainActivity : FragmentActivity() {
         //button.attachView(ViewClass::class.java, DragTargetAnchor.RightMiddle, 0)
 
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        topButton.saveFragments(outState)
+        leftButton.saveFragments(outState)
+        bottomButton.saveFragments(outState)
+        rightButton.saveFragments(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        topButton.restoreFragments(savedInstanceState)
+        leftButton.restoreFragments(savedInstanceState)
+        bottomButton.restoreFragments(savedInstanceState)
+        rightButton.restoreFragments(savedInstanceState)
+    }
 }

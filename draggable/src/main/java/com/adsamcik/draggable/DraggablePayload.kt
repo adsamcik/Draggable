@@ -2,9 +2,9 @@ package com.adsamcik.draggable
 
 import android.annotation.SuppressLint
 import android.graphics.Point
+import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
-import android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import android.support.v4.app.FragmentTransaction.TRANSIT_NONE
 import android.view.View
 import android.view.ViewGroup
@@ -167,7 +167,6 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
                 val ft = mActivity.supportFragmentManager.beginTransaction()
                 val newInst = mClass.newInstance()
                 ft.replace(cView.id, newInst, mFragmentTag)
-                newInst.retainInstance = true
 
                 if (onInitialized != null)
                     ft.runOnCommit {
@@ -190,14 +189,26 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         }
     }
 
-    internal fun restoreFragment(tag: String) {
+    internal fun restoreFragment(id: Int, tag: String) {
+        if (id != View.NO_ID)
+            wrapper = mParent.findViewById(id)
         this.mFragmentTag = tag
+    }
 
+    internal fun restoreFragment(bundle: Bundle) {
         @Suppress("UNCHECKED_CAST")
-        val fragment = mActivity.supportFragmentManager.findFragmentByTag(tag) as T?
-        if (fragment != null) {
-            mFragment = fragment
+        if (wrapper != null) {
+            val fragment = mActivity.supportFragmentManager.getFragment(bundle, mFragmentTag) as T?
+            if (fragment != null) {
+                mFragment = fragment
+                mActivity.supportFragmentManager.beginTransaction().replace(wrapper!!.id, fragment).commit()
+            }
         }
+    }
+
+    internal fun saveFragment(bundle: Bundle) {
+        if (mFragment != null)
+            mActivity.supportFragmentManager.putFragment(bundle, mFragmentTag, mFragment)
     }
 
     private fun calculateTargetTranslation(initialPosition: Point, toView: View, offset: Point, offsets: Offset): Point {
