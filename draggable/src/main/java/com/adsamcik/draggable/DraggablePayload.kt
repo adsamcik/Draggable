@@ -14,6 +14,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import java.util.*
 import kotlin.concurrent.schedule
+import kotlin.math.roundToInt
 
 
 class DraggablePayload<T>(private val mActivity: FragmentActivity,
@@ -138,7 +139,6 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         this.offsets.setWithDpAsPx(offsets)
     }
 
-    private var initialOnScreen: Point = Point(0, 0)
     private var targetOffset: Point = Point(0, 0)
 
     /**
@@ -170,20 +170,12 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 
                 if (onInitialized != null)
                     ft.runOnCommit {
-                        val thisOnScreen = Utility.getLocationOnScreen(wrapper!!)
-                        initialOnScreen.x = thisOnScreen[0]
-                        initialOnScreen.y = thisOnScreen[1]
                         onInitialized?.invoke(mFragment!!)
                     }
                 ft.commitAllowingStateLoss()
 
                 mFragment = newInst
             }
-
-
-            val thisOnScreen = Utility.getLocationOnScreen(wrapper!!)
-            initialOnScreen.x = thisOnScreen[0]
-            initialOnScreen.y = thisOnScreen[1]
         } else if (destroyTimerTask != null) {
             destroyTimerTask!!.cancel()
         }
@@ -211,10 +203,15 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
             mActivity.supportFragmentManager.putFragment(bundle, mFragmentTag, mFragment)
     }
 
-    private fun calculateTargetTranslation(initialPosition: Point, toView: View, offset: Point, offsets: Offset): Point {
-        val targetOnScreen = Utility.getLocationOnScreen(toView)
-        val targetX = (targetOnScreen[0] - initialPosition.x) + offset.x
-        val targetY = (targetOnScreen[1] - initialPosition.y) + offset.y
+    private fun calculateTargetTranslation(toView: View, offset: Point, offsets: Offset): Point {
+        val wrapper = wrapper!!
+        val location = wrapper.locationOnScreen()
+        location[0] -= wrapper.translationX.roundToInt() - initialTranslation.x
+        location[1] -= wrapper.translationY.roundToInt() - initialTranslation.y
+
+        val targetOnScreen = toView.locationOnScreen()
+        val targetX = (targetOnScreen[0] - location[0]) + offset.x
+        val targetY = (targetOnScreen[1] - location[1]) + offset.y
         //Log.d("Draggable", "(${targetOnScreen[1]} - ${initialPosition.y}) + ${offset.y} = $targetY")
         return Point(targetX + offsets.horizontal, targetY + offsets.vertical)
     }
@@ -243,8 +240,8 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 
     private fun moveWithTarget() {
         val wrapper = wrapper!!
-        val targetOnScreen = Utility.getLocationOnScreen(mTargetView)
-        val parentOnScreen = Utility.getLocationOnScreen(mParent)
+        val targetOnScreen = mTargetView.locationOnScreen()
+        val parentOnScreen = mParent.locationOnScreen()
         targetOffset = anchor.calculateEdgeOffset(wrapper, mTargetView)
 
         wrapper.translationX = (targetOnScreen[0] - parentOnScreen[0] + targetOffset.x + offsets.horizontal).toFloat()
@@ -254,7 +251,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     private fun moveWithPercentage(percentage: Float) {
         val wrapper = wrapper!!
         targetOffset = anchor.calculateEdgeOffsetWithPadding(wrapper, mTargetView)
-        val targetTranslation = calculateTargetTranslation(initialOnScreen, mTargetView, targetOffset, offsets)
+        val targetTranslation = calculateTargetTranslation(mTargetView, targetOffset, offsets)
         wrapper.translationX = initialTranslation.x.toFloat() + targetTranslation.x * percentage
         wrapper.translationY = initialTranslation.y.toFloat() + targetTranslation.y * percentage
     }

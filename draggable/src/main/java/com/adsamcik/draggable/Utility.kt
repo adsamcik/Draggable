@@ -2,22 +2,15 @@ package com.adsamcik.draggable
 
 import android.content.res.Resources
 import android.graphics.PointF
-import android.util.Log
 import android.view.View
 
 internal object Utility {
     internal fun Int.toDp() = (this / Resources.getSystem().displayMetrics.density).toInt()
     internal fun Int.toPx() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
-    internal fun getLocationOnScreen(view: View): IntArray {
-        val array = IntArray(2)
-        view.getLocationOnScreen(array)
-        return array
-    }
-
     internal fun calculateTargetTranslation(sourceView: View, toView: View, anchor: DragTargetAnchor, offset: Offset): PointF {
-        val thisOnScreen = getLocationOnScreen(sourceView)
-        val targetOnScreen = getLocationOnScreen(toView)
+        val thisOnScreen = sourceView.locationOnScreen()
+        val targetOnScreen = toView.locationOnScreen()
         val targetRelPos = anchor.calculateEdgeOffsetWithPadding(sourceView, toView)
         val targetX = (targetOnScreen[0] - thisOnScreen[0]) + targetRelPos.x + sourceView.translationX
         val targetY = (targetOnScreen[1] - thisOnScreen[1]) + targetRelPos.y + sourceView.translationY
@@ -44,6 +37,9 @@ internal object Utility {
     }
 
     internal fun betweenInPercent(firstConstraint: Float, secondConstraint: Float, number: Float): Float {
-        return (number - firstConstraint) / (secondConstraint - firstConstraint)
+        return if (firstConstraint == secondConstraint)
+            0f
+        else
+            (number - firstConstraint) / (secondConstraint - firstConstraint)
     }
 }

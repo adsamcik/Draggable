@@ -575,6 +575,9 @@ class DraggableImageButton : AppCompatImageButton {
 
     fun restoreFragments(bundle: Bundle) {
         payloads.forEach { it.restoreFragment(bundle) }
+
+        if (dragAxis != DragAxis.None && mDragDirection != DragAxis.None)
+            moveToStateInternal(state, false)
     }
 
     override fun onSaveInstanceState(): Parcelable {
