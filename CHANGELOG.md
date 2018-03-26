@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.10.1] - 26-3-2018
+
+* OnState is now properly called during fragment restoration
+
 ## [0.10.0] - 25-3-2018
 
 * Add state saving including fragments. Needs to be called from activity to work properly. Currently not too tested, but it seems to work.
