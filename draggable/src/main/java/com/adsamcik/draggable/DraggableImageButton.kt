@@ -365,7 +365,7 @@ class DraggableImageButton : AppCompatImageButton {
             mPayloads.forEach { it.onInitialPosition() }
     }
 
-    private fun moveToStateInternal(mState: State, animate: Boolean) {
+    private fun moveToStateInternal(mState: State, animate: Boolean, forceStateChange: Boolean = false) {
         val target: Float
         val animator: ValueAnimator
 
@@ -375,7 +375,7 @@ class DraggableImageButton : AppCompatImageButton {
                 animator = animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
             else {
                 move(mInitialTranslation.x, mTargetTranslation.x, target, ::setTranslationX)
-                onEnterState(mState, mState != state)
+                onEnterState(mState, forceStateChange || mState != state)
                 return
             }
         } else if (dragAxis.isVertical() && mDragDirection.isVertical()) {
@@ -384,7 +384,7 @@ class DraggableImageButton : AppCompatImageButton {
                 animator = animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
             else {
                 move(mInitialTranslation.y, mTargetTranslation.y, target, ::setTranslationY)
-                onEnterState(mState, mState != state)
+                onEnterState(mState, forceStateChange || mState != state)
                 return
             }
         } else
@@ -576,8 +576,9 @@ class DraggableImageButton : AppCompatImageButton {
     fun restoreFragments(bundle: Bundle) {
         payloads.forEach { it.restoreFragment(bundle) }
 
-        if (dragAxis != DragAxis.None && mDragDirection != DragAxis.None)
-            moveToStateInternal(state, false)
+        if (dragAxis != DragAxis.None && mDragDirection != DragAxis.None) {
+            moveToStateInternal(state, false, true)
+        }
     }
 
     override fun onSaveInstanceState(): Parcelable {
