@@ -150,7 +150,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     fun initializeView() {
         if (wrapper == null) {
             val cView = FrameLayout(mActivity)
-            cView.id = (Math.random() * (Int.MAX_VALUE - 1)).toInt()
+            cView.id = View.generateViewId()
             cView.layoutParams = ViewGroup.LayoutParams(width, height)
             cView.setBackgroundColor(backgroundColor)
             cView.translationZ = initialTranslationZ
