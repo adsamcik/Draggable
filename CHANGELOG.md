@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10.3] - 30-3-2018
+
+* Fixed fling behaving incorrectly due to absolute fling value
+* Improved unique id generation for DraggablePayload
+* State changes should be reported much more reliably now
+
+## [0.10.2] - 27-3-2018
+
+* Updated touch delegate to solve some issues
+
 ## [0.10.1] - 26-3-2018
 
 * OnState is now properly called during fragment restoration
