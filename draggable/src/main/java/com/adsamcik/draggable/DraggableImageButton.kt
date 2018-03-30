@@ -22,6 +22,7 @@ import com.adsamcik.touchdelegate.DraggableTouchDelegate
 import com.adsamcik.touchdelegate.TouchDelegateComposite
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.roundToInt
+import kotlin.math.sign
 
 
 class DraggableImageButton : AppCompatImageButton {
@@ -462,6 +463,16 @@ class DraggableImageButton : AppCompatImageButton {
 
     private fun calculateTargetTranslation() = Utility.calculateTargetTranslation(this, targetView!!, targetAnchor, targetOffset)
 
+    private fun calculateMove(velocity: Float, translation: Float, initialTranslation: Float, targetTranslation: Float): Boolean {
+        val direction = (targetTranslation - initialTranslation).sign * if (state == State.INITIAL) 1 else -1
+        val dirVelocity = velocity * direction
+        val useVelocity = Math.abs(velocity) in mMinFlingVelocity..mMaxFlingVelocity
+
+        return (useVelocity && dirVelocity in mMinFlingVelocity..mMaxFlingVelocity) ||
+                (Math.abs(translation - initialTranslation) < Math.abs(translation - targetTranslation)) xor
+                (state == State.INITIAL)
+    }
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (dragAxis == DragAxis.None || targetView == null)
             return false
@@ -506,16 +517,9 @@ class DraggableImageButton : AppCompatImageButton {
                     //Second it calculates how far we moved and uses xor with boolean that represents if current state is initial
                     //Xor simplifies the actual condition so it can be the same for both states
                     val move = if (dragAxis.isVertical() && mDragDirection.isVertical()) {
-                        val velocity = Math.abs(velocityTracker.yVelocity)
-                        (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
-                                (Math.abs(translationY - mInitialTranslation.y) < Math.abs(translationY - mTargetTranslation.y)) xor
-                                (state == State.INITIAL)
+                        calculateMove(velocityTracker.yVelocity, translationY, mInitialTranslation.y, mTargetTranslation.y)
                     } else if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
-                        val velocity = Math.abs(velocityTracker.xVelocity)
-                        val translationX = translationX
-                        (velocity in mMinFlingVelocity..mMaxFlingVelocity) ||
-                                (Math.abs(translationX - mInitialTranslation.x) < Math.abs(translationX - mTargetTranslation.x)) xor
-                                (state == State.INITIAL)
+                        calculateMove(velocityTracker.xVelocity, translationX, mInitialTranslation.x, mTargetTranslation.x)
                     } else
                         return true
 
