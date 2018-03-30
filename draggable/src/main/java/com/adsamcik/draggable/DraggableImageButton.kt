@@ -322,7 +322,7 @@ class DraggableImageButton : AppCompatImageButton {
             this.touchRect = null
         }
     }
-
+    
     override fun performClick(): Boolean {
         if (!isClickable)
             return false
@@ -340,6 +340,9 @@ class DraggableImageButton : AppCompatImageButton {
         return true
     }
 
+    /**
+     * Creates animation from current position to target position
+     */
     private fun animate(initialConstraintTranslation: Float,
                         targetConstraintTranslation: Float,
                         thisTranslation: Float,
@@ -360,6 +363,9 @@ class DraggableImageButton : AppCompatImageButton {
         return valueAnimator
     }
 
+    /**
+     * Handles callbacks for animator and triggers appropriate on state change callbacks
+     */
     private fun handleAnimatorListeners(animator: ValueAnimator, currentState: State, newState: State) {
         val stateChanged = newState != currentState
 
@@ -372,7 +378,15 @@ class DraggableImageButton : AppCompatImageButton {
         })
     }
 
-    private fun moveToStateInternal(newState: State, animate: Boolean, forceStateChange: Boolean = false) {
+    /**
+     * Calculates move to state internally. Can use animation or be immediate based on [animate].
+     * [forceOnEnter] forces OnEnter state callbacks to be triggered even when state hasn't changed.
+     * OnLeave will still only be triggered if state is changing.
+     * @param newState New state to which button should move
+     * @param animate True indicates that the move should be animated and not immediate
+     * @param forceOnEnter Forces onEnterState callback to be triggered even when state hasn't changed
+     */
+    private fun moveToStateInternal(newState: State, animate: Boolean, forceOnEnter: Boolean = false) {
         val target: Float
         val animator: ValueAnimator
 
@@ -382,7 +396,7 @@ class DraggableImageButton : AppCompatImageButton {
                 animator = animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
             else {
                 positionUpdate(mInitialTranslation.x, mTargetTranslation.x, target, ::setTranslationX)
-                onStateSet(state, newState, forceStateChange)
+                onStateSet(state, newState, forceOnEnter)
                 return
             }
         } else if (dragAxis.isVertical() && mDragDirection.isVertical()) {
@@ -391,7 +405,7 @@ class DraggableImageButton : AppCompatImageButton {
                 animator = animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
             else {
                 positionUpdate(mInitialTranslation.y, mTargetTranslation.y, target, ::setTranslationY)
-                onStateSet(state, newState, forceStateChange)
+                onStateSet(state, newState, forceOnEnter)
                 return
             }
         } else
@@ -401,6 +415,9 @@ class DraggableImageButton : AppCompatImageButton {
         state = newState
     }
 
+    /**
+     * Called internally when leaving state
+     */
     private fun onLeaveState(state: State, changeState: Boolean) {
         if (changeState && !isInTranstion.get()) {
             onLeaveStateListener?.invoke(this, state)
@@ -408,6 +425,9 @@ class DraggableImageButton : AppCompatImageButton {
         }
     }
 
+    /**
+     * Called internally when entering state
+     */
     private fun onEnterState(state: State, stateChange: Boolean) {
         if (stateChange || isInTranstion.get()) {
             mPayloads.forEach { it.onStateChange(state) }
@@ -423,10 +443,10 @@ class DraggableImageButton : AppCompatImageButton {
     private fun onStateSet(currentState: State,
                            newState: State,
                            forceStateChange: Boolean) {
-        val changeState = forceStateChange || currentState != newState
+        val changeState = currentState != newState
 
         onLeaveState(currentState, changeState)
-        onEnterState(newState, changeState)
+        onEnterState(newState, changeState || forceStateChange)
     }
 
     private fun positionUpdate(initialConstraintTranslation: Float,
