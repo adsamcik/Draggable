@@ -20,7 +20,7 @@ import android.view.ViewConfiguration
 import android.view.animation.*
 import com.adsamcik.touchdelegate.DraggableTouchDelegate
 import com.adsamcik.touchdelegate.TouchDelegateComposite
-import org.jetbrains.annotations.NotNull
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.roundToInt
 
 
@@ -74,6 +74,10 @@ class DraggableImageButton : AppCompatImageButton {
 
     var state = State.INITIAL
         private set
+
+    var isInTranstion: AtomicBoolean = AtomicBoolean(false)
+        private set
+
     private val mPayloads = ArrayList<DraggablePayload<*>>()
     private var mActiveAnimation: ValueAnimator? = null
 
@@ -234,33 +238,22 @@ class DraggableImageButton : AppCompatImageButton {
 
     /**
      * Moves button to given [state]
-     * If [force] is true, the view will always move to the given state, ignoring any user input
      *
      * @param state State to which the button should move
-     * @param force If true, ignores user input and always animates to given state
      */
-    fun moveToState(state: State, animate: Boolean, force: Boolean) {
+    fun moveToState(state: State, animate: Boolean) {
         if (targetView == null)
             throw RuntimeException("You cannot move to state without target view")
 
+        if (this.state == state && !isInTranstion.get())
+            return
+
         mTargetTranslation = calculateTargetTranslation()
 
-        if (force) {
-            if (state == State.INITIAL && translationX == mInitialTranslation.x && translationY == mInitialTranslation.y)
-                return
-            else if (state == State.TARGET && translationX == mTargetTranslation.x && translationY == mTargetTranslation.y)
-                return
-
-            mDrag = false
-            if (this.state == State.INITIAL)
-                mDragDirection = dragAxis
-            moveToStateInternal(state, animate)
-        } else if (state != this.state) {
-            mDrag = false
-            if (this.state == State.INITIAL)
-                mDragDirection = dragAxis
-            moveToStateInternal(state, animate)
-        }
+        mDrag = false
+        if (this.state == State.INITIAL)
+            mDragDirection = dragAxis
+        moveToStateInternal(state, animate)
     }
 
     /**
@@ -346,54 +339,6 @@ class DraggableImageButton : AppCompatImageButton {
         return true
     }
 
-    private fun handleAnimatorListeners(animator: ValueAnimator, state: State) {
-        val stateChange = state != this.state
-        animator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                onEnterState(state, stateChange)
-            }
-        })
-    }
-
-    private fun onEnterState(state: State, stateChange: Boolean) {
-        if (stateChange) {
-            mPayloads.forEach { it.onStateChange(state) }
-            onEnterStateListener?.invoke(this, state, mDragDirection)
-        }
-
-        if (state == State.INITIAL)
-            mPayloads.forEach { it.onInitialPosition() }
-    }
-
-    private fun moveToStateInternal(mState: State, animate: Boolean, forceStateChange: Boolean = false) {
-        val target: Float
-        val animator: ValueAnimator
-
-        if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
-            target = if (mState == State.INITIAL) mInitialTranslation.x else mTargetTranslation.x
-            if (animate)
-                animator = animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
-            else {
-                move(mInitialTranslation.x, mTargetTranslation.x, target, ::setTranslationX)
-                onEnterState(mState, forceStateChange || mState != state)
-                return
-            }
-        } else if (dragAxis.isVertical() && mDragDirection.isVertical()) {
-            target = if (mState == State.INITIAL) mInitialTranslation.y else mTargetTranslation.y
-            if (animate)
-                animator = animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
-            else {
-                move(mInitialTranslation.y, mTargetTranslation.y, target, ::setTranslationY)
-                onEnterState(mState, forceStateChange || mState != state)
-                return
-            }
-        } else
-            throw IllegalStateException("Not sure to which state should I move.")
-
-        handleAnimatorListeners(animator, mState)
-        state = mState
-    }
-
     private fun animate(initialConstraintTranslation: Float,
                         targetConstraintTranslation: Float,
                         thisTranslation: Float,
@@ -414,11 +359,71 @@ class DraggableImageButton : AppCompatImageButton {
         return valueAnimator
     }
 
-    private fun move(initialConstraintTranslation: Float,
-                     targetConstraintTranslation: Float,
-                     targetTranslation: Float,
-                     assignListener: (Float) -> Unit) {
-        positionUpdate(initialConstraintTranslation, targetConstraintTranslation, targetTranslation, assignListener)
+    private fun handleAnimatorListeners(animator: ValueAnimator, currentState: State, newState: State) {
+        val stateChanged = newState != currentState
+
+        onLeaveState(currentState, stateChanged)
+
+        animator.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                onEnterState(newState, stateChanged)
+            }
+        })
+    }
+
+    private fun moveToStateInternal(newState: State, animate: Boolean, forceStateChange: Boolean = false) {
+        val target: Float
+        val animator: ValueAnimator
+
+        if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
+            target = if (newState == State.INITIAL) mInitialTranslation.x else mTargetTranslation.x
+            if (animate)
+                animator = animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
+            else {
+                positionUpdate(mInitialTranslation.x, mTargetTranslation.x, target, ::setTranslationX)
+                onStateSet(state, newState, forceStateChange)
+                return
+            }
+        } else if (dragAxis.isVertical() && mDragDirection.isVertical()) {
+            target = if (newState == State.INITIAL) mInitialTranslation.y else mTargetTranslation.y
+            if (animate)
+                animator = animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
+            else {
+                positionUpdate(mInitialTranslation.y, mTargetTranslation.y, target, ::setTranslationY)
+                onStateSet(state, newState, forceStateChange)
+                return
+            }
+        } else
+            throw IllegalStateException("Not sure to which state should I move.")
+
+        handleAnimatorListeners(animator, state, newState)
+        state = newState
+    }
+
+    private fun onLeaveState(state: State, changeState: Boolean) {
+        if (changeState && !isInTranstion.get())
+            onLeaveStateListener?.invoke(this, state)
+    }
+
+    private fun onEnterState(state: State, stateChange: Boolean) {
+        isInTranstion.set(false)
+
+        if (stateChange) {
+            mPayloads.forEach { it.onStateChange(state) }
+            onEnterStateListener?.invoke(this, state, mDragDirection)
+        }
+
+        if (state == State.INITIAL)
+            mPayloads.forEach { it.onInitialPosition() }
+    }
+
+    private fun onStateSet(currentState: State,
+                           newState: State,
+                           forceStateChange: Boolean) {
+        val changeState = forceStateChange || currentState != newState
+
+        onLeaveState(currentState, changeState)
+        onEnterState(newState, changeState)
     }
 
     private fun positionUpdate(initialConstraintTranslation: Float,
@@ -469,6 +474,9 @@ class DraggableImageButton : AppCompatImageButton {
                 mTargetTranslation = calculateTargetTranslation()
                 mDrag = false
 
+                onLeaveState(state, true)
+                isInTranstion.set(true)
+
                 if (state == State.INITIAL)
                     mDragDirection = DragAxis.None
 
@@ -481,8 +489,6 @@ class DraggableImageButton : AppCompatImageButton {
 
                 mVelocityTracker = VelocityTracker.obtain()
                 mVelocityTracker!!.addMovement(event)
-
-                onLeaveStateListener?.invoke(this, state)
             }
             MotionEvent.ACTION_UP -> {
                 val velocityTracker = mVelocityTracker!!
@@ -646,19 +652,6 @@ class DraggableImageButton : AppCompatImageButton {
             out.writeInt(dragDirection.ordinal)
             out.writeStringList(payloadFragmentTags)
             out.writeIntArray(payloadWrapperId)
-        }
-
-        @JvmField
-        @NotNull
-        val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.Creator<SavedState> {
-
-            override fun createFromParcel(source: Parcel): SavedState {
-                return SavedState(source)
-            }
-
-            override fun newArray(size: Int): Array<SavedState?> {
-                return arrayOfNulls(size)
-            }
         }
     }
 }

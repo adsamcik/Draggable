@@ -52,10 +52,10 @@ class MainActivity : FragmentActivity() {
             } else {
                 if (state == DraggableImageButton.State.INITIAL) {
                     button.setBackgroundColor(Color.GRAY)
-                    bottomButton.moveToState(DraggableImageButton.State.INITIAL, true, true)
+                    bottomButton.moveToState(DraggableImageButton.State.INITIAL, true)
                 } else {
                     button.setBackgroundColor(Color.GREEN)
-                    bottomButton.moveToState(DraggableImageButton.State.TARGET, false, true)
+                    bottomButton.moveToState(DraggableImageButton.State.TARGET, false)
                 }
             }
         }
@@ -95,6 +95,14 @@ class MainActivity : FragmentActivity() {
         button.addPayload(DraggablePayload(this, ViewClass::class.java, Point(0, 0), parent as ViewGroup, DragTargetAnchor.RightBottom, 0))*/
         //button.attachView(ViewClass::class.java, DragTargetAnchor.RightMiddle, 0)
 
+    }
+
+    override fun onBackPressed() {
+        //super.onBackPressed()
+        topButton.moveToState(DraggableImageButton.State.INITIAL, true)
+        leftButton.moveToState(DraggableImageButton.State.INITIAL, false)
+        //rightButton.moveToState(DraggableImageButton.State.TARGET, false)
+        bottomButton.moveToState(DraggableImageButton.State.TARGET, true)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
