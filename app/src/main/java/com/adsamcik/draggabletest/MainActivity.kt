@@ -6,6 +6,7 @@ import android.graphics.Point
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.ViewGroup
 import com.adsamcik.draggable.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -39,7 +40,7 @@ class MainActivity : FragmentActivity() {
         topPayload.anchor = DragTargetAnchor.LeftBottom
         topPayload.onInitialized = {
             it.view!!.setBackgroundColor(Color.CYAN)
-            it.view!!.setOnClickListener {  }
+            it.view!!.setOnClickListener { }
         }
         topPayload.targetTranslationZ = dpToPx(this, 16).toFloat()
         topButton.addPayload(topPayload)
@@ -71,6 +72,7 @@ class MainActivity : FragmentActivity() {
         payload.setOffsetsDp(Offset(16))
         bottomButton.addPayload(payload)
         bottomButton.onEnterStateListener = { button, state, _ ->
+            Log.d("StateChange", "Enter state $state")
             when (state) {
                 DraggableImageButton.State.INITIAL -> {
                     button.setBackgroundColor(Color.GREEN)
@@ -82,6 +84,10 @@ class MainActivity : FragmentActivity() {
                 }
             }
         }
+        bottomButton.onLeaveStateListener = {_, state ->
+            Log.d("StateChange", "Leave state $state")
+        }
+
         //bottomButton.extendTouchAreaBy(dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64))
 
 

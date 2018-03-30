@@ -402,20 +402,22 @@ class DraggableImageButton : AppCompatImageButton {
     }
 
     private fun onLeaveState(state: State, changeState: Boolean) {
-        if (changeState && !isInTranstion.get())
+        if (changeState && !isInTranstion.get()) {
             onLeaveStateListener?.invoke(this, state)
+            isInTranstion.set(true)
+        }
     }
 
     private fun onEnterState(state: State, stateChange: Boolean) {
-        isInTranstion.set(false)
-
-        if (stateChange) {
+        if (stateChange || isInTranstion.get()) {
             mPayloads.forEach { it.onStateChange(state) }
             onEnterStateListener?.invoke(this, state, mDragDirection)
-        }
 
-        if (state == State.INITIAL)
-            mPayloads.forEach { it.onInitialPosition() }
+            if (state == State.INITIAL)
+                mPayloads.forEach { it.onInitialPosition() }
+
+            isInTranstion.set(false)
+        }
     }
 
     private fun onStateSet(currentState: State,
@@ -486,7 +488,6 @@ class DraggableImageButton : AppCompatImageButton {
                 mDrag = false
 
                 onLeaveState(state, true)
-                isInTranstion.set(true)
 
                 if (state == State.INITIAL)
                     mDragDirection = DragAxis.None
