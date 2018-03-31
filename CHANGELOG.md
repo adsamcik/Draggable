@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## [0.11.0] - 31-3-2018
+
+* EnterState is now called when listener is attached and button is in state (Reason for this larger version bump)
+* Id should now be properly unique
+* Destroy fragment when fragment is no longer existing no longer crashes library
+* Timer should now be properly removed when onDestroyFragment is called
+
 ## [0.10.4] - 31-3-2018
 
 * Fixed many bugs in fragment recreation which should now work much better
