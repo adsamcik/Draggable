@@ -22,6 +22,11 @@ class ViewClass : Fragment(), IOnDemandView {
         Log.d("ViewClass", "Exit")
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("ViewClass", "Create")
+        super.onCreate(savedInstanceState)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         Log.d("ViewClass", "CreateView")
         retainInstance = false
