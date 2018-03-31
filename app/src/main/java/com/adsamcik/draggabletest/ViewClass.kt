@@ -32,4 +32,9 @@ class ViewClass : Fragment(), IOnDemandView {
         Log.d("ViewClass", "DestroyView")
         super.onDestroyView()
     }
+
+    override fun onDestroy() {
+        Log.d("ViewClass", "Destroy")
+        super.onDestroy()
+    }
 }
