@@ -8,10 +8,8 @@ import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentTransaction.TRANSIT_NONE
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.math.roundToInt
@@ -42,13 +40,13 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
      * Width of the view
      * does not update the views width after its creation
      */
-    var width: Int = MATCH_PARENT
+    var width: Int = WRAP_CONTENT
 
     /**
      * Height of the view
      * does not update the views height after its creation
      */
-    var height: Int = MATCH_PARENT
+    var height: Int = WRAP_CONTENT
 
     /**
      * Initial translation of the view
@@ -149,20 +147,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     @SuppressLint("ResourceType")
     fun initializeView() {
         if (wrapper == null) {
-            val cView = FrameLayout(mActivity)
-            cView.id = View.generateViewId()
-            cView.layoutParams = ViewGroup.LayoutParams(width, height)
-            cView.setBackgroundColor(backgroundColor)
-            cView.translationZ = initialTranslationZ
-            mParent.addView(cView)
-            wrapper = cView
-            if (stickToTarget) {
-                onDrag(0f)
-            } else {
-                cView.translationX = initialTranslation.x.toFloat()
-                cView.translationY = initialTranslation.y.toFloat()
-            }
-
+            val cView = createWrapper()
             if (mFragment == null) {
                 val ft = mActivity.supportFragmentManager.beginTransaction()
                 val newInst = mClass.newInstance()
@@ -176,25 +161,61 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 
                 mFragment = newInst
             }
+            wrapper = cView
         } else if (destroyTimerTask != null) {
             destroyTimerTask!!.cancel()
         }
     }
 
+    /**
+     * Creates wrapper frame layout so there is view to handle even when fragment has no view yet
+     */
+    private fun createWrapper(): FrameLayout {
+        val cView = FrameLayout(mActivity)
+        cView.id = View.generateViewId()
+        cView.layoutParams = ViewGroup.LayoutParams(width, height)
+        cView.setBackgroundColor(backgroundColor)
+        cView.translationZ = initialTranslationZ
+        mParent.addView(cView)
+        wrapper = cView
+        if (stickToTarget) {
+            onDrag(0f)
+        } else {
+            cView.translationX = initialTranslation.x.toFloat()
+            cView.translationY = initialTranslation.y.toFloat()
+        }
+        return cView
+    }
+
     internal fun restoreFragment(id: Int, tag: String) {
+        //id is not reused because it might no longer be unique
         if (id != View.NO_ID)
-            wrapper = mParent.findViewById(id)
+            wrapper = createWrapper()
         this.mFragmentTag = tag
     }
 
+    @Suppress("UNCHECKED_CAST")
     internal fun restoreFragment(bundle: Bundle) {
-        @Suppress("UNCHECKED_CAST")
+        val wrapper = wrapper
         if (wrapper != null) {
-            val fragment = mActivity.supportFragmentManager.getFragment(bundle, mFragmentTag) as T?
-            if (fragment != null) {
-                mFragment = fragment
-                mActivity.supportFragmentManager.beginTransaction().replace(wrapper!!.id, fragment).commit()
-            }
+            val fragmentManager = mActivity.supportFragmentManager
+            val fragment = fragmentManager.findFragmentByTag(mFragmentTag)
+                    ?: fragmentManager.getFragment(bundle, mFragmentTag)
+            mFragment = fragment as T
+
+            //Problem with this is that top view loses it's width and height for some reason
+            /*val view = fragment.view
+            if (view != null) {
+                (view.parent as ViewGroup?)?.removeView(view)
+                wrapper.addView(view)
+            } else {*/
+
+            //Disadvantage of this is that view goes through this -> OnCreate, OnDestroy, OnCreate because of the remove and replace
+            fragmentManager.beginTransaction().remove(fragment).commitNow()
+            fragmentManager.beginTransaction().replace(wrapper.id, fragment).commitNow()
+            //}
+
+            onInitialized?.invoke(fragment)
         }
     }
 
@@ -275,14 +296,14 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         val ft = mActivity.supportFragmentManager.beginTransaction()
         ft.remove(mFragment)
         ft.setTransition(TRANSIT_NONE)
-        ft.commitAllowingStateLoss();
+        ft.commitAllowingStateLoss()
 
         mFragment = null
-        launch(UI) {
+        val wrapper = wrapper
+        this.wrapper = null
+        mParent.post {
             mParent.removeView(wrapper)
-            wrapper = null
         }
-
     }
 
     private fun removeTimer() {

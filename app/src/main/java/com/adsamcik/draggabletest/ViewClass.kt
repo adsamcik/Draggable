@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import com.adsamcik.draggable.IOnDemandView
 
 class ViewClass : Fragment(), IOnDemandView {
-
     override fun onPermissionResponse(requestCode: Int, success: Boolean) {
         Log.d("ViewClass", "Permission request")
     }
@@ -24,6 +23,13 @@ class ViewClass : Fragment(), IOnDemandView {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Log.d("ViewClass", "CreateView")
+        retainInstance = false
         return inflater.inflate(R.layout.fragment_view_class, container, false)
+    }
+
+    override fun onDestroyView() {
+        Log.d("ViewClass", "DestroyView")
+        super.onDestroyView()
     }
 }
