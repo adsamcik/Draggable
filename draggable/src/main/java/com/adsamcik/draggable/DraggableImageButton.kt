@@ -60,6 +60,13 @@ class DraggableImageButton : AppCompatImageButton {
 
     //Listeners
     var onEnterStateListener: EnterStateListener? = null
+        set(value) {
+            if (value != null && !isInTranstion.get()) {
+                value.invoke(this, state, dragAxis)
+            }
+            field = value
+        }
+
     var onLeaveStateListener: ExitStateListener? = null
 
     //Animation parameters
