@@ -1,4 +1,17 @@
-# Changelog
+Changelog
+=========
+
+## [0.10.4] - 31-3-2018
+
+* Fixed many bugs in fragment recreation which should now work much better
+
+#### Known issues ####
+
+* __Fragments are recreated twice__ (the first recreation is destroyed). 
+This is caused by removing and adding fragment to different container using FragmentTransaction. 
+There is a solution around this (changing view parent) but the problem 
+with that solution is that the top view in the hierarchy of that fragment 
+loses width and height.
 
 ## [0.10.3] - 30-3-2018
 
@@ -18,7 +31,8 @@
 
 * Add state saving including fragments. Needs to be called from activity to work properly. Currently not too tested, but it seems to work.
 
-Known issues
+#### Known issues ####
+   
 
 * Button properties are not retained on rotation (eg. background color)
 
