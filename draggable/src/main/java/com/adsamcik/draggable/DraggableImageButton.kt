@@ -376,6 +376,8 @@ class DraggableImageButton : AppCompatImageButton {
                 onEnterState(newState, stateChanged)
             }
         })
+
+        state = newState
     }
 
     /**
@@ -412,7 +414,6 @@ class DraggableImageButton : AppCompatImageButton {
             throw IllegalStateException("Not sure to which state should I move.")
 
         handleAnimatorListeners(animator, state, newState)
-        state = newState
     }
 
     /**
@@ -447,6 +448,8 @@ class DraggableImageButton : AppCompatImageButton {
 
         onLeaveState(currentState, changeState)
         onEnterState(newState, changeState || forceStateChange)
+
+        state = newState
     }
 
     private fun positionUpdate(initialConstraintTranslation: Float,
@@ -607,8 +610,15 @@ class DraggableImageButton : AppCompatImageButton {
     fun restoreFragments(bundle: Bundle) {
         payloads.forEach { it.restoreFragment(bundle) }
 
-        if (dragAxis != DragAxis.None && mDragDirection != DragAxis.None) {
-            moveToStateInternal(state, false, true)
+        initializeState(state)
+    }
+
+    private fun initializeState(state: State) {
+        if (dragAxis != DragAxis.None && mDragDirection != DragAxis.None && state != State.INITIAL) {
+            targetView?.post {
+                mTargetTranslation = calculateTargetTranslation()
+                moveToStateInternal(state, false)
+            }
         }
     }
 
@@ -624,33 +634,26 @@ class DraggableImageButton : AppCompatImageButton {
         return ss
     }
 
-    override fun onRestoreInstanceState(state: Parcelable?) {
-        if (state !is SavedState) {
-            super.onRestoreInstanceState(state)
+    override fun onRestoreInstanceState(savedState: Parcelable?) {
+        if (savedState !is SavedState) {
+            super.onRestoreInstanceState(savedState)
             return
         } else
-            super.onRestoreInstanceState(state.superState)
+            super.onRestoreInstanceState(savedState.superState)
 
         if (targetViewId != View.NO_ID && targetView == null)
             targetView = rootView.findViewById(targetViewId)
 
-        mDragDirection = state.dragDirection
+        mDragDirection = savedState.dragDirection
 
         //Basic check to ensure payloads are likely to be restored correctly
-        if (payloads.size == state.payloadFragmentTags.size) {
+        if (payloads.size == savedState.payloadFragmentTags.size) {
             for (i in 0 until payloads.size) {
-                payloads[i].restoreFragment(state.payloadWrapperId[i], state.payloadFragmentTags[i])
+                payloads[i].restoreFragment(savedState.payloadWrapperId[i], savedState.payloadFragmentTags[i])
             }
         }
 
-        this.state = state.state
-
-        if (dragAxis != DragAxis.None && mDragDirection != DragAxis.None) {
-            targetView?.post {
-                mTargetTranslation = calculateTargetTranslation()
-                moveToStateInternal(state.state, false)
-            }
-        }
+        initializeState(savedState.state)
     }
 
     internal class SavedState : View.BaseSavedState {
