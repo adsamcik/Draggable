@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
-import android.support.annotation.IdRes
 import android.support.v4.app.FragmentActivity
 import android.util.DisplayMetrics
 import android.util.Log
@@ -52,7 +51,7 @@ class MainActivity : FragmentActivity() {
                     button.setBackgroundColor(Color.YELLOW)
                 else
                     button.setBackgroundColor(Color.BLUE)
-            } else {
+            } else if (axis == DragAxis.X) {
                 if (state == DraggableImageButton.State.INITIAL) {
                     button.setBackgroundColor(Color.GRAY)
                     bottomButton.moveToState(DraggableImageButton.State.INITIAL, true)
@@ -86,7 +85,7 @@ class MainActivity : FragmentActivity() {
                 }
             }
         }
-        bottomButton.onLeaveStateListener = {_, state ->
+        bottomButton.onLeaveStateListener = { _, state ->
             Log.d("StateChange", "Leave state $state")
         }
 
