@@ -4,10 +4,12 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
+import android.support.annotation.IdRes
 import android.support.v4.app.FragmentActivity
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.ViewGroup
+import android.widget.Button
 import com.adsamcik.draggable.*
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -87,6 +89,10 @@ class MainActivity : FragmentActivity() {
         bottomButton.onLeaveStateListener = {_, state ->
             Log.d("StateChange", "Leave state $state")
         }
+
+        val lameButton = Button(this)
+        lameButton.id = 1
+        parent.addView(lameButton)
 
         //bottomButton.extendTouchAreaBy(dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64))
 

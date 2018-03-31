@@ -167,12 +167,22 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         }
     }
 
+    private fun View.generateUniqueId() {
+        while (true) {
+            val id = View.generateViewId()
+            if (mParent.rootView.findViewById<View>(id) == null) {
+                this.id = id
+                return
+            }
+        }
+    }
+
     /**
      * Creates wrapper frame layout so there is view to handle even when fragment has no view yet
      */
     private fun createWrapper(): FrameLayout {
         val cView = FrameLayout(mActivity)
-        cView.id = View.generateViewId()
+        cView.generateUniqueId()
         cView.layoutParams = ViewGroup.LayoutParams(width, height)
         cView.setBackgroundColor(backgroundColor)
         cView.translationZ = initialTranslationZ
@@ -285,11 +295,12 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         }
     }
 
+    @Synchronized
     private fun destroyFragment() {
-        if (mFragment == null)
-            throw RuntimeException("Fragment is already null")
-        else if (mFragment!!.isStateSaved)
+        if (mFragment?.isStateSaved != false)
             return
+
+        removeTimer()
 
         onBeforeDestroyed?.invoke(mFragment!!)
 

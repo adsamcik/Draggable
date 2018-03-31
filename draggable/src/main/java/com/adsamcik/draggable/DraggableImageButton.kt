@@ -322,7 +322,7 @@ class DraggableImageButton : AppCompatImageButton {
             this.touchRect = null
         }
     }
-    
+
     override fun performClick(): Boolean {
         if (!isClickable)
             return false
@@ -443,11 +443,11 @@ class DraggableImageButton : AppCompatImageButton {
 
     private fun onStateSet(currentState: State,
                            newState: State,
-                           forceStateChange: Boolean) {
+                           forceEnterState: Boolean) {
         val changeState = currentState != newState
 
         onLeaveState(currentState, changeState)
-        onEnterState(newState, changeState || forceStateChange)
+        onEnterState(newState, changeState || forceEnterState)
 
         state = newState
     }
@@ -614,10 +614,12 @@ class DraggableImageButton : AppCompatImageButton {
     }
 
     private fun initializeState(state: State) {
-        if (dragAxis != DragAxis.None && mDragDirection != DragAxis.None && state != State.INITIAL) {
+        if (state == State.INITIAL) {
+            onEnterState(state, true)
+        } else if (dragAxis != DragAxis.None && mDragDirection != DragAxis.None) {
             targetView?.post {
                 mTargetTranslation = calculateTargetTranslation()
-                moveToStateInternal(state, false)
+                moveToStateInternal(state, false, true)
             }
         }
     }
