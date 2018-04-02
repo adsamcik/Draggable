@@ -665,7 +665,7 @@ class DraggableImageButton : AppCompatImageButton {
         initializeState(savedState.state)
     }
 
-    internal class SavedState : View.BaseSavedState {
+    internal class SavedState : View.BaseSavedState, Parcelable {
         lateinit var state: State
         lateinit var dragDirection: DragAxis
         lateinit var payloadFragmentTags: List<String>
@@ -690,5 +690,14 @@ class DraggableImageButton : AppCompatImageButton {
             out.writeStringList(payloadFragmentTags)
             out.writeIntArray(payloadWrapperId)
         }
+
+        companion object {
+            @JvmField
+            val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.Creator<SavedState> {
+                override fun createFromParcel(source: Parcel): SavedState = SavedState(source)
+                override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
+            }
+        }
+
     }
 }
