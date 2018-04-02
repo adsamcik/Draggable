@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## [0.11.1] - 2-4-2018
+
+* Fixed crash during activity restoration
+
 ## [0.11.0] - 31-3-2018
 
 * EnterState is now called when listener is attached and button is in state (Reason for this larger version bump)
