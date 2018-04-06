@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## [0.11.1] - 6-4-2018
+
+* Add hasChanged variable to onEnter to distinguish between true state changes
+
 ## [0.11.1] - 2-4-2018
 
 * Fixed crash during activity restoration
