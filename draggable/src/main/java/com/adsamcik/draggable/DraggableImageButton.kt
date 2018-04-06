@@ -62,7 +62,7 @@ class DraggableImageButton : AppCompatImageButton {
     var onEnterStateListener: EnterStateListener? = null
         set(value) {
             if (value != null && !isInTranstion.get()) {
-                value.invoke(this, state, dragAxis)
+                value.invoke(this, state, dragAxis, false)
             }
             field = value
         }
@@ -439,7 +439,7 @@ class DraggableImageButton : AppCompatImageButton {
     private fun onEnterState(state: State, stateChange: Boolean) {
         if (stateChange || isInTranstion.get()) {
             mPayloads.forEach { it.onStateChange(state) }
-            onEnterStateListener?.invoke(this, state, mDragDirection)
+            onEnterStateListener?.invoke(this, state, mDragDirection, stateChange)
 
             if (state == State.INITIAL)
                 mPayloads.forEach { it.onInitialPosition() }

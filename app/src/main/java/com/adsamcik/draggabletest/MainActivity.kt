@@ -45,7 +45,7 @@ class MainActivity : FragmentActivity() {
         }
         topPayload.targetTranslationZ = dpToPx(this, 16).toFloat()
         topButton.addPayload(topPayload)
-        topButton.onEnterStateListener = { button, state, axis ->
+        topButton.onEnterStateListener = { button, state, axis, _ ->
             if (axis == DragAxis.Y) {
                 if (state == DraggableImageButton.State.INITIAL)
                     button.setBackgroundColor(Color.YELLOW)
@@ -72,8 +72,8 @@ class MainActivity : FragmentActivity() {
         payload.anchor = DragTargetAnchor.LeftTop
         payload.setOffsetsDp(Offset(16))
         bottomButton.addPayload(payload)
-        bottomButton.onEnterStateListener = { button, state, _ ->
-            Log.d("StateChange", "Enter state $state")
+        bottomButton.onEnterStateListener = { button, state, _, change ->
+            Log.d("StateChange", "Enter state $state change? $change")
             when (state) {
                 DraggableImageButton.State.INITIAL -> {
                     button.setBackgroundColor(Color.GREEN)
