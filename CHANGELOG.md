@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## [0.11.1] - 6-4-2018
+## [0.12.0] - 6-4-2018
 
 * Add hasChanged variable to onEnter to distinguish between true state changes
 
