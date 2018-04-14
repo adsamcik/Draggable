@@ -85,7 +85,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
      *
      * Negative numbers serve as infinite
      */
-    var destroyPayloadAfter: Long = -1
+    var destroyPayloadAfter: Long = NEVER
 
     /**
      * Initial translation z
@@ -370,7 +370,16 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     }
 
     companion object {
+        /**
+         * Fragment destruction constant indicating it never be destroyed after entering [DraggableImageButton.State.INITIAL]
+         * Constant is set to [destroyPayloadAfter] property
+         */
         const val NEVER = -1L
+
+        /**
+         * Fragment destruction constant indicating it should be immediately destroyed after entering [DraggableImageButton.State.INITIAL]
+         * Constant is set to [destroyPayloadAfter] property
+         */
         const val IMMEDIATELY = 0L
     }
 }
