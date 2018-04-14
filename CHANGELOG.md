@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## [0.12.1] - 14-4-2018
+
+* Improved fragment destruction
+
 ## [0.12.0] - 6-4-2018
 
 * Add hasChanged variable to onEnter to distinguish between true state changes
