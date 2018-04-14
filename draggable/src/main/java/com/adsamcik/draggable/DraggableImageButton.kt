@@ -331,8 +331,10 @@ class DraggableImageButton : AppCompatImageButton {
     }
 
     override fun performClick(): Boolean {
-        if (!isClickable)
+        if (!isClickable) {
+            onEnterState(state, false)
             return false
+        }
 
         if (mDragDirection == DragAxis.XY)
             throw UnsupportedOperationException("You can't perform click operation on both axes")
@@ -428,7 +430,9 @@ class DraggableImageButton : AppCompatImageButton {
      */
     private fun onLeaveState(state: State, changeState: Boolean) {
         if (changeState && !isInTranstion.get()) {
+            mPayloads.forEach { it.onLeaveState(state) }
             onLeaveStateListener?.invoke(this, state)
+
             isInTranstion.set(true)
         }
     }
@@ -438,11 +442,8 @@ class DraggableImageButton : AppCompatImageButton {
      */
     private fun onEnterState(state: State, stateChange: Boolean) {
         if (stateChange || isInTranstion.get()) {
-            mPayloads.forEach { it.onStateChange(state) }
+            mPayloads.forEach { it.onEnterState(state) }
             onEnterStateListener?.invoke(this, state, mDragDirection, stateChange)
-
-            if (state == State.INITIAL)
-                mPayloads.forEach { it.onInitialPosition() }
 
             isInTranstion.set(false)
         }

@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
 import java.util.*
+import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.schedule
 import kotlin.math.roundToInt
 
@@ -111,6 +112,11 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     private var destroyTimerTask: TimerTask? = null
 
     /**
+     * Lock for destroy task
+     */
+    private var destroyLock = ReentrantLock()
+
+    /**
      * Fragment tag used for finding existing fragment
      * It is nearly impossible for there to be 2 fragments with the same tag
      * Uses mClass to make sure it is always at least the same type and never causes cast crash
@@ -162,8 +168,6 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
                 mFragment = newInst
             }
             wrapper = cView
-        } else if (destroyTimerTask != null) {
-            destroyTimerTask!!.cancel()
         }
     }
 
@@ -251,17 +255,12 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         if (wrapper == null)
             initializeView()
 
-        removeTimer()
-
         val wrapper = wrapper!!
 
         if (stickToTarget)
             moveWithTarget()
         else
             moveWithPercentage(percentage)
-
-        //val targetOnScreen = Utility.getLocationOnScreen(mTargetView)
-        //Log.d("Draggable", "Progress $percentage translation y ${wrapper.translationY} target view ${mTargetView.translationY} target on screen ${targetOnScreen[1]}")
 
         if (initialTranslationZ != targetTranslationZ)
             wrapper.translationZ = initialTranslationZ + (targetTranslationZ - initialTranslationZ) * percentage
@@ -287,12 +286,19 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         wrapper.translationY = initialTranslation.y.toFloat() + targetTranslation.y * percentage
     }
 
-    internal fun onInitialPosition() {
-        if (destroyPayloadAfter > IMMEDIATELY) {
-            destroyTimerTask = Timer("Destroy", true).schedule(destroyPayloadAfter) { destroyFragment() }
-        } else if (destroyPayloadAfter == IMMEDIATELY) {
-            destroyFragment()
+    @Synchronized
+    private fun onInitialPosition() {
+        destroyLock.lock()
+
+        if (destroyTimerTask == null) {
+            if (destroyPayloadAfter > IMMEDIATELY) {
+                destroyTimerTask = Timer("Destroy", true).schedule(destroyPayloadAfter) { destroyFragment() }
+            } else if (destroyPayloadAfter == IMMEDIATELY) {
+                destroyFragment()
+            }
         }
+
+        destroyLock.unlock()
     }
 
     @Synchronized
@@ -300,6 +306,7 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         if (mFragment?.isStateSaved != false)
             return
 
+        destroyLock.lock()
         removeTimer()
 
         onBeforeDestroyed?.invoke(mFragment!!)
@@ -315,11 +322,17 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
         mParent.post {
             mParent.removeView(wrapper)
         }
+        destroyLock.unlock()
     }
 
+    @Synchronized
     private fun removeTimer() {
+        destroyLock.lock()
+
         destroyTimerTask?.cancel()
         destroyTimerTask = null
+
+        destroyLock.unlock()
     }
 
     /**
@@ -330,16 +343,30 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
      */
     internal fun onPermissionResponse(requestCode: Int, success: Boolean) = mFragment?.onPermissionResponse(requestCode, success)
 
+
     /**
-     * Called when state change is finished
+     * Called when entering state
      *
-     * @param state Current button state
+     * @param state State which is being entered
      */
-    internal fun onStateChange(state: DraggableImageButton.State) {
+    internal fun onEnterState(state: DraggableImageButton.State) {
         when (state) {
             DraggableImageButton.State.TARGET -> mFragment?.onEnter(mActivity)
-            DraggableImageButton.State.INITIAL -> mFragment?.onLeave(mActivity)
+            DraggableImageButton.State.INITIAL -> {
+                mFragment?.onLeave(mActivity)
+                onInitialPosition()
+            }
         }
+    }
+
+    /**
+     * Called when leaving state
+     *
+     * @param state State which is being leaved
+     */
+    internal fun onLeaveState(state: DraggableImageButton.State) {
+        if (state == DraggableImageButton.State.INITIAL)
+            removeTimer()
     }
 
     companion object {
