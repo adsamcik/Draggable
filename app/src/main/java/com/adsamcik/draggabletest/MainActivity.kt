@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import com.adsamcik.draggable.*
@@ -90,7 +91,7 @@ class MainActivity : FragmentActivity() {
         }
 
         val lameButton = Button(this)
-        lameButton.id = 1
+        lameButton.id = View.generateViewId()
         parent.addView(lameButton)
 
         //bottomButton.extendTouchAreaBy(dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64), dpToPx(this, 64))
