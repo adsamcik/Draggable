@@ -3,9 +3,9 @@ package com.adsamcik.draggable
 import android.annotation.SuppressLint
 import android.graphics.Point
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
-import android.support.v4.app.FragmentTransaction.TRANSIT_NONE
+import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentTransaction.TRANSIT_NONE
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -16,11 +16,11 @@ import kotlin.concurrent.schedule
 import kotlin.math.roundToInt
 
 
-class DraggablePayload<T>(private val mActivity: FragmentActivity,
+class DraggablePayload<T>(private val mActivity: AppCompatActivity,
                           private val mClass: Class<T>,
                           private val mParent: ViewGroup,
                           private val mTargetView: View
-) where T : Fragment, T : IOnDemandView {
+) where T : androidx.fragment.app.Fragment, T : IOnDemandView {
     /**
      * Offset in pixels
      */
@@ -234,8 +234,9 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
     }
 
     internal fun saveFragment(bundle: Bundle) {
-        if (mFragment != null)
-            mActivity.supportFragmentManager.putFragment(bundle, mFragmentTag, mFragment)
+        val fragment = mFragment
+        if (fragment != null)
+            mActivity.supportFragmentManager.putFragment(bundle, mFragmentTag, fragment)
     }
 
     private fun calculateTargetTranslation(toView: View, offset: Point, offsets: Offset): Point {
@@ -303,16 +304,17 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 
     @Synchronized
     private fun destroyFragment() {
-        if (mFragment?.isStateSaved != false)
+        val fragment = mFragment
+        if (fragment?.isStateSaved != false)
             return
 
         destroyLock.lock()
         removeTimer()
 
-        onBeforeDestroyed?.invoke(mFragment!!)
+        onBeforeDestroyed?.invoke(fragment)
 
         val ft = mActivity.supportFragmentManager.beginTransaction()
-        ft.remove(mFragment)
+        ft.remove(fragment)
         ft.setTransition(TRANSIT_NONE)
         ft.commitAllowingStateLoss()
 

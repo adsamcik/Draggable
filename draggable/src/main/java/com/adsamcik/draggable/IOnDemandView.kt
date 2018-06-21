@@ -1,6 +1,6 @@
 package com.adsamcik.draggable
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 
 interface IOnDemandView {
     /**
@@ -8,14 +8,14 @@ interface IOnDemandView {
      *
      * @param activity Activity (It passes only Activity to allow better future support for changes)
      */
-    fun onEnter(activity: Activity)
+    fun onEnter(activity: AppCompatActivity)
 
     /**
      * Called when leaving tab
      *
      * @param activity Activity (It passes only Activity to allow better future support for changes)
      */
-    fun onLeave(activity: Activity)
+    fun onLeave(activity: AppCompatActivity)
 
     /**
      * Called when permissions result comes back

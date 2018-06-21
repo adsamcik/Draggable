@@ -11,7 +11,7 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
-import android.support.v7.widget.AppCompatImageButton
+import androidx.appcompat.widget.AppCompatImageButton
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.VelocityTracker
