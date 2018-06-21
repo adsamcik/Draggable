@@ -3,13 +3,12 @@ package com.adsamcik.draggable
 import android.annotation.SuppressLint
 import android.graphics.Point
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentTransaction.TRANSIT_NONE
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentTransaction.TRANSIT_NONE
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.schedule
