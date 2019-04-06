@@ -9,7 +9,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka'
 
-ext.version = '0.14.0'
+ext.version = '0.14.1'
 
 android {
     compileSdkVersion 28
@@ -42,8 +42,8 @@ dokka {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.22.5"
-    implementation 'androidx.appcompat:appcompat:1.0.0-alpha3'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.0"
+    implementation 'androidx.appcompat:appcompat:1.0.2'
 
     implementation 'com.adsamcik.android-components:touchdelegate:1.1.3'
 }

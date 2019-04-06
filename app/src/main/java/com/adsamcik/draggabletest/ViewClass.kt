@@ -1,12 +1,12 @@
 package com.adsamcik.draggabletest
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.adsamcik.draggable.IOnDemandView
 
 class ViewClass : Fragment(), IOnDemandView {
@@ -14,11 +14,11 @@ class ViewClass : Fragment(), IOnDemandView {
         Log.d("ViewClass", "Permission request")
     }
 
-    override fun onEnter(activity: AppCompatActivity) {
+    override fun onEnter(activity: FragmentActivity) {
         Log.d("ViewClass", "Enter")
     }
 
-    override fun onLeave(activity: AppCompatActivity) {
+    override fun onLeave(activity: FragmentActivity) {
         Log.d("ViewClass", "Exit")
     }
 

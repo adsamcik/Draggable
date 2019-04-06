@@ -7,7 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction.TRANSIT_NONE
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
@@ -15,11 +16,11 @@ import kotlin.concurrent.schedule
 import kotlin.math.roundToInt
 
 
-class DraggablePayload<T>(private val mActivity: AppCompatActivity,
+class DraggablePayload<T>(private val mActivity: FragmentActivity,
                           private val mClass: Class<T>,
                           private val mParent: ViewGroup,
                           private val mTargetView: View
-) where T : androidx.fragment.app.Fragment, T : IOnDemandView {
+) where T : Fragment, T : IOnDemandView {
     /**
      * Offset in pixels
      */
