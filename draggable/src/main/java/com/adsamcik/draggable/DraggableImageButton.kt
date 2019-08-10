@@ -7,8 +7,10 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.TypedArray
+import android.graphics.Canvas
 import android.graphics.PointF
 import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
@@ -22,10 +24,12 @@ import androidx.appcompat.widget.AppCompatImageButton
 import com.adsamcik.touchdelegate.DraggableTouchDelegate
 import com.adsamcik.touchdelegate.TouchDelegateComposite
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
 
+@SuppressWarnings("Unused", "WeakerAccess")
 class DraggableImageButton : AppCompatImageButton {
 	/**
 	 * Axis along which object can be dragged
@@ -62,7 +66,7 @@ class DraggableImageButton : AppCompatImageButton {
 	//Listeners
 	var onEnterStateListener: EnterStateListener? = null
 		set(value) {
-			if (value != null && !isInTranstion.get()) {
+			if (value != null && !isInTransition.get()) {
 				value.invoke(this, state, dragAxis, false)
 			}
 			field = value
@@ -84,10 +88,10 @@ class DraggableImageButton : AppCompatImageButton {
 	var state = State.INITIAL
 		private set
 
-	var isInTranstion: AtomicBoolean = AtomicBoolean(false)
+	var isInTransition: AtomicBoolean = AtomicBoolean(false)
 		private set
 
-	private val mPayloads = ArrayList<DraggablePayload<*>>()
+	private val mPayloads = mutableListOf<DraggablePayload<*>>()
 	private var mActiveAnimation: ValueAnimator? = null
 
 	//Translation X and Y
@@ -112,6 +116,8 @@ class DraggableImageButton : AppCompatImageButton {
 	private var touchRect: Rect? = null
 
 	private var mFragmentTag: String = Math.random().toString()
+
+	private var exclusionRects = mutableListOf<Rect>(Rect())
 
 	constructor(context: Context) : super(context)
 	constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
@@ -179,12 +185,12 @@ class DraggableImageButton : AppCompatImageButton {
 		val interpolatorId = typedArray.getInt(R.styleable.DraggableImageButton_interpolator, -1)
 		if (interpolatorId >= 0) {
 			animationInterpolator = when (interpolatorId) {
-				0 -> LinearInterpolator()
-				1 -> OvershootInterpolator()
-				2 -> BounceInterpolator()
-				3 -> AccelerateInterpolator()
-				4 -> DecelerateInterpolator()
-				5 -> AccelerateDecelerateInterpolator()
+				0 -> LinearInterpolator() as TimeInterpolator
+				1 -> OvershootInterpolator() as TimeInterpolator
+				2 -> BounceInterpolator() as TimeInterpolator
+				3 -> AccelerateInterpolator() as TimeInterpolator
+				4 -> DecelerateInterpolator() as TimeInterpolator
+				5 -> AccelerateDecelerateInterpolator() as TimeInterpolator
 				else -> throw IllegalArgumentException("Invalid interpolator value")
 			}
 		}
@@ -251,17 +257,16 @@ class DraggableImageButton : AppCompatImageButton {
 	 * @param state State to which the button should move
 	 */
 	fun moveToState(state: State, animate: Boolean) {
-		if (targetView == null)
-			throw RuntimeException("You cannot move to state without target view")
+		if (targetView == null) throw RuntimeException("You cannot move to state without target view")
 
-		if (this.state == state && !isInTranstion.get())
-			return
+		if (this.state == state && !isInTransition.get()) return
 
 		mTargetTranslation = calculateTargetTranslation()
 
 		mDrag = false
-		if (this.state == State.INITIAL)
+		if (this.state == State.INITIAL) {
 			mDragDirection = dragAxis
+		}
 		moveToStateInternal(state, animate)
 	}
 
@@ -315,16 +320,18 @@ class DraggableImageButton : AppCompatImageButton {
 			if (delegate is TouchDelegateComposite) {
 				delegate.removeDelegate(touchDemandView)
 
-				if (delegate.count == 0)
+				if (delegate.count == 0) {
 					parent.touchDelegate = null
+				}
 			}
 		}
 	}
 
 	override fun onAttachedToWindow() {
 		super.onAttachedToWindow()
-		if (targetViewId != View.NO_ID && targetView == null)
+		if (targetViewId != View.NO_ID && targetView == null) {
 			targetView = rootView.findViewById(targetViewId)
+		}
 
 		val touchRect = touchRect
 		if (touchRect != null) {
@@ -339,8 +346,9 @@ class DraggableImageButton : AppCompatImageButton {
 			return false
 		}
 
-		if (mDragDirection == DragAxis.XY)
+		if (mDragDirection == DragAxis.XY) {
 			throw UnsupportedOperationException("You can't perform click operation on both axes")
+		}
 
 		super.performClick()
 
@@ -406,24 +414,25 @@ class DraggableImageButton : AppCompatImageButton {
 
 		if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
 			target = if (newState == State.INITIAL) mInitialTranslation.x else mTargetTranslation.x
-			if (animate)
+			if (animate) {
 				animator = animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
-			else {
+			} else {
 				positionUpdate(mInitialTranslation.x, mTargetTranslation.x, target, ::setTranslationX)
 				onStateSet(state, newState, forceOnEnter)
 				return
 			}
 		} else if (dragAxis.isVertical() && mDragDirection.isVertical()) {
 			target = if (newState == State.INITIAL) mInitialTranslation.y else mTargetTranslation.y
-			if (animate)
+			if (animate) {
 				animator = animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
-			else {
+			} else {
 				positionUpdate(mInitialTranslation.y, mTargetTranslation.y, target, ::setTranslationY)
 				onStateSet(state, newState, forceOnEnter)
 				return
 			}
-		} else
+		} else {
 			throw IllegalStateException("Not sure to which state should I move.")
+		}
 
 		handleAnimatorListeners(animator, state, newState)
 	}
@@ -432,11 +441,11 @@ class DraggableImageButton : AppCompatImageButton {
 	 * Called internally when leaving state
 	 */
 	private fun onLeaveState(state: State, changeState: Boolean) {
-		if (changeState && !isInTranstion.get()) {
+		if (changeState && !isInTransition.get()) {
 			mPayloads.forEach { it.onLeaveState(state) }
 			onLeaveStateListener?.invoke(this, state)
 
-			isInTranstion.set(true)
+			isInTransition.set(true)
 		}
 	}
 
@@ -444,11 +453,11 @@ class DraggableImageButton : AppCompatImageButton {
 	 * Called internally when entering state
 	 */
 	private fun onEnterState(state: State, stateChange: Boolean) {
-		if (stateChange || isInTranstion.get()) {
+		if (stateChange || isInTransition.get()) {
 			mPayloads.forEach { it.onEnterState(state) }
 			onEnterStateListener?.invoke(this, state, mDragDirection, stateChange)
 
-			isInTranstion.set(false)
+			isInTransition.set(false)
 		}
 	}
 
@@ -507,18 +516,17 @@ class DraggableImageButton : AppCompatImageButton {
 		val dirVelocity = velocity * direction
 
 		val flingVelocityRange = mMinFlingVelocity.toFloat()..mMaxFlingVelocity.toFloat()
-		val useVelocity = Math.abs(velocity) in flingVelocityRange
+		val useVelocity = abs(velocity) in flingVelocityRange
 
 		return (useVelocity && dirVelocity in flingVelocityRange) ||
-				(Math.abs(translation - initialTranslation) < Math.abs(translation - targetTranslation)) xor
+				(abs(translation - initialTranslation) < abs(translation - targetTranslation)) xor
 				(state == State.INITIAL)
 	}
 
 	//Recycle is called but refactoring caused lint to properly detect it
 	@SuppressLint("Recycle")
 	override fun onTouchEvent(event: MotionEvent): Boolean {
-		if (dragAxis == DragAxis.None || targetView == null)
-			return false
+		if (dragAxis == DragAxis.None || targetView == null) return false
 
 		when (event.action and MotionEvent.ACTION_MASK) {
 			MotionEvent.ACTION_DOWN -> {
@@ -530,8 +538,9 @@ class DraggableImageButton : AppCompatImageButton {
 
 				onLeaveState(state, true)
 
-				if (state == State.INITIAL)
+				if (state == State.INITIAL) {
 					mDragDirection = DragAxis.None
+				}
 
 				mActiveAnimation?.run {
 					cancel()
@@ -549,9 +558,9 @@ class DraggableImageButton : AppCompatImageButton {
 						?: throw NullPointerException("Velocity tracker is null")
 				mVelocityTracker = null
 
-				if (!mDrag)
+				if (!mDrag) {
 					performClick()
-				else if (targetView != null) {
+				} else if (targetView != null) {
 					mTargetTranslation = calculateTargetTranslation()
 
 					velocityTracker.computeCurrentVelocity(1000)
@@ -564,29 +573,33 @@ class DraggableImageButton : AppCompatImageButton {
 						calculateMove(velocityTracker.yVelocity, translationY, mInitialTranslation.y, mTargetTranslation.y)
 					} else if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
 						calculateMove(velocityTracker.xVelocity, translationX, mInitialTranslation.x, mTargetTranslation.x)
-					} else
+					} else {
 						return true
+					}
 
-					if (move)
+					if (move) {
 						moveToStateInternal(!state, true)
-					else
+					} else {
 						moveToStateInternal(state, true)
+					}
 				}
 
 				velocityTracker.recycle()
 			}
 			MotionEvent.ACTION_MOVE -> {
-				val velocityTracker = mVelocityTracker ?: throw NullPointerException("Velocity tracker is null")
+				val velocityTracker = mVelocityTracker
+						?: throw NullPointerException("Velocity tracker is null")
 				velocityTracker.addMovement(event)
 
 				if (!mDrag) {
 					//Checks whether we dragged far enough to consider this a drag gesture
-					val xDiff = Math.abs(event.rawX - mTouchInitialPosition.x)
-					val yDiff = Math.abs(event.rawY - mTouchInitialPosition.y)
+					val xDiff = abs(event.rawX - mTouchInitialPosition.x)
+					val yDiff = abs(event.rawY - mTouchInitialPosition.y)
 					if (xDiff > yDiff) {
 						if (xDiff > mSlop && !mDragDirection.isVertical()) {
-							if (!mDragDirection.isHorizontal())
+							if (!mDragDirection.isHorizontal()) {
 								mDragDirection = DragAxis.X
+							}
 							mDrag = true
 						}
 					} else {
@@ -640,7 +653,7 @@ class DraggableImageButton : AppCompatImageButton {
 		} else if (dragAxis != DragAxis.None && mDragDirection != DragAxis.None) {
 			targetView?.post {
 				mTargetTranslation = calculateTargetTranslation()
-				moveToStateInternal(state, false, true)
+				moveToStateInternal(state, animate = false, forceOnEnter = true)
 			}
 		}
 	}
@@ -648,24 +661,26 @@ class DraggableImageButton : AppCompatImageButton {
 	override fun onSaveInstanceState(): Parcelable {
 		val superState = super.onSaveInstanceState()
 
-		val ss = SavedState(superState)
-		ss.state = state
-		ss.dragDirection = mDragDirection
-		ss.payloadFragmentTags = mPayloads.map { it.mFragmentTag }
-		ss.payloadWrapperId = mPayloads.map { it.wrapper?.id ?: View.NO_ID }.toIntArray()
+		return SavedState(superState).apply {
+			state = state
+			dragDirection = mDragDirection
+			payloadFragmentTags = mPayloads.map { it.mFragmentTag }
+			payloadWrapperId = mPayloads.map { it.wrapper?.id ?: View.NO_ID }.toIntArray()
+		}
 
-		return ss
 	}
 
 	override fun onRestoreInstanceState(savedState: Parcelable?) {
 		if (savedState !is SavedState) {
 			super.onRestoreInstanceState(savedState)
 			return
-		} else
+		} else {
 			super.onRestoreInstanceState(savedState.superState)
+		}
 
-		if (targetViewId != View.NO_ID && targetView == null)
+		if (targetViewId != View.NO_ID && targetView == null) {
 			targetView = rootView.findViewById(targetViewId)
+		}
 
 		mDragDirection = savedState.dragDirection
 
@@ -695,7 +710,7 @@ class DraggableImageButton : AppCompatImageButton {
 			source.readIntArray(payloadWrapperId)
 		}
 
-		constructor(superState: Parcelable) : super(superState)
+		constructor(superState: Parcelable?) : super(superState)
 
 		override fun writeToParcel(out: Parcel, flags: Int) {
 			super.writeToParcel(out, flags)
