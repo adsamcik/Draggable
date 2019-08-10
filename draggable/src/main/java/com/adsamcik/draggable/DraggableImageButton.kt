@@ -7,7 +7,6 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.TypedArray
-import android.graphics.Canvas
 import android.graphics.PointF
 import android.graphics.Rect
 import android.os.Build
@@ -116,8 +115,6 @@ class DraggableImageButton : AppCompatImageButton {
 	private var touchRect: Rect? = null
 
 	private var mFragmentTag: String = Math.random().toString()
-
-	private var exclusionRects = mutableListOf<Rect>(Rect())
 
 	constructor(context: Context) : super(context)
 	constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
