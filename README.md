@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/adsamcik/Draggable.svg?branch=master)](https://travis-ci.org/adsamcik/Draggable)
+![Build Status](https://github.com/adsamcik/Draggable/workflows/Android%20CI/badge.svg)
 [ ![Download](https://api.bintray.com/packages/adsamcik/android-components/draggable/images/download.svg) ](https://bintray.com/adsamcik/android-components/draggable/_latestVersion)
 
 # Draggable
