@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
-import android.support.v4.app.FragmentActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
@@ -14,7 +14,7 @@ import com.adsamcik.draggable.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
     private fun dpToPx(c: Context, dp: Int): Int = Math.round(dp * c.resources.displayMetrics.density)
 
     override fun onCreate(savedInstanceState: Bundle?) {

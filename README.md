@@ -1,4 +1,5 @@
 ![Build Status](https://github.com/adsamcik/Draggable/workflows/Android%20CI/badge.svg)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/51e4ee2c8cbf42e58d4013e3d6ca2fa8)](https://www.codacy.com/app/adsamcik/Draggable?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=adsamcik/Draggable&amp;utm_campaign=Badge_Grade)
 [ ![Download](https://api.bintray.com/packages/adsamcik/android-components/draggable/images/download.svg) ](https://bintray.com/adsamcik/android-components/draggable/_latestVersion)
 
 # Draggable
