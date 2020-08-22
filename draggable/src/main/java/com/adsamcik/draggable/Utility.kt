@@ -11,7 +11,7 @@ internal object Utility {
 			sourceView: View,
 			toView: View,
 			anchor: DragTargetAnchor,
-			offset: Offset
+			offset: Offset,
 	): PointF {
 		val thisOnScreen = sourceView.locationOnScreen()
 		val targetOnScreen = toView.locationOnScreen()
@@ -39,7 +39,7 @@ internal object Utility {
 	internal fun betweenInPercent(
 			firstConstraint: Int,
 			secondConstraint: Int,
-			number: Float
+			number: Float,
 	): Float {
 		return (number - firstConstraint) / (secondConstraint - firstConstraint)
 	}
@@ -47,7 +47,7 @@ internal object Utility {
 	internal fun betweenInPercent(
 			firstConstraint: Float,
 			secondConstraint: Float,
-			number: Float
+			number: Float,
 	): Float {
 		return if (firstConstraint == secondConstraint)
 			0f

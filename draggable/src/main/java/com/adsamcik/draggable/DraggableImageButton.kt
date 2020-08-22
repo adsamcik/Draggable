@@ -250,7 +250,7 @@ class DraggableImageButton : AppCompatImageButton {
 	}
 
 	fun setTargetOffsetDp(offset: Offset) {
-		this.targetOffset.setWithDpAsPx(offset)
+		this.targetOffset.setWithDp(offset)
 	}
 
 	/**
@@ -403,7 +403,7 @@ class DraggableImageButton : AppCompatImageButton {
 			targetConstraintTranslation: Float,
 			thisTranslation: Float,
 			targetTranslation: Float,
-			assignListener: (Float) -> Unit
+			assignListener: (Float) -> Unit,
 	): ValueAnimator {
 		val valueAnimator = ValueAnimator.ofFloat(thisTranslation, targetTranslation)
 
@@ -431,7 +431,7 @@ class DraggableImageButton : AppCompatImageButton {
 	private fun handleAnimatorListeners(
 			animator: ValueAnimator,
 			currentState: State,
-			newState: State
+			newState: State,
 	) {
 		val stateChanged = newState != currentState
 
@@ -457,7 +457,7 @@ class DraggableImageButton : AppCompatImageButton {
 	private fun moveToStateInternal(
 			newState: State,
 			animate: Boolean,
-			forceOnEnter: Boolean = false
+			forceOnEnter: Boolean = false,
 	) {
 		val target: Float
 		val animator: ValueAnimator
@@ -536,7 +536,7 @@ class DraggableImageButton : AppCompatImageButton {
 	private fun onStateSet(
 			currentState: State,
 			newState: State,
-			forceEnterState: Boolean
+			forceEnterState: Boolean,
 	) {
 		val changeState = currentState != newState
 
@@ -550,7 +550,7 @@ class DraggableImageButton : AppCompatImageButton {
 			initialConstraintTranslation: Float,
 			targetConstraintTranslation: Float,
 			value: Float,
-			assignListener: (Float) -> Unit
+			assignListener: (Float) -> Unit,
 	) {
 		assignListener.invoke(value)
 		val percentage = Utility.betweenInPercent(
@@ -581,7 +581,7 @@ class DraggableImageButton : AppCompatImageButton {
 			desire: Float,
 			initialTranslation: Float,
 			targetTranslation: Float,
-			translationSetter: (Float) -> Unit
+			translationSetter: (Float) -> Unit,
 	) {
 		if (targetView != null) {
 			if (Utility.between(initialTranslation, targetTranslation, desire)) {
@@ -614,7 +614,7 @@ class DraggableImageButton : AppCompatImageButton {
 			velocity: Float,
 			translation: Float,
 			initialTranslation: Float,
-			targetTranslation: Float
+			targetTranslation: Float,
 	): Boolean {
 		val direction = (targetTranslation - initialTranslation).sign * if (state == State.INITIAL) 1 else -1
 		val dirVelocity = velocity * direction

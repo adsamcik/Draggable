@@ -41,8 +41,9 @@ class MainActivity : AppCompatActivity() {
         topPayload.initialTranslation = Point(0, -400)
         topPayload.anchor = DragTargetAnchor.LeftBottom
         topPayload.onInitialized = {
-            it.view!!.setBackgroundColor(Color.CYAN)
-            it.view!!.setOnClickListener { }
+            val view = requireNotNull(it.view)
+            view.setBackgroundColor(Color.CYAN)
+            view.setOnClickListener { }
         }
         topPayload.targetTranslationZ = dpToPx(this, 16).toFloat()
         topButton.addPayload(topPayload)

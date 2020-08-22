@@ -1,6 +1,5 @@
 package com.adsamcik.draggable
 
-import android.annotation.SuppressLint
 import android.graphics.Point
 import android.os.Bundle
 import android.view.View
@@ -20,7 +19,7 @@ class DraggablePayload<T>(
 		private val mActivity: FragmentActivity,
 		private val mClass: Class<T>,
 		private val mParent: ViewGroup,
-		private val mTargetView: View
+		private val mTargetView: View,
 ) where T : Fragment, T : IOnDemandView {
 	/**
 	 * Offset in pixels
@@ -117,6 +116,7 @@ class DraggablePayload<T>(
 	 */
 	private var destroyLock = ReentrantLock()
 
+
 	/**
 	 * Fragment tag used for finding existing fragment
 	 * It is nearly impossible for there to be 2 fragments with the same tag
@@ -141,7 +141,7 @@ class DraggablePayload<T>(
 	 * Sets offsets from dp to px
 	 */
 	fun setOffsetsDp(offsets: Offset) {
-		this.offsets.setWithDpAsPx(offsets)
+		this.offsets.setWithDp(offsets)
 	}
 
 	private var targetOffset: Point = Point(0, 0)
@@ -151,7 +151,6 @@ class DraggablePayload<T>(
 	 * Only cancels destroy timer if it was already initialized
 	 * It is called automatically when drag starts
 	 */
-	@SuppressLint("ResourceType")
 	fun initializeView() {
 		if (wrapper == null) {
 			val cView = createWrapper()
@@ -255,18 +254,21 @@ class DraggablePayload<T>(
 	}
 
 	internal fun onDrag(percentage: Float) {
-		if (wrapper == null)
+		if (wrapper == null) {
 			initializeView()
+		}
 
-		val wrapper = wrapper!!
+		val wrapper = requireNotNull(wrapper)
 
-		if (stickToTarget)
+		if (stickToTarget) {
 			moveWithTarget()
-		else
+		} else {
 			moveWithPercentage(percentage)
+		}
 
-		if (initialTranslationZ != targetTranslationZ)
+		if (initialTranslationZ != targetTranslationZ) {
 			wrapper.translationZ = initialTranslationZ + (targetTranslationZ - initialTranslationZ) * percentage
+		}
 
 		wrapper.invalidate()
 	}

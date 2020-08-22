@@ -14,7 +14,7 @@ class Offset(var horizontal: Int, var vertical: Int) {
 	 * Updates this object with value from [offsets]
 	 * @param offsets Offset in density independent pixels
 	 */
-	fun setWithDpAsPx(offsets: Offset) {
+	fun setWithDp(offsets: Offset) {
 		horizontal = offsets.horizontal.dp()
 		vertical = offsets.vertical.dp()
 	}
