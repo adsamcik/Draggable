@@ -7,7 +7,12 @@ import android.view.View
 internal object Utility {
 	internal fun Int.dp() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
-	internal fun calculateTargetTranslation(sourceView: View, toView: View, anchor: DragTargetAnchor, offset: Offset): PointF {
+	internal fun calculateTargetTranslation(
+			sourceView: View,
+			toView: View,
+			anchor: DragTargetAnchor,
+			offset: Offset
+	): PointF {
 		val thisOnScreen = sourceView.locationOnScreen()
 		val targetOnScreen = toView.locationOnScreen()
 		val targetRelPos = anchor.calculateEdgeOffsetWithPadding(sourceView, toView)
@@ -31,11 +36,19 @@ internal object Utility {
 			number in firstConstraint..secondConstraint
 	}
 
-	internal fun betweenInPercent(firstConstraint: Int, secondConstraint: Int, number: Float): Float {
+	internal fun betweenInPercent(
+			firstConstraint: Int,
+			secondConstraint: Int,
+			number: Float
+	): Float {
 		return (number - firstConstraint) / (secondConstraint - firstConstraint)
 	}
 
-	internal fun betweenInPercent(firstConstraint: Float, secondConstraint: Float, number: Float): Float {
+	internal fun betweenInPercent(
+			firstConstraint: Float,
+			secondConstraint: Float,
+			number: Float
+	): Float {
 		return if (firstConstraint == secondConstraint)
 			0f
 		else

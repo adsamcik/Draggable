@@ -125,7 +125,11 @@ class DraggableImageButton : AppCompatImageButton {
 		init(context, attrs)
 	}
 
-	constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+	constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
+			context,
+			attrs,
+			defStyleAttr
+	) {
 		init(context, attrs, defStyleAttr)
 	}
 
@@ -140,7 +144,12 @@ class DraggableImageButton : AppCompatImageButton {
 	 * Attribute initialization
 	 */
 	private fun init(context: Context, attrs: AttributeSet, defStyleAttr: Int) {
-		val a = context.obtainStyledAttributes(attrs, R.styleable.DraggableImageButton, defStyleAttr, 0)
+		val a = context.obtainStyledAttributes(
+				attrs,
+				R.styleable.DraggableImageButton,
+				defStyleAttr,
+				0
+		)
 		init(a)
 		a.recycle()
 	}
@@ -163,26 +172,51 @@ class DraggableImageButton : AppCompatImageButton {
 			dragAxis = DragAxis.values()[axisRaw]
 
 		//target
-		targetTranslationZ = typedArray.getDimension(R.styleable.DraggableImageButton_targetTranslationZ, targetTranslationZ)
-		targetViewId = typedArray.getResourceId(R.styleable.DraggableImageButton_targetView, View.NO_ID)
+		targetTranslationZ = typedArray.getDimension(
+				R.styleable.DraggableImageButton_targetTranslationZ,
+				targetTranslationZ
+		)
+		targetViewId = typedArray.getResourceId(
+				R.styleable.DraggableImageButton_targetView,
+				View.NO_ID
+		)
 
-		targetOffset.vertical = typedArray.getDimension(R.styleable.DraggableImageButton_targetOffsetVertical, targetOffset.vertical.toFloat()).roundToInt()
-		targetOffset.horizontal = typedArray.getDimension(R.styleable.DraggableImageButton_targetOffsetHorizontal, targetOffset.horizontal.toFloat()).roundToInt()
+		targetOffset.vertical = typedArray.getDimension(
+				R.styleable.DraggableImageButton_targetOffsetVertical,
+				targetOffset.vertical.toFloat()
+		).roundToInt()
+		targetOffset.horizontal = typedArray.getDimension(
+				R.styleable.DraggableImageButton_targetOffsetHorizontal,
+				targetOffset.horizontal.toFloat()
+		).roundToInt()
 
 		val anchor = typedArray.getInt(R.styleable.DraggableImageButton_targetAnchor, -1)
 		if (anchor >= 0)
 			targetAnchor = DragTargetAnchor.fromInt(anchor)
 
 		//touchArea
-		val leftTA = typedArray.getDimension(R.styleable.DraggableImageButton_extendLeftTouchArea, 0f).roundToInt()
-		val topTA = typedArray.getDimension(R.styleable.DraggableImageButton_extendTopTouchArea, 0f).roundToInt()
-		val rightTA = typedArray.getDimension(R.styleable.DraggableImageButton_extendRightTouchArea, 0f).roundToInt()
-		val bottomTA = typedArray.getDimension(R.styleable.DraggableImageButton_extendBottomTouchArea, 0f).roundToInt()
+		val leftTA = typedArray.getDimension(
+				R.styleable.DraggableImageButton_extendLeftTouchArea,
+				0f
+		).roundToInt()
+		val topTA = typedArray.getDimension(R.styleable.DraggableImageButton_extendTopTouchArea, 0f)
+				.roundToInt()
+		val rightTA = typedArray.getDimension(
+				R.styleable.DraggableImageButton_extendRightTouchArea,
+				0f
+		).roundToInt()
+		val bottomTA = typedArray.getDimension(
+				R.styleable.DraggableImageButton_extendBottomTouchArea,
+				0f
+		).roundToInt()
 		if (leftTA != 0 || topTA != 0 || rightTA != 0 || bottomTA != 0)
 			touchRect = Rect(leftTA, topTA, rightTA, bottomTA)
 
 		//animation
-		fullAnimationLength = typedArray.getInt(R.styleable.DraggableImageButton_animationLength, fullAnimationLength.toInt()).toLong()
+		fullAnimationLength = typedArray.getInt(
+				R.styleable.DraggableImageButton_animationLength,
+				fullAnimationLength.toInt()
+		).toLong()
 		val interpolatorId = typedArray.getInt(R.styleable.DraggableImageButton_interpolator, -1)
 		if (interpolatorId >= 0) {
 			animationInterpolator = when (interpolatorId) {
@@ -364,15 +398,22 @@ class DraggableImageButton : AppCompatImageButton {
 	/**
 	 * Creates animation from current position to target position
 	 */
-	private fun animate(initialConstraintTranslation: Float,
-	                    targetConstraintTranslation: Float,
-	                    thisTranslation: Float,
-	                    targetTranslation: Float,
-	                    assignListener: (Float) -> Unit): ValueAnimator {
+	private fun animate(
+			initialConstraintTranslation: Float,
+			targetConstraintTranslation: Float,
+			thisTranslation: Float,
+			targetTranslation: Float,
+			assignListener: (Float) -> Unit
+	): ValueAnimator {
 		val valueAnimator = ValueAnimator.ofFloat(thisTranslation, targetTranslation)
 
 		valueAnimator.addUpdateListener {
-			positionUpdate(initialConstraintTranslation, targetConstraintTranslation, it.animatedValue as Float, assignListener)
+			positionUpdate(
+					initialConstraintTranslation,
+					targetConstraintTranslation,
+					it.animatedValue as Float,
+					assignListener
+			)
 		}
 
 
@@ -387,7 +428,11 @@ class DraggableImageButton : AppCompatImageButton {
 	/**
 	 * Handles callbacks for animator and triggers appropriate on state change callbacks
 	 */
-	private fun handleAnimatorListeners(animator: ValueAnimator, currentState: State, newState: State) {
+	private fun handleAnimatorListeners(
+			animator: ValueAnimator,
+			currentState: State,
+			newState: State
+	) {
 		val stateChanged = newState != currentState
 
 		onLeaveState(currentState, stateChanged)
@@ -409,25 +454,51 @@ class DraggableImageButton : AppCompatImageButton {
 	 * @param animate True indicates that the move should be animated and not immediate
 	 * @param forceOnEnter Forces onEnterState callback to be triggered even when state hasn't changed
 	 */
-	private fun moveToStateInternal(newState: State, animate: Boolean, forceOnEnter: Boolean = false) {
+	private fun moveToStateInternal(
+			newState: State,
+			animate: Boolean,
+			forceOnEnter: Boolean = false
+	) {
 		val target: Float
 		val animator: ValueAnimator
 
 		if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
 			target = if (newState == State.INITIAL) mInitialTranslation.x else mTargetTranslation.x
 			if (animate) {
-				animator = animate(mInitialTranslation.x, mTargetTranslation.x, translationX, target, ::setTranslationX)
+				animator = animate(
+						mInitialTranslation.x,
+						mTargetTranslation.x,
+						translationX,
+						target,
+						::setTranslationX
+				)
 			} else {
-				positionUpdate(mInitialTranslation.x, mTargetTranslation.x, target, ::setTranslationX)
+				positionUpdate(
+						mInitialTranslation.x,
+						mTargetTranslation.x,
+						target,
+						::setTranslationX
+				)
 				onStateSet(state, newState, forceOnEnter)
 				return
 			}
 		} else if (dragAxis.isVertical() && mDragDirection.isVertical()) {
 			target = if (newState == State.INITIAL) mInitialTranslation.y else mTargetTranslation.y
 			if (animate) {
-				animator = animate(mInitialTranslation.y, mTargetTranslation.y, translationY, target, ::setTranslationY)
+				animator = animate(
+						mInitialTranslation.y,
+						mTargetTranslation.y,
+						translationY,
+						target,
+						::setTranslationY
+				)
 			} else {
-				positionUpdate(mInitialTranslation.y, mTargetTranslation.y, target, ::setTranslationY)
+				positionUpdate(
+						mInitialTranslation.y,
+						mTargetTranslation.y,
+						target,
+						::setTranslationY
+				)
 				onStateSet(state, newState, forceOnEnter)
 				return
 			}
@@ -462,9 +533,11 @@ class DraggableImageButton : AppCompatImageButton {
 		}
 	}
 
-	private fun onStateSet(currentState: State,
-	                       newState: State,
-	                       forceEnterState: Boolean) {
+	private fun onStateSet(
+			currentState: State,
+			newState: State,
+			forceEnterState: Boolean
+	) {
 		val changeState = currentState != newState
 
 		onLeaveState(currentState, changeState)
@@ -473,26 +546,51 @@ class DraggableImageButton : AppCompatImageButton {
 		state = newState
 	}
 
-	private fun positionUpdate(initialConstraintTranslation: Float,
-	                           targetConstraintTranslation: Float,
-	                           value: Float,
-	                           assignListener: (Float) -> Unit) {
+	private fun positionUpdate(
+			initialConstraintTranslation: Float,
+			targetConstraintTranslation: Float,
+			value: Float,
+			assignListener: (Float) -> Unit
+	) {
 		assignListener.invoke(value)
-		val percentage = Utility.betweenInPercent(initialConstraintTranslation, targetConstraintTranslation, value)
+		val percentage = Utility.betweenInPercent(
+				initialConstraintTranslation,
+				targetConstraintTranslation,
+				value
+		)
 		mPayloads.forEach { payload -> payload.onDrag(percentage) }
 
 		updateTranslationZ(percentage)
 	}
 
-	private fun setHorizontalTranslation(desire: Float) = setTranslation(desire, mInitialTranslation.x, mTargetTranslation.x, this::setTranslationX)
+	private fun setHorizontalTranslation(desire: Float) = setTranslation(
+			desire,
+			mInitialTranslation.x,
+			mTargetTranslation.x,
+			this::setTranslationX
+	)
 
-	private fun setVerticalTranslation(desire: Float) = setTranslation(desire, mInitialTranslation.y, mTargetTranslation.y, this::setTranslationY)
+	private fun setVerticalTranslation(desire: Float) = setTranslation(
+			desire,
+			mInitialTranslation.y,
+			mTargetTranslation.y,
+			this::setTranslationY
+	)
 
-	private fun setTranslation(desire: Float, initialTranslation: Float, targetTranslation: Float, translationSetter: (Float) -> Unit) {
+	private fun setTranslation(
+			desire: Float,
+			initialTranslation: Float,
+			targetTranslation: Float,
+			translationSetter: (Float) -> Unit
+	) {
 		if (targetView != null) {
 			if (Utility.between(initialTranslation, targetTranslation, desire)) {
 				translationSetter.invoke(desire)
-				val percentage = Utility.betweenInPercent(initialTranslation, targetTranslation, desire)
+				val percentage = Utility.betweenInPercent(
+						initialTranslation,
+						targetTranslation,
+						desire
+				)
 				mPayloads.forEach { payload -> payload.onDrag(percentage) }
 				updateTranslationZ(percentage)
 			}
@@ -512,7 +610,12 @@ class DraggableImageButton : AppCompatImageButton {
 		return Utility.calculateTargetTranslation(this, targetView, targetAnchor, targetOffset)
 	}
 
-	private fun calculateMove(velocity: Float, translation: Float, initialTranslation: Float, targetTranslation: Float): Boolean {
+	private fun calculateMove(
+			velocity: Float,
+			translation: Float,
+			initialTranslation: Float,
+			targetTranslation: Float
+	): Boolean {
 		val direction = (targetTranslation - initialTranslation).sign * if (state == State.INITIAL) 1 else -1
 		val dirVelocity = velocity * direction
 
@@ -571,9 +674,19 @@ class DraggableImageButton : AppCompatImageButton {
 					//Second it calculates how far we moved and uses xor with boolean that represents if current state is initial
 					//Xor simplifies the actual condition so it can be the same for both states
 					val move = if (dragAxis.isVertical() && mDragDirection.isVertical()) {
-						calculateMove(velocityTracker.yVelocity, translationY, mInitialTranslation.y, mTargetTranslation.y)
+						calculateMove(
+								velocityTracker.yVelocity,
+								translationY,
+								mInitialTranslation.y,
+								mTargetTranslation.y
+						)
 					} else if (dragAxis.isHorizontal() && mDragDirection.isHorizontal()) {
-						calculateMove(velocityTracker.xVelocity, translationX, mInitialTranslation.x, mTargetTranslation.x)
+						calculateMove(
+								velocityTracker.xVelocity,
+								translationX,
+								mInitialTranslation.x,
+								mTargetTranslation.x
+						)
 					} else {
 						return true
 					}
@@ -688,7 +801,10 @@ class DraggableImageButton : AppCompatImageButton {
 		//Basic check to ensure payloads are likely to be restored correctly
 		if (payloads.size == savedState.payloadFragmentTags.size) {
 			for (i in payloads.indices) {
-				payloads[i].restoreFragment(savedState.payloadWrapperId[i], savedState.payloadFragmentTags[i])
+				payloads[i].restoreFragment(
+						savedState.payloadWrapperId[i],
+						savedState.payloadFragmentTags[i]
+				)
 			}
 		}
 

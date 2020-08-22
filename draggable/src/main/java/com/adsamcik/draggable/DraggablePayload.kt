@@ -16,10 +16,11 @@ import kotlin.concurrent.schedule
 import kotlin.math.roundToInt
 
 
-class DraggablePayload<T>(private val mActivity: FragmentActivity,
-                          private val mClass: Class<T>,
-                          private val mParent: ViewGroup,
-                          private val mTargetView: View
+class DraggablePayload<T>(
+		private val mActivity: FragmentActivity,
+		private val mClass: Class<T>,
+		private val mParent: ViewGroup,
+		private val mTargetView: View
 ) where T : Fragment, T : IOnDemandView {
 	/**
 	 * Offset in pixels
@@ -294,7 +295,10 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 
 		if (destroyTimerTask == null) {
 			if (destroyPayloadAfter > IMMEDIATELY) {
-				destroyTimerTask = Timer("Destroy", true).schedule(destroyPayloadAfter) { destroyFragment() }
+				destroyTimerTask = Timer(
+						"Destroy",
+						true
+				).schedule(destroyPayloadAfter) { destroyFragment() }
 			} else if (destroyPayloadAfter == IMMEDIATELY) {
 				destroyFragment()
 			}
@@ -344,7 +348,8 @@ class DraggablePayload<T>(private val mActivity: FragmentActivity,
 	 * @param requestCode Request code of the permission
 	 * @param success True if all permissions succeeded
 	 */
-	internal fun onPermissionResponse(requestCode: Int, success: Boolean) = mFragment?.onPermissionResponse(requestCode, success)
+	internal fun onPermissionResponse(requestCode: Int, success: Boolean) =
+			mFragment?.onPermissionResponse(requestCode, success)
 
 
 	/**

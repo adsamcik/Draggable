@@ -22,19 +22,33 @@ enum class DragTargetAnchor {
 	 * @return Point that represents upper left position for the view
 	 */
 	fun calculateEdgeOffsetWithPadding(thisView: View, parentView: View): Point =
-			addPaddingOffset(parentView, when (this) {
+			addPaddingOffset(
+					parentView, when (this) {
 				LeftMiddle -> Point(0, parentView.height / 2 - thisView.height / 2)
-				Middle -> Point(parentView.width / 2 - thisView.height / 2, parentView.height / 2 - thisView.height / 2)
-				RightMiddle -> Point(parentView.width - thisView.width, parentView.height / 2 - thisView.height / 2)
+				Middle -> Point(
+						parentView.width / 2 - thisView.height / 2,
+						parentView.height / 2 - thisView.height / 2
+				)
+				RightMiddle -> Point(
+						parentView.width - thisView.width,
+						parentView.height / 2 - thisView.height / 2
+				)
 
 				LeftTop -> Point(0, 0)
 				MiddleTop -> Point(parentView.width / 2 - thisView.width / 2, 0)
 				RightTop -> Point(parentView.width - thisView.width, 0)
 
-				RightBottom -> Point(parentView.width - thisView.width, parentView.height - thisView.height)
-				MiddleBottom -> Point(parentView.width / 2 - thisView.height / 2, parentView.height - thisView.height)
+				RightBottom -> Point(
+						parentView.width - thisView.width,
+						parentView.height - thisView.height
+				)
+				MiddleBottom -> Point(
+						parentView.width / 2 - thisView.height / 2,
+						parentView.height - thisView.height
+				)
 				LeftBottom -> Point(0, parentView.height - thisView.height)
-			})
+			}
+			)
 
 	/**
 	 * Calculates position when view is anchored. Takes parents padding into account.
@@ -45,15 +59,24 @@ enum class DragTargetAnchor {
 	 */
 	fun calculateEdgeOffset(thisView: View, parentView: View): Point = when (this) {
 		LeftMiddle -> Point(0, parentView.height / 2 - thisView.height / 2)
-		Middle -> Point(parentView.width / 2 - thisView.height / 2, parentView.height / 2 - thisView.height / 2)
-		RightMiddle -> Point(parentView.width - thisView.width, parentView.height / 2 - thisView.height / 2)
+		Middle -> Point(
+				parentView.width / 2 - thisView.height / 2,
+				parentView.height / 2 - thisView.height / 2
+		)
+		RightMiddle -> Point(
+				parentView.width - thisView.width,
+				parentView.height / 2 - thisView.height / 2
+		)
 
 		LeftTop -> Point(0, 0)
 		MiddleTop -> Point(parentView.width / 2 - thisView.width / 2, 0)
 		RightTop -> Point(parentView.width - thisView.width, 0)
 
 		RightBottom -> Point(parentView.width - thisView.width, parentView.height - thisView.height)
-		MiddleBottom -> Point(parentView.width / 2 - thisView.height / 2, parentView.height - thisView.height)
+		MiddleBottom -> Point(
+				parentView.width / 2 - thisView.height / 2,
+				parentView.height - thisView.height
+		)
 		LeftBottom -> Point(0, parentView.height - thisView.height)
 	}
 
