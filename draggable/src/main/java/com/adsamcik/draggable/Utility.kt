@@ -5,8 +5,7 @@ import android.graphics.PointF
 import android.view.View
 
 internal object Utility {
-	internal fun Int.toDp() = (this / Resources.getSystem().displayMetrics.density).toInt()
-	internal fun Int.toPx() = (this * Resources.getSystem().displayMetrics.density).toInt()
+	internal fun Int.dp() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
 	internal fun calculateTargetTranslation(sourceView: View, toView: View, anchor: DragTargetAnchor, offset: Offset): PointF {
 		val thisOnScreen = sourceView.locationOnScreen()

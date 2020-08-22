@@ -1,6 +1,6 @@
 package com.adsamcik.draggable
 
-import com.adsamcik.draggable.Utility.toPx
+import com.adsamcik.draggable.Utility.dp
 
 /**
  * Offset object containing horizontal and vertical offset
@@ -15,8 +15,8 @@ class Offset(var horizontal: Int, var vertical: Int) {
 	 * @param offsets Offset in density independent pixels
 	 */
 	fun setWithDpAsPx(offsets: Offset) {
-		horizontal = offsets.horizontal.toPx()
-		vertical = offsets.vertical.toPx()
+		horizontal = offsets.horizontal.dp()
+		vertical = offsets.vertical.dp()
 	}
 
 	override fun toString() = "(horizontal: $horizontal, vertical: $vertical)"
