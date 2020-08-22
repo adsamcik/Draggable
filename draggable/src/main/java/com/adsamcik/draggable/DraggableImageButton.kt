@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.PointF
 import android.graphics.Rect
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
@@ -18,7 +17,12 @@ import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
 import android.view.ViewConfiguration
-import android.view.animation.*
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.BounceInterpolator
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.LinearInterpolator
+import android.view.animation.OvershootInterpolator
 import androidx.appcompat.widget.AppCompatImageButton
 import com.adsamcik.touchdelegate.DraggableTouchDelegate
 import com.adsamcik.touchdelegate.TouchDelegateComposite
@@ -182,12 +186,12 @@ class DraggableImageButton : AppCompatImageButton {
 		val interpolatorId = typedArray.getInt(R.styleable.DraggableImageButton_interpolator, -1)
 		if (interpolatorId >= 0) {
 			animationInterpolator = when (interpolatorId) {
-				0 -> LinearInterpolator() as TimeInterpolator
-				1 -> OvershootInterpolator() as TimeInterpolator
-				2 -> BounceInterpolator() as TimeInterpolator
-				3 -> AccelerateInterpolator() as TimeInterpolator
-				4 -> DecelerateInterpolator() as TimeInterpolator
-				5 -> AccelerateDecelerateInterpolator() as TimeInterpolator
+				0 -> LinearInterpolator()
+				1 -> OvershootInterpolator()
+				2 -> BounceInterpolator()
+				3 -> AccelerateInterpolator()
+				4 -> DecelerateInterpolator()
+				5 -> AccelerateDecelerateInterpolator()
 				else -> throw IllegalArgumentException("Invalid interpolator value")
 			}
 		}
@@ -659,7 +663,7 @@ class DraggableImageButton : AppCompatImageButton {
 		val superState = super.onSaveInstanceState()
 
 		return SavedState(superState).apply {
-			state = state
+			this@DraggableImageButton.state = state
 			dragDirection = mDragDirection
 			payloadFragmentTags = mPayloads.map { it.mFragmentTag }
 			payloadWrapperId = mPayloads.map { it.wrapper?.id ?: View.NO_ID }.toIntArray()
@@ -683,7 +687,7 @@ class DraggableImageButton : AppCompatImageButton {
 
 		//Basic check to ensure payloads are likely to be restored correctly
 		if (payloads.size == savedState.payloadFragmentTags.size) {
-			for (i in 0 until payloads.size) {
+			for (i in payloads.indices) {
 				payloads[i].restoreFragment(savedState.payloadWrapperId[i], savedState.payloadFragmentTags[i])
 			}
 		}
@@ -691,7 +695,7 @@ class DraggableImageButton : AppCompatImageButton {
 		initializeState(savedState.state)
 	}
 
-	internal class SavedState : View.BaseSavedState, Parcelable {
+	internal class SavedState : BaseSavedState, Parcelable {
 		lateinit var state: State
 		lateinit var dragDirection: DragAxis
 		lateinit var payloadFragmentTags: List<String>

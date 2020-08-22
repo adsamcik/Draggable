@@ -23,17 +23,17 @@ enum class DragTargetAnchor {
 	 */
 	fun calculateEdgeOffsetWithPadding(thisView: View, parentView: View): Point =
 			addPaddingOffset(parentView, when (this) {
-				DragTargetAnchor.LeftMiddle -> Point(0, parentView.height / 2 - thisView.height / 2)
-				DragTargetAnchor.Middle -> Point(parentView.width / 2 - thisView.height / 2, parentView.height / 2 - thisView.height / 2)
-				DragTargetAnchor.RightMiddle -> Point(parentView.width - thisView.width, parentView.height / 2 - thisView.height / 2)
+				LeftMiddle -> Point(0, parentView.height / 2 - thisView.height / 2)
+				Middle -> Point(parentView.width / 2 - thisView.height / 2, parentView.height / 2 - thisView.height / 2)
+				RightMiddle -> Point(parentView.width - thisView.width, parentView.height / 2 - thisView.height / 2)
 
-				DragTargetAnchor.LeftTop -> Point(0, 0)
-				DragTargetAnchor.MiddleTop -> Point(parentView.width / 2 - thisView.width / 2, 0)
-				DragTargetAnchor.RightTop -> Point(parentView.width - thisView.width, 0)
+				LeftTop -> Point(0, 0)
+				MiddleTop -> Point(parentView.width / 2 - thisView.width / 2, 0)
+				RightTop -> Point(parentView.width - thisView.width, 0)
 
-				DragTargetAnchor.RightBottom -> Point(parentView.width - thisView.width, parentView.height - thisView.height)
-				DragTargetAnchor.MiddleBottom -> Point(parentView.width / 2 - thisView.height / 2, parentView.height - thisView.height)
-				DragTargetAnchor.LeftBottom -> Point(0, parentView.height - thisView.height)
+				RightBottom -> Point(parentView.width - thisView.width, parentView.height - thisView.height)
+				MiddleBottom -> Point(parentView.width / 2 - thisView.height / 2, parentView.height - thisView.height)
+				LeftBottom -> Point(0, parentView.height - thisView.height)
 			})
 
 	/**
@@ -44,56 +44,56 @@ enum class DragTargetAnchor {
 	 * @return Point that represents upper left position for the view
 	 */
 	fun calculateEdgeOffset(thisView: View, parentView: View): Point = when (this) {
-		DragTargetAnchor.LeftMiddle -> Point(0, parentView.height / 2 - thisView.height / 2)
-		DragTargetAnchor.Middle -> Point(parentView.width / 2 - thisView.height / 2, parentView.height / 2 - thisView.height / 2)
-		DragTargetAnchor.RightMiddle -> Point(parentView.width - thisView.width, parentView.height / 2 - thisView.height / 2)
+		LeftMiddle -> Point(0, parentView.height / 2 - thisView.height / 2)
+		Middle -> Point(parentView.width / 2 - thisView.height / 2, parentView.height / 2 - thisView.height / 2)
+		RightMiddle -> Point(parentView.width - thisView.width, parentView.height / 2 - thisView.height / 2)
 
-		DragTargetAnchor.LeftTop -> Point(0, 0)
-		DragTargetAnchor.MiddleTop -> Point(parentView.width / 2 - thisView.width / 2, 0)
-		DragTargetAnchor.RightTop -> Point(parentView.width - thisView.width, 0)
+		LeftTop -> Point(0, 0)
+		MiddleTop -> Point(parentView.width / 2 - thisView.width / 2, 0)
+		RightTop -> Point(parentView.width - thisView.width, 0)
 
-		DragTargetAnchor.RightBottom -> Point(parentView.width - thisView.width, parentView.height - thisView.height)
-		DragTargetAnchor.MiddleBottom -> Point(parentView.width / 2 - thisView.height / 2, parentView.height - thisView.height)
-		DragTargetAnchor.LeftBottom -> Point(0, parentView.height - thisView.height)
+		RightBottom -> Point(parentView.width - thisView.width, parentView.height - thisView.height)
+		MiddleBottom -> Point(parentView.width / 2 - thisView.height / 2, parentView.height - thisView.height)
+		LeftBottom -> Point(0, parentView.height - thisView.height)
 	}
 
 	private fun addPaddingOffset(parentView: View, point: Point): Point {
 		when (this) {
-			DragTargetAnchor.LeftMiddle -> {
+			LeftMiddle -> {
 				point.x += parentView.paddingLeft
 				point.y += parentView.paddingTop - parentView.paddingBottom
 			}
-			DragTargetAnchor.Middle -> {
+			Middle -> {
 				point.x += parentView.paddingRight - parentView.paddingLeft
 				point.y += parentView.paddingTop - parentView.paddingBottom
 			}
-			DragTargetAnchor.RightMiddle -> {
+			RightMiddle -> {
 				point.x -= parentView.paddingRight
 				point.y += parentView.paddingTop - parentView.paddingBottom
 			}
 
-			DragTargetAnchor.LeftTop -> {
+			LeftTop -> {
 				point.x += parentView.paddingLeft
 				point.y += parentView.paddingTop
 			}
-			DragTargetAnchor.MiddleTop -> {
+			MiddleTop -> {
 				point.x += parentView.paddingRight - parentView.paddingLeft
 				point.y += parentView.paddingTop
 			}
-			DragTargetAnchor.RightTop -> {
+			RightTop -> {
 				point.x -= parentView.paddingRight
 				point.y += parentView.paddingTop
 			}
 
-			DragTargetAnchor.LeftBottom -> {
+			LeftBottom -> {
 				point.x += parentView.paddingLeft
 				point.y -= parentView.paddingBottom
 			}
-			DragTargetAnchor.MiddleBottom -> {
+			MiddleBottom -> {
 				point.x += parentView.paddingRight - parentView.paddingLeft
 				point.y -= parentView.paddingBottom
 			}
-			DragTargetAnchor.RightBottom -> {
+			RightBottom -> {
 				point.x -= parentView.paddingRight
 				point.y -= parentView.paddingBottom
 			}
