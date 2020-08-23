@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## [1.0.0] - 23-8-2020
+
+* Fixed bugs
+* Updated to target Android R
+
 ## [0.12.1] - 14-4-2018
 
 * Improved fragment destruction
