@@ -116,6 +116,10 @@ class DraggablePayload<T>(
 	 */
 	private var destroyLock = ReentrantLock()
 
+	/**
+	 * Last known state, used if fragment was not initialized.
+	 */
+	private var state: DraggableImageButton.State = DraggableImageButton.State.INITIAL
 
 	/**
 	 * Fragment tag used for finding existing fragment
@@ -159,14 +163,11 @@ class DraggablePayload<T>(
 				val newInst = mClass.newInstance()
 				ft.replace(cView.id, newInst, mFragmentTag)
 
-				if (onInitialized != null) {
-					ft.runOnCommit {
-						onInitialized?.invoke(newInst)
-					}
+				ft.runOnCommit {
+					mFragment = newInst
+					onInitialized?.invoke(newInst)
 				}
 				ft.commitAllowingStateLoss()
-
-				mFragment = newInst
 			}
 			wrapper = cView
 		}
@@ -203,9 +204,10 @@ class DraggablePayload<T>(
 	}
 
 	internal fun restoreFragment(id: Int, tag: String) {
-		//id is not reused because it might no longer be unique
-		if (id != View.NO_ID)
+		// id is not reused because it might no longer be unique
+		if (id != View.NO_ID) {
 			wrapper = createWrapper()
+		}
 		this.mFragmentTag = tag
 	}
 
@@ -218,17 +220,13 @@ class DraggablePayload<T>(
 					?: fragmentManager.getFragment(bundle, mFragmentTag)
 			mFragment = fragment as T
 
-			//Problem with this is that top view loses it's width and height for some reason
-			/*val view = fragment.view
-			if (view != null) {
-				(view.parent as ViewGroup?)?.removeView(view)
-				wrapper.addView(view)
-			} else {*/
+			fragmentManager.beginTransaction()
+					.remove(fragment)
+					.commitNow()
 
-			//Disadvantage of this is that view goes through this -> OnCreate, OnDestroy, OnCreate because of the remove and replace
-			fragmentManager.beginTransaction().remove(fragment).commitNow()
-			fragmentManager.beginTransaction().replace(wrapper.id, fragment).commitNow()
-			//}
+			fragmentManager.beginTransaction()
+					.replace(wrapper.id, fragment)
+					.commitNow()
 
 			onInitialized?.invoke(fragment)
 		}
@@ -236,8 +234,9 @@ class DraggablePayload<T>(
 
 	internal fun saveFragment(bundle: Bundle) {
 		val fragment = mFragment
-		if (fragment != null)
+		if (fragment != null) {
 			mActivity.supportFragmentManager.putFragment(bundle, mFragmentTag, fragment)
+		}
 	}
 
 	private fun calculateTargetTranslation(toView: View, offset: Point, offsets: Offset): Point {
@@ -312,8 +311,9 @@ class DraggablePayload<T>(
 	@Synchronized
 	private fun destroyFragment() {
 		val fragment = mFragment
-		if (fragment?.isStateSaved != false)
+		if (fragment?.isStateSaved != false) {
 			return
+		}
 
 		destroyLock.lock()
 		removeTimer()
@@ -375,8 +375,9 @@ class DraggablePayload<T>(
 	 * @param state State which is being leaved
 	 */
 	internal fun onLeaveState(state: DraggableImageButton.State) {
-		if (state == DraggableImageButton.State.INITIAL)
+		if (state == DraggableImageButton.State.INITIAL) {
 			removeTimer()
+		}
 	}
 
 	companion object {
