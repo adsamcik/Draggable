@@ -31,9 +31,22 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
-
-@SuppressWarnings("Unused", "WeakerAccess")
+/**
+ * Draggable Image Button
+ */
+@Suppress("Unused", "WeakerAccess", "TooManyFunctions")
 class DraggableImageButton : AppCompatImageButton {
+
+	companion object {
+		private const val DEFAULT_ANIMATION_LENGTH = 250L
+		private const val LINEAR_INTERPOLATOR_INDEX = 0
+		private const val OVERSHOOT_INTERPOLATOR_INDEX = 1
+		private const val BOUNCE_INTERPOLATOR_INDEX = 2
+		private const val ACCELERATE_INTERPOLATOR_INDEX = 3
+		private const val DECELERATE_INTERPOLATOR_INDEX = 4
+		private const val ACCELERATE_DECELERATE_INTERPOLATOR_INDEX = 5
+	}
+
 	/**
 	 * Axis along which object can be dragged
 	 * Note: Axis XY might not work yet
@@ -81,7 +94,7 @@ class DraggableImageButton : AppCompatImageButton {
 	/**
 	 * Full length of the animation in milliseconds
 	 */
-	var fullAnimationLength: Long = 250
+	var fullAnimationLength: Long = DEFAULT_ANIMATION_LENGTH
 
 	/**
 	 * Animation interpolator
@@ -93,6 +106,11 @@ class DraggableImageButton : AppCompatImageButton {
 
 	var isInTransition: AtomicBoolean = AtomicBoolean(false)
 		private set
+
+	/**
+	 * All payloads attached to the button
+	 */
+	val payloads: Array<out DraggablePayload<*>> get() = mPayloads.toTypedArray()
 
 	private val mPayloads = mutableListOf<DraggablePayload<*>>()
 	private var mActiveAnimation: ValueAnimator? = null
@@ -117,8 +135,6 @@ class DraggableImageButton : AppCompatImageButton {
 	//Attribute temporaries
 	private var targetViewId: Int = View.NO_ID
 	private var touchRect: Rect? = null
-
-	private var mFragmentTag: String = Math.random().toString()
 
 	constructor(context: Context) : super(context)
 	constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
@@ -163,15 +179,7 @@ class DraggableImageButton : AppCompatImageButton {
 		a.recycle()
 	}
 
-	/**
-	 * Attribute initialization
-	 */
-	private fun init(typedArray: TypedArray) {
-		val axisRaw = typedArray.getInt(R.styleable.DraggableImageButton_axis, -1)
-		if (axisRaw >= 0)
-			dragAxis = DragAxis.values()[axisRaw]
-
-		//target
+	private fun initTarget(typedArray: TypedArray) {
 		targetTranslationZ = typedArray.getDimension(
 				R.styleable.DraggableImageButton_targetTranslationZ,
 				targetTranslationZ
@@ -191,10 +199,12 @@ class DraggableImageButton : AppCompatImageButton {
 		).roundToInt()
 
 		val anchor = typedArray.getInt(R.styleable.DraggableImageButton_targetAnchor, -1)
-		if (anchor >= 0)
+		if (anchor >= 0) {
 			targetAnchor = DragTargetAnchor.fromInt(anchor)
+		}
+	}
 
-		//touchArea
+	private fun initTouchArea(typedArray: TypedArray) {
 		val leftTA = typedArray.getDimension(
 				R.styleable.DraggableImageButton_extendLeftTouchArea,
 				0f
@@ -209,10 +219,12 @@ class DraggableImageButton : AppCompatImageButton {
 				R.styleable.DraggableImageButton_extendBottomTouchArea,
 				0f
 		).roundToInt()
-		if (leftTA != 0 || topTA != 0 || rightTA != 0 || bottomTA != 0)
+		if (leftTA != 0 || topTA != 0 || rightTA != 0 || bottomTA != 0) {
 			touchRect = Rect(leftTA, topTA, rightTA, bottomTA)
+		}
+	}
 
-		//animation
+	private fun initAnimation(typedArray: TypedArray) {
 		fullAnimationLength = typedArray.getInt(
 				R.styleable.DraggableImageButton_animationLength,
 				fullAnimationLength.toInt()
@@ -220,22 +232,33 @@ class DraggableImageButton : AppCompatImageButton {
 		val interpolatorId = typedArray.getInt(R.styleable.DraggableImageButton_interpolator, -1)
 		if (interpolatorId >= 0) {
 			animationInterpolator = when (interpolatorId) {
-				0 -> LinearInterpolator()
-				1 -> OvershootInterpolator()
-				2 -> BounceInterpolator()
-				3 -> AccelerateInterpolator()
-				4 -> DecelerateInterpolator()
-				5 -> AccelerateDecelerateInterpolator()
+				LINEAR_INTERPOLATOR_INDEX -> LinearInterpolator()
+				OVERSHOOT_INTERPOLATOR_INDEX -> OvershootInterpolator()
+				BOUNCE_INTERPOLATOR_INDEX -> BounceInterpolator()
+				ACCELERATE_INTERPOLATOR_INDEX -> AccelerateInterpolator()
+				DECELERATE_INTERPOLATOR_INDEX -> DecelerateInterpolator()
+				ACCELERATE_DECELERATE_INTERPOLATOR_INDEX -> AccelerateDecelerateInterpolator()
 				else -> throw IllegalArgumentException("Invalid interpolator value")
 			}
 		}
+	}
 
+	private fun initAxis(typedArray: TypedArray) {
+		val axisRaw = typedArray.getInt(R.styleable.DraggableImageButton_axis, -1)
+		if (axisRaw >= 0) {
+			dragAxis = DragAxis.values()[axisRaw]
+		}
 	}
 
 	/**
-	 * All payloads attached to the button
+	 * Attribute initialization
 	 */
-	val payloads: Array<out DraggablePayload<*>> get() = mPayloads.toTypedArray()
+	private fun init(typedArray: TypedArray) {
+		initAxis(typedArray)
+		initTarget(typedArray)
+		initTouchArea(typedArray)
+		initAnimation(typedArray)
+	}
 
 	/**
 	 * Sets target position view, anchor on that view
@@ -292,7 +315,7 @@ class DraggableImageButton : AppCompatImageButton {
 	 * @param state State to which the button should move
 	 */
 	fun moveToState(state: State, animate: Boolean) {
-		if (targetView == null) throw RuntimeException("You cannot move to state without target view")
+		requireNotNull(targetView) { "You cannot move to state without target view" }
 
 		if (this.state == state && !isInTransition.get()) return
 
