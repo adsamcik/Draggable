@@ -21,6 +21,21 @@ class DraggablePayload<T>(
 		private val mParent: ViewGroup,
 		private val mTargetView: View,
 ) where T : Fragment, T : IOnDemandView {
+	companion object {
+		/**
+		 * Fragment destruction constant indicating it never be destroyed after entering [DraggableImageButton.State.INITIAL]
+		 * Constant is set to [destroyPayloadAfter] property
+		 */
+		const val NEVER = -1L
+
+		/**
+		 * Fragment destruction constant indicating
+		 * it should be immediately destroyed after entering [DraggableImageButton.State.INITIAL]
+		 * Constant is set to [destroyPayloadAfter] property
+		 */
+		const val IMMEDIATELY = 0L
+	}
+
 	/**
 	 * Offset in pixels
 	 */
@@ -378,19 +393,5 @@ class DraggablePayload<T>(
 		if (state == DraggableImageButton.State.INITIAL) {
 			removeTimer()
 		}
-	}
-
-	companion object {
-		/**
-		 * Fragment destruction constant indicating it never be destroyed after entering [DraggableImageButton.State.INITIAL]
-		 * Constant is set to [destroyPayloadAfter] property
-		 */
-		const val NEVER = -1L
-
-		/**
-		 * Fragment destruction constant indicating it should be immediately destroyed after entering [DraggableImageButton.State.INITIAL]
-		 * Constant is set to [destroyPayloadAfter] property
-		 */
-		const val IMMEDIATELY = 0L
 	}
 }
