@@ -10,7 +10,6 @@ import android.content.res.TypedArray
 import android.graphics.PointF
 import android.graphics.Rect
 import android.os.Bundle
-import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -26,6 +25,7 @@ import android.view.animation.OvershootInterpolator
 import androidx.appcompat.widget.AppCompatImageButton
 import com.adsamcik.touchdelegate.DraggableTouchDelegate
 import com.adsamcik.touchdelegate.TouchDelegateComposite
+import kotlinx.android.parcel.Parcelize
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -775,12 +775,11 @@ class DraggableImageButton : AppCompatImageButton {
 	override fun onSaveInstanceState(): Parcelable {
 		val superState = super.onSaveInstanceState()
 
-		return SavedState(superState).apply {
-			this@DraggableImageButton.state = state
-			dragDirection = mDragDirection
-			payloadFragmentTags = mPayloads.map { it.mFragmentTag }
-			payloadWrapperId = mPayloads.map { it.wrapper?.id ?: View.NO_ID }.toIntArray()
-		}
+		return SavedState(superState,
+		                  state,
+		                  mDragDirection,
+		                  mPayloads.map { it.mFragmentTag },
+		                  mPayloads.map { it.wrapper?.id ?: View.NO_ID }.toIntArray())
 
 	}
 
@@ -798,11 +797,11 @@ class DraggableImageButton : AppCompatImageButton {
 
 		mDragDirection = savedState.dragDirection
 
-		//Basic check to ensure payloads are likely to be restored correctly
+		// Basic check to ensure payloads are likely to be restored correctly
 		if (payloads.size == savedState.payloadFragmentTags.size) {
 			for (i in payloads.indices) {
 				payloads[i].restoreFragment(
-						savedState.payloadWrapperId[i],
+						savedState.payloadWrapperIds[i],
 						savedState.payloadFragmentTags[i]
 				)
 			}
@@ -811,39 +810,12 @@ class DraggableImageButton : AppCompatImageButton {
 		initializeState(savedState.state)
 	}
 
-	internal class SavedState : BaseSavedState, Parcelable {
-		lateinit var state: State
-		lateinit var dragDirection: DragAxis
-		lateinit var payloadFragmentTags: List<String>
-		lateinit var payloadWrapperId: IntArray
-
-		private constructor(source: Parcel) : super(source) {
-			state = State.values()[source.readInt()]
-			dragDirection = DragAxis.values()[source.readInt()]
-			payloadFragmentTags = ArrayList()
-			source.readStringList(payloadFragmentTags)
-
-			payloadWrapperId = IntArray(payloadFragmentTags.size)
-			source.readIntArray(payloadWrapperId)
-		}
-
-		constructor(superState: Parcelable?) : super(superState)
-
-		override fun writeToParcel(out: Parcel, flags: Int) {
-			super.writeToParcel(out, flags)
-			out.writeInt(state.ordinal)
-			out.writeInt(dragDirection.ordinal)
-			out.writeStringList(payloadFragmentTags)
-			out.writeIntArray(payloadWrapperId)
-		}
-
-		companion object {
-			@JvmField
-			val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.Creator<SavedState> {
-				override fun createFromParcel(source: Parcel): SavedState = SavedState(source)
-				override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
-			}
-		}
-
-	}
+	@Parcelize
+	internal class SavedState(
+			val superState: Parcelable?,
+			val state: State,
+			val dragDirection: DragAxis,
+			val payloadFragmentTags: List<String>,
+			val payloadWrapperIds: IntArray,
+	) : Parcelable
 }
