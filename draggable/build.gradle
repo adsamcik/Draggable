@@ -1,15 +1,11 @@
-plugins {
-    id "com.jfrog.bintray" version "1.8.5"
-    id "com.github.dcendents.android-maven" version "2.1"
-}
-
 apply plugin: 'maven-publish'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'org.jetbrains.dokka'
 
-ext.version = '1.0.1'
+ext.version = "1.0.1"
+ext.artifactId = "draggable"
 
 android {
     compileSdkVersion 30
@@ -18,7 +14,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 30
-        versionName "$version"
+        versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -53,33 +49,32 @@ dependencies {
 
 tasks.register("prepareKotlinBuildScriptModel"){}
 
-/*ext {
-    bintrayRepo = 'android-components'
-    bintrayName = 'draggable'
+publishing {
+    publications {
+        bar(MavenPublication) {
+            groupId 'com.adsamcik.android-components'
+            artifactId artifactId
+            version version
+            artifact("$buildDir/outputs/aar/${artifactId}-release.aar")
+        }
+    }
 
-    publishedGroupId = 'com.adsamcik.android-components'
-    libraryName = 'draggable'
-    artifact = 'draggable'
-
-    libraryDescription = 'Draggable components allowing you to easily define draggable elements'
-
-    siteUrl = 'https://github.com/adsamcik/Draggable'
-    gitUrl = 'https://github.com/adsamcik/Draggable.git'
-
-    libraryVersion = "$version"
-
-    developerId = 'adsamcik'
-    developerName = ''
-    developerEmail = ''
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
+    repositories {
+        /*maven {
+            name = "OSSRH"
+            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }*/
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/octocat/hello-world"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
 }
-
-//gradlew bintrayUpload
-
-if (file('../local.properties').exists()) {
-    apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
-    apply from: 'https://gist.githubusercontent.com/adsamcik/81084e03dd0190772fd32b90136da34e/raw/e8007b585e57a8dfa25ca5446acf1f65c6448373/bintrayv2.gradle'
-}*/
