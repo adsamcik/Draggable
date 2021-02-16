@@ -6,7 +6,7 @@ plugins {
 apply plugin: 'maven-publish'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'org.jetbrains.dokka'
 
 ext.version = '1.0.0'
@@ -35,7 +35,7 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
-    buildToolsVersion = '30.0.2'
+    buildToolsVersion = '30.0.3'
 }
 
 dokka {
@@ -51,7 +51,9 @@ dependencies {
     implementation 'com.adsamcik.android-components:touchdelegate:1.2.0'
 }
 
-ext {
+tasks.register("prepareKotlinBuildScriptModel"){}
+
+/*ext {
     bintrayRepo = 'android-components'
     bintrayName = 'draggable'
 
@@ -80,4 +82,4 @@ ext {
 if (file('../local.properties').exists()) {
     apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
     apply from: 'https://gist.githubusercontent.com/adsamcik/81084e03dd0190772fd32b90136da34e/raw/e8007b585e57a8dfa25ca5446acf1f65c6448373/bintrayv2.gradle'
-}
+}*/
