@@ -49,7 +49,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2'
     implementation 'androidx.appcompat:appcompat:1.2.0'
 
-    implementation 'com.adsamcik.android-components:touchdelegate:1.2.0'
+    implementation 'com.adsamcik.android-components:touchdelegate:1.2.1'
 }
 
 tasks.register("prepareKotlinBuildScriptModel"){}
@@ -59,7 +59,7 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                
+
                 groupId = "com.adsamcik.android-components"
                 artifactId = artifactId
                 version = versionName
