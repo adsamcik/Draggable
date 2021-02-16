@@ -51,11 +51,8 @@ tasks.register("prepareKotlinBuildScriptModel"){}
 
 publishing {
     publications {
-        bar(MavenPublication) {
-            groupId 'com.adsamcik.android-components'
-            artifactId artifactId
-            version version
-            artifact("$buildDir/outputs/aar/${artifactId}-release.aar")
+        gpr(MavenPublication) {
+            from(components.java)
         }
     }
 
@@ -70,7 +67,7 @@ publishing {
         }*/
         maven {
             name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/octocat/hello-world"
+            url = "https://maven.pkg.github.com/adsamcik/$artifactId"
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
