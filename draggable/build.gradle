@@ -7,8 +7,10 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'org.jetbrains.dokka'
 
-ext.version = "1.0.1"
-ext.artifactId = "draggable"
+ext {
+    versionName = "1.0.1"
+    artifactId = "draggable"
+}
 
 android {
     compileSdkVersion 30
@@ -17,7 +19,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 30
-        versionName version
+        versionName versionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -63,7 +65,7 @@ afterEvaluate {
                 // You can then customize attributes of the publication as shown below.
                 groupId = "com.adsamcik.android-components"
                 artifactId = artifactId
-                version = version
+                version = versionName
             }
         }
     }
