@@ -18,6 +18,7 @@ import kotlin.math.roundToInt
 /**
  * Payload which can be attached to [DraggableImageButton].
  */
+@Suppress("TooManyFunctions")
 class DraggablePayload<T>(
 		private val mActivity: FragmentActivity,
 		private val mClass: Class<T>,
