@@ -15,6 +15,9 @@ import kotlin.concurrent.schedule
 import kotlin.math.roundToInt
 
 
+/**
+ * Payload which can be attached to [DraggableImageButton].
+ */
 class DraggablePayload<T>(
 		private val mActivity: FragmentActivity,
 		private val mClass: Class<T>,
@@ -228,22 +231,32 @@ class DraggablePayload<T>(
 
 	@Suppress("UNCHECKED_CAST")
 	internal fun restoreFragment(bundle: Bundle) {
-		val wrapper = wrapper
 		if (wrapper != null) {
 			val fragmentManager = mActivity.supportFragmentManager
-			val fragment = fragmentManager.findFragmentByTag(mFragmentTag)
-					?: fragmentManager.getFragment(bundle, mFragmentTag)
-			mFragment = fragment as T
+			@Suppress("SwallowedException")
+			// It is not desirable to pass this exception further
+			try {
+				val fragment = fragmentManager.findFragmentByTag(mFragmentTag)
+						?: fragmentManager.getFragment(bundle, mFragmentTag)
+				mFragment = fragment as T
 
-			fragmentManager.beginTransaction()
-					.remove(fragment)
-					.commitNow()
+				fragmentManager.beginTransaction()
+						.remove(fragment)
+						.commitNow()
 
-			fragmentManager.beginTransaction()
-					.replace(wrapper.id, fragment)
-					.commitNow()
+				fragmentManager.beginTransaction()
+						.replace(requireNotNull(wrapper).id, fragment)
+						.commitNow()
 
-			onInitialized?.invoke(fragment)
+				onInitialized?.invoke(fragment)
+			} catch (e: IllegalStateException) {
+				// In some edge cases getFragment throws IllegalException
+				// The workaround for this is to just force recreation of payloads.
+				mParent.removeAllViews()
+				wrapper = null
+				mFragment = null
+				initializeView()
+			}
 		}
 	}
 
