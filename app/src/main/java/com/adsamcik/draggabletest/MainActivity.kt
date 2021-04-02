@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 		leftPayload.initialTranslationZ = -1f
 		leftPayload.targetTranslationZ = dpToPx(this, 24).toFloat()
 		leftPayload.destroyPayloadAfter = 500
-		leftPayload.onInitialized = { it.view!!.setBackgroundColor(Color.BLUE) }
+		leftPayload.onInitialized = { requireNotNull(it.view).setBackgroundColor(Color.BLUE) }
 		leftPayload.stickToTarget = true
 		leftButton.addPayload(leftPayload)
 

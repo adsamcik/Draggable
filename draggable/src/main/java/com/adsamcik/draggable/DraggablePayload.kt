@@ -269,7 +269,7 @@ class DraggablePayload<T>(
 	}
 
 	private fun calculateTargetTranslation(toView: View, offset: Point, offsets: Offset): Point {
-		val wrapper = wrapper!!
+		val wrapper = requireNotNull(wrapper)
 		val location = wrapper.locationOnScreen()
 		location[0] -= wrapper.translationX.roundToInt() - initialTranslation.x
 		location[1] -= wrapper.translationY.roundToInt() - initialTranslation.y
@@ -302,7 +302,7 @@ class DraggablePayload<T>(
 	}
 
 	private fun moveWithTarget() {
-		val wrapper = wrapper!!
+		val wrapper = requireNotNull(wrapper)
 		val targetOnScreen = mTargetView.locationOnScreen()
 		val parentOnScreen = mParent.locationOnScreen()
 		targetOffset = anchor.calculateEdgeOffset(wrapper, mTargetView)
