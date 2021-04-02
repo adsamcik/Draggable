@@ -8,7 +8,7 @@ apply plugin: 'kotlin-parcelize'
 apply plugin: 'org.jetbrains.dokka'
 
 ext {
-    versionName = "1.0.3"
+    versionName = "1.0.4"
     artifactId = "draggable"
 }
 
